@@ -809,7 +809,7 @@ invalid input rather than silently truncating content.
 | Messages / stored body bytes | 10,000 / 64 MiB per conversation | Reserve one message slot for a terminal daemon event; reject ordinary sends before exhaustion |
 | Consumers | 64 per conversation/project | Reject additional identities before allocation |
 | Export leases / lifetime | 16 / 120 seconds | Fixed snapshot and complete output, bounded temporary spool at 128 MiB |
-| Prune preview | 1,000 candidates / 120 seconds | Require a narrower filter when the complete selection exceeds the cap |
+| Prune preview | 1,000 candidates / 120 seconds | At most 64 live previews; require a narrower filter when the complete selection exceeds the cap |
 | Concurrent bridges | 4 | At most one owner per conversation/project |
 | Worker time / turns / total time | 120 seconds / 20 / 600 seconds | Time limits 1 through 3,600 seconds; turns 1 through 100 |
 | Worker usage | 100,000 reported tokens | Stop before another turn once observed cumulative usage reaches the configured budget; a running turn can overshoot |

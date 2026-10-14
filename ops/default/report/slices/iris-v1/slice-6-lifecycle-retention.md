@@ -1,6 +1,6 @@
 # Slice 6: Lifecycle and Retention
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -14,59 +14,84 @@ after an exact retention preview is explicitly confirmed.
 
 ## Delivered Behavior
 
-Startup loads validated invitation, inactivity and retention durations with
+Startup loads bounded invitation, inactivity and retention durations with
 2-hour, 24-hour and 30-day defaults. Issued invitation deadlines remain fixed.
-Current daemon policy controls inactivity and retention. Reads, waits and
-acknowledgments do not renew activity.
+Current daemon policy controls inactivity and retention. New calls, first joins
+and new participant message/status inserts renew activity; reads, waits,
+acknowledgments, heartbeats, duplicate retries and maintenance do not.
 
-The daemon reconciles overdue state before readiness and expires pending or
-active conversations without an agent. Work is bounded to 128 transitions per
-transaction; timers use the nearest deadline with a 30-second maximum recheck.
-Terminal state, its system event and bridge shutdown markers commit together;
-only committed transitions notify waiters.
+The daemon reconciles overdue state before readiness and expires conversations
+without an agent. Terminal state, its system event and bridge shutdown markers
+commit together. Receivers wake after commit. Bridges acknowledge reachable
+informational events without a model before stopping, preserving unfinished
+ordinary work. Terminal histories remain stored through retention.
 
-Bare prune previews terminal history without changing it. Explicit confirmation
-revalidates exact membership, revisions, terminal times, policy, cutoff, token
-lifetime and export leases before deleting. New eligibility is not silently
-added. The token is consumed atomically with deletion; retained allocation and
-code/request tombstones survive. Previews cap at 1,000 candidates and 64 live
-120-second tokens. A terminal bridge drains reachable informational events
-before stopping, without processing unfinished ordinary work.
+Bare prune previews without changing history or consumer progress. Explicit
+confirmation revalidates exact membership, revisions, terminal times, current
+policy/eligibility, token lifetime and export leases before deleting. Changed,
+missing, newly ineligible or leased candidates reject the whole selection.
+Newly eligible history is never silently added. Deletion and one-use token
+consumption commit together while permanent project/pair/code/request
+allocations survive.
 
 ## Implementation Notes
 
-The store's injected clock owns durable timestamps, including migration
-application. New calls, successful joins and new participant message/status
-inserts are significant activity; duplicate operations are not.
+The store's injected clock owns durable UTC millisecond timestamps, including
+migrations. Maintenance uses at most 128 transitions per transaction and the
+nearest deadline with a maximum 30-second recheck. Cancellation joins its owned
+loop; maintenance failure stops the service. No model performs lifecycle work.
+
+Prune defaults to project scope; explicit all-project scope supports human
+administration. Previews contain a complete selection of at most 1,000 candidates,
+sizes, cutoff and a random 120-second token. At most 64 live previews exist.
+Confirmation is noninteractive and cannot accept a changed selection. SQLite
+rollback preserves all history and the token if any deletion fails.
 
 ## Contracts Added or Changed
 
-Version-1 configuration accepts a partial `lifecycle` object with
+Version-1 configuration accepts a partial `lifecycle` object containing
 `invitation_seconds`, `inactivity_seconds` and `retention_seconds`, each from
-1 through 315360000. Policy is immutable during a daemon run.
+1 through 315360000. Policy loads at daemon startup. `prune.preview` and
+`prune.confirm` use the existing versioned private protocol and bounded
+preview/candidate tables. Export-lease guards share serialized store
+transactions; lease acquisition and public exports belong to the history slice.
 
 ## Files of Interest
 
-- `internal/iris/prune_confirm.go`: transactional revalidation and deletion.
-- `internal/iris/prune_preview.go`: bounded exact membership and tokens.
-- `internal/iris/prune_cli.go`: default preview and noninteractive confirmation.
-- `docs/reference/lifecycle.md`: policy and operation contracts.
-- `internal/iris/maintenance.go`: bounded scheduling, startup and shutdown.
-- `internal/iris/maintenance_expire.go`: transactional expiration batches.
-- `internal/iris/lifecycle_policy.go`: defaults, bounds and durations.
-- `internal/iris/conversation_lifecycle.go`: configured expiration decisions.
-- `internal/iris/call_create.go`: persisted invitation deadlines and quotas.
+- `internal/iris/lifecycle_policy.go`: defaults, bounds and duration conversion.
+- `internal/iris/maintenance.go`: scheduling, reconciliation and shutdown.
+- `internal/iris/maintenance_expire.go`: atomic bounded expiration batches.
+- `internal/iris/prune_confirm.go`: revalidation and transactional deletion.
+- `internal/iris/prune_preview.go`: exact membership and confirmation metadata.
+- `internal/iris/process_lifecycle_test.go`: real daemon/CLI retention workflow.
+- `docs/reference/lifecycle.md`: policy, scope, preview and confirmation.
 
 ## Validation
 
-- Passed: `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestLifecycle|TestInvitation|TestConfiguration|TestJoin|TestSend' -count=1`.
-- Passed: `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --allow-serial-runners ./...`.
+Passed focused commands:
 
-- Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestMaintenance|TestLifecycle|TestBridgeIdle|TestCallBounds' -count=1`.
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestLifecycle|TestInvitation|TestConfiguration|TestJoin|TestSend' -count=1`
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestPrune|TestMaintenance|TestLifecycle|TestBridge' -count=1`
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run 'TestProcess.*Expiration|TestProcessLifecycle|TestLifecycleFresh' -count=1`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --allow-serial-runners --build-tags=integration,bridge ./...`
 
-- Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestPrune|TestMaintenance|TestLifecycle|TestBridge' -count=1`.
+Evidence covers exact boundaries, significant-activity rules, independent timer
+expiry, multi-batch reconciliation, receive/bridge notification, failed-event
+rollback, exact-deadline races, complete preview caps, stale revision/time/policy/
+membership/export-lease rejection, deletion rollback, one-use tokens, project
+scope, noninteractive IPC, human/JSON output and preserved allocations.
+A deterministic test reproduced the terminal-stop race before the fix and now
+requires the terminal event's processing acknowledgment without a model turn.
+
+Actual-binary fixtures also prove readiness reconciliation before stateful
+requests, retained metadata/messages while the daemon is stopped, policy reload,
+prune/restart, and fresh conversation context. Clock rollback cannot reopen
+terminal state or cause ordinal reuse. Required ordered PR checks and final
+exact-HEAD evidence remain pending controller validation.
 
 ## Risks and Follow-ups
 
-Process-level retention acceptance
-remain tasks in this slice.
+Public history discovery and exports remain assigned to the next recorded slice.
+Current evidence confirms retained data through store/offline inspection.
+Active bridge shutdown is observed on its five-second ownership renewal;
+full recovery and execution cleanup acceptance remain in the recovery slice.

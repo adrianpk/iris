@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 6, in-progress; lifecycle and retention.
+Active slice: Slice 6, reviewing; lifecycle and retention.
 
-Active tasks: T6.4.
+Active tasks: none; Slice 6 validation and canonical PR preparation remain.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 5 of 10 slices delivered; 26 of 44 tasks completed.
+Progress: 5 of 10 slices delivered; 27 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -53,7 +53,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 3 | projects and handshake | delivered | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | `#3` | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | delivered | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | `#4` | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | delivered | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | `#5` | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
-| Slice 6 | lifecycle and retention | in-progress | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
+| Slice 6 | lifecycle and retention | reviewing | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
 | Slice 7 | history and export | pending | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | pending | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
@@ -116,8 +116,8 @@ future artifacts; create each during its owning slice.
 | --- | --- | --- | --- | --- |
 | T6.1 | completed | `feat(lifecycle): define Iris expiration policy` | `64b475195ae1` | Configured defaults, invalid/null/overflow policy rejection, fixed invitation deadlines, exact inactivity boundaries and receive/ack non-renewal passed; focused lint passed. |
 | T6.2 | completed | `feat(lifecycle): expire inactive Iris conversations` | `c3a5d34ec8fb` | Independent timer, receive wakeup, idle bridge shutdown, bounded startup reconciliation, rollback/no false notification, significant activity and exact-deadline join/send races passed with the race detector; lint passed. |
-| T6.3 | completed | `feat(retention): prune confirmed Iris history` | this commit | Preview non-mutation, exact/frozen selections, stale revisions/time/policy/membership/leases, deletion rollback, one-use tokens, bounds, scope, noninteractive IPC and retained allocations passed with race checks; terminal event acknowledgment regression fixed and lint passed. |
-| T6.4 | pending | `test(lifecycle): verify Iris retention and conversation isolation` | pending | Retained closed/expired history; prune/restart and fresh conversation ID/context. |
+| T6.3 | completed | `feat(retention): prune confirmed Iris history` | `8c5019f0b7aa` | Preview non-mutation, exact/frozen selections, stale revisions/time/policy/membership/leases, deletion rollback, one-use tokens, bounds, scope, noninteractive IPC and retained allocations passed with race checks; terminal event acknowledgment regression fixed and lint passed. |
+| T6.4 | completed | `test(lifecycle): verify Iris retention and conversation isolation` | this commit | Actual daemon/CLI expiration without an agent, readiness reconciliation, retained history, policy reload/stale token, confirmed pruning and fresh IDs/context passed with the race detector; clock rollback and all terminal routes passed; combined-tag lint passed. |
 
 ## Slice 7 Tasks
 
