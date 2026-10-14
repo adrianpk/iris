@@ -1,6 +1,6 @@
 # Slice 5: Codex Exchange
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -65,7 +65,7 @@ usage bound blocks the next turn and is not a hard provider token ceiling.
 ## Validation
 
 All eight ordered commands passed through Looper on clean implementation
-candidate `3235973b8edc63ba07efa8b7a7f20d566857f080`:
+and merged PR head `c0bb1ff0c0221a3c3d12e962529fbf42f333c563`:
 
 - `make check`
 - `make lint`
@@ -76,7 +76,7 @@ candidate `3235973b8edc63ba07efa8b7a7f20d566857f080`:
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
 - `git diff --check`
 
-The real target passed in 29.540 seconds. Two temporary projects used distinct
+The real target passed in 28.841 seconds. Two temporary projects used distinct
 Codex threads and exactly one turn each. The reply contained a random value
 stored only in the receiving project's file. Ordered bridge consumers durably
 acknowledged the question and response without human relay. Initial idle time
@@ -87,8 +87,9 @@ workers and service stopped through owned cleanup.
 Focused race tests also passed injected reply/ack rollback, idempotent completion,
 stale ownership, close/completion races, budgets, informational processing,
 approval denial/once-only decisions, terminal checks and interruption proof.
-Final PR evidence must be regenerated after the PR-reference follow-up and match
-the canonical PR head and this exact ordered command list.
+Looper regenerated evidence after the PR-reference follow-up for that exact
+head and ordered command list. Canonical PR `#5` merged into `dev` at the same
+head.
 
 ## Risks and Follow-ups
 
