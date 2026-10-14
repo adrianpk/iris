@@ -2,18 +2,21 @@ package iris
 
 import (
 	"context"
+	"strings"
 )
 
 type statistics struct {
-	SchemaVersion        int   `json:"schema_version"`
-	Ready                bool  `json:"ready"`
-	StorageSchemaVersion int   `json:"storage_schema_version"`
-	Projects             int64 `json:"projects"`
-	Conversations        int64 `json:"conversations"`
-	Messages             int64 `json:"messages"`
+	SchemaVersion        int     `json:"schema_version"`
+	ProjectID            *string `json:"project_id"`
+	Ready                bool    `json:"ready"`
+	StorageSchemaVersion int     `json:"storage_schema_version"`
+	Projects             int64   `json:"projects"`
+	Conversations        int64   `json:"conversations"`
+	Messages             int64   `json:"messages"`
 }
 
 type statsParams struct {
+	projectSelection
 	AllProjects bool `json:"all_projects"`
 }
 
@@ -37,6 +40,10 @@ func (s *store) handle(ctx context.Context, req request) response {
 		return failure("unsupported_protocol", "expected iris/v1", false)
 	}
 
+	if strings.HasPrefix(req.Operation, "projects.") {
+		return s.handleProjects(ctx, req)
+	}
+
 	if req.Operation != "stats" {
 		return failure("unknown_operation", "unsupported operation", false)
 	}
@@ -46,18 +53,7 @@ func (s *store) handle(ctx context.Context, req request) response {
 		return failure("invalid_request", "invalid operation parameters", false)
 	}
 
-	if !params.AllProjects {
-		return failure("project_not_found", "explicit all_projects scope is required for service statistics", false)
-	}
+	result, err := s.selectedStatistics(ctx, params)
 
-	result, err := s.statistics(ctx)
-	if err != nil {
-		if ctx.Err() != nil {
-			return failure("cancelled", "request cancelled", false)
-		}
-
-		return failure("storage_unavailable", "cannot read service storage", false)
-	}
-
-	return success(result)
+	return operationResponse(ctx, result, err)
 }

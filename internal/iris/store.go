@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"time"
 
 	"modernc.org/sqlite"
 )
 
 type store struct {
-	db *sql.DB
+	db  *sql.DB
+	now func() time.Time
 }
 
 func openStore(ctx context.Context, cfg config) (*store, error) {
@@ -37,7 +39,7 @@ func openStore(ctx context.Context, cfg config) (*store, error) {
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
 
-	s := &store{db: db}
+	s := &store{db: db, now: time.Now}
 
 	if err := s.migrate(ctx, initialMigrations()); err != nil {
 		return nil, errors.Join(err, db.Close())

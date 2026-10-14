@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"slices"
 )
 
@@ -14,11 +15,13 @@ type App struct {
 	stdout io.Writer
 	stderr io.Writer
 	config func() (config, error)
+	cwd    func() (string, error)
+	stdin  io.Reader
 }
 
 // NewApp stores output streams without resolving paths or performing IO.
 func NewApp(stdout, stderr io.Writer) *App {
-	return &App{stdout: stdout, stderr: stderr, config: defaultConfig}
+	return &App{stdout: stdout, stderr: stderr, config: defaultConfig, cwd: os.Getwd, stdin: os.Stdin}
 }
 
 // Run executes one command and returns its process exit code.
@@ -48,6 +51,8 @@ func (app *App) run(ctx context.Context, args []string) error {
 	switch args[0] {
 	case "serve":
 		return app.runServe(ctx, args[1:])
+	case "projects":
+		return app.runProjects(ctx, args[1:])
 	case "stats":
 		return app.runStats(ctx, args[1:])
 	}

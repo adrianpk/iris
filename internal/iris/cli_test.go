@@ -42,11 +42,11 @@ func TestStatsOutput(t *testing.T) {
 
 	stdout.Reset()
 
-	if code := app.Run(t.Context(), []string{"stats", "--json"}); code != 2 || stdout.Len() != 0 {
+	if code := app.Run(t.Context(), []string{"stats", "--json"}); code != 1 || stdout.Len() != 0 {
 		t.Fatalf("usage code=%d stdout=%q", code, stdout.String())
 	}
 
-	if err := decodeJSON(stderr.Bytes(), &reply); err != nil || reply.Error == nil || reply.Error.Code != "invalid_request" {
+	if err := decodeJSON(stderr.Bytes(), &reply); err != nil || reply.Error == nil || reply.Error.Code != "project_not_found" {
 		t.Fatalf("error response=%+v error=%v", reply, err)
 	}
 }

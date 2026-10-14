@@ -13,7 +13,8 @@ const rootHelp = `Usage: iris <command> [options]
 
 Commands:
   serve                       Run the private local service
-  stats --all-projects [--json] Inspect service readiness and storage counts
+  projects                    Register and inspect project identities
+  stats [--project <selector>|--all-projects] [--json] Inspect storage counts
   help                        Show command help
 
 The service uses XDG data/config/runtime roots. No network listener is opened.
@@ -84,22 +85,29 @@ func (app *App) runStats(ctx context.Context, args []string) error {
 	flags.SetOutput(io.Discard)
 
 	all := flags.Bool("all-projects", false, "inspect all projects")
+	selected := flags.String("project", "", "explicit project selector")
 
 	jsonOutput := flags.Bool("json", false, "emit JSON")
 	if err := flags.Parse(args); err != nil {
-		return app.flagError(err, "Usage: iris stats --all-projects [--json]\n")
+		return app.flagError(err, "Usage: iris stats [--project <selector>|--all-projects] [--json]\n")
 	}
 
-	if flags.NArg() != 0 || !*all {
-		return &usageError{message: "stats requires --all-projects and no positional arguments"}
+	if flags.NArg() != 0 || (*all && *selected != "") {
+		return &usageError{message: "stats accepts a project selector or all-projects scope and no positional arguments"}
 	}
 
-	cfg, err := app.config()
+	ref := projectSelection{Project: *selected}
+
+	var err error
+	if !*all {
+		ref, err = app.selectReference(*selected)
+	}
+
 	if err != nil {
-		return &serviceError{Code: "invalid_request", Message: "invalid Iris configuration", cause: err}
+		return err
 	}
 
-	reply, err := callService(ctx, cfg, request{Protocol: protocolVersion, Operation: "stats", Params: []byte(`{"all_projects":true}`)})
+	reply, err := app.request(ctx, "stats", statsParams{projectSelection: ref, AllProjects: *all})
 	if err != nil {
 		return err
 	}
