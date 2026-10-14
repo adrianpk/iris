@@ -1,6 +1,6 @@
 # Slice 9: Linux Operation
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -53,8 +53,8 @@ remain 0600 and 0700. Shutdown closes only the inherited descriptor.
 
 ## Validation
 
-All nine ordered checks passed through Looper on clean implementation candidate
-`95ab6656dfee575f190c4180775e4b10edaba59b` before canonical PR #9 opened:
+All nine ordered checks passed through Looper on final canonical PR #9 head
+`562059bc7f3605f784d5e038a24f0425ec1675b2`, which merged into `dev` unchanged:
 
 - `make check`
 - `make lint`
@@ -66,16 +66,16 @@ All nine ordered checks passed through Looper on clean implementation candidate
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge,systemd ./...`
 - `git diff --check`
 
-The controller's required `make test-systemd` run passed in 5.062 seconds.
+The controller's required `make test-systemd` run passed in 4.995 seconds.
 Uniquely named runtime units verified inactive-before-request activation,
 matching XDG roots with spaces/percent/dollar signs, 0600 socket/database/WAL/SHM,
 0700 roots, no implicit restart during upgrade, deliberate restart, crash
 restart, durable IDs/messages, long-poll disconnect, cancelled waits, retained
 socket inode and orderly shutdown/reopen. Its one-second idle observation
-measured 0 CPU ticks and 13,524 KiB daemon RSS with no bridge/provider children.
+measured 0 CPU ticks and 13,576 KiB daemon RSS with no bridge/provider children.
 Cleanup removed all owned units, links and roots; missing manager access fails.
 
-The actual-process and changed-boundary race command passed in 13.981 seconds.
+The actual-process and changed-boundary race command passed in 14.092 seconds.
 Descriptor tests reject incorrect metadata, network/packet listeners, unsafe
 modes and foreign paths while preserving manager ownership. Three installation
 cases verify repeated build hashes, executable output, atomic replacement,
@@ -93,9 +93,9 @@ The corrected unit uses unprivileged-manager restrictions; the running daemon
 has zero effective capabilities and no new privileges. The shutdown fixture
 accepts an explicit cancellation error envelope as well as EOF.
 
-The PR-reference follow-up requires regeneration on its exact clean head with
-this same ordered command list. The canonical PR head and controller ledger
-identify final integration evidence.
+The final controller ledger binds this exact head and ordered command list.
+Acta merge event `01M4XMH7GZ829YE0GRX15RG7J5` confirms Rebase + Fast-forward
+integration.
 
 ## Risks and Follow-ups
 
