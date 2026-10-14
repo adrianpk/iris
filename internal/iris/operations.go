@@ -119,3 +119,14 @@ func (s *store) handleHandshake(ctx context.Context, req request) response {
 
 	return failure("unknown_operation", "unsupported conversation operation", false)
 }
+
+func (s *store) handleSend(ctx context.Context, req request) response {
+	var params sendParams
+	if err := decodeJSON(req.Params, &params); err != nil {
+		return failure("invalid_request", "invalid send parameters", false)
+	}
+
+	value, err := s.send(ctx, params)
+
+	return operationResponse(ctx, value, err)
+}

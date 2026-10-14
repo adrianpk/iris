@@ -40,18 +40,27 @@ func (s *store) handle(ctx context.Context, req request) response {
 		return failure("unsupported_protocol", "expected iris/v1", false)
 	}
 
+	return s.dispatch(ctx, req)
+}
+
+func (s *store) dispatch(ctx context.Context, req request) response {
 	if strings.HasPrefix(req.Operation, "projects.") {
 		return s.handleProjects(ctx, req)
 	}
 
-	if req.Operation == "call" || req.Operation == "join" || req.Operation == "close" {
+	switch req.Operation {
+	case "send":
+		return s.handleSend(ctx, req)
+	case "call", "join", "close":
 		return s.handleHandshake(ctx, req)
+	case "stats":
+		return s.handleStats(ctx, req)
 	}
 
-	if req.Operation != "stats" {
-		return failure("unknown_operation", "unsupported operation", false)
-	}
+	return failure("unknown_operation", "unsupported operation", false)
+}
 
+func (s *store) handleStats(ctx context.Context, req request) response {
 	var params statsParams
 	if err := decodeJSON(req.Params, &params); err != nil {
 		return failure("invalid_request", "invalid operation parameters", false)
