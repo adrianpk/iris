@@ -53,6 +53,12 @@ func (app *App) run(ctx context.Context, args []string) error {
 
 func (app *App) runCommand(ctx context.Context, args []string) error {
 	switch args[0] {
+	case "send":
+		return app.runSend(ctx, args[1:])
+	case "receive":
+		return app.runReceive(ctx, args[1:])
+	case "ack":
+		return app.runAck(ctx, args[1:])
 	case "serve":
 		return app.runServe(ctx, args[1:])
 	case "join", "close":

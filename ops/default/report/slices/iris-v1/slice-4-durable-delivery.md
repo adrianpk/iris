@@ -33,6 +33,13 @@ disconnect, timeout and terminal state release subscriptions. There are at
 most 64 waiters, with 16 per project. Wire deadlines allow requested wait plus
 five seconds rather than using the ordinary request timeout.
 
+The CLI exposes `send`, `receive` and `ack`. Shared text/file/stdin handling
+preserves multiline UTF-8 and rejects empty, oversized or conflicting input.
+Send supports reply targets, correlation IDs, explicit recipients, status
+messages and retry keys. Receive defaults to consumer `manual` and a 30-second
+wait; `--wait 0` returns immediately. JSON success is one versioned envelope,
+with failures only on stderr.
+
 ## Implementation Notes
 
 The existing SQLite schema owns delivery identities and constraints. One write
@@ -65,8 +72,10 @@ message slot for a terminal event and respect body/storage bounds.
 
 - `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestWait' -count=1 -timeout=30s` — passed after correcting a test fixture's page limit and replacing a racy connection-count assertion with a bounded concurrent writer check.
 
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^TestDeliveryCLI|TestCallInitial' -count=1` — passed for human/JSON, boundary-size content and input failures across the real Unix transport.
+
 Controller-recorded exact-HEAD validation follows the remaining tasks.
 
 ## Risks and Follow-ups
 
-CLI content and process recovery remain in T4.4 and T4.5.
+Actual-process delivery recovery and isolation acceptance remains in T4.5.

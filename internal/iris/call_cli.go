@@ -25,7 +25,7 @@ func addCallFlags(flags *flag.FlagSet) callOptions {
 		topic:   flags.String("topic", "", "conversation topic"),
 		key:     flags.String("idempotency-key", "", "stable request key for retries"),
 		body:    flags.String("message", "", "initial message text"),
-		file:    flags.String("file", "", "read initial message file"),
+		file:    flags.String("file", "", "read message file"),
 		json:    flags.Bool("json", false, "emit JSON"),
 	}
 }
@@ -62,7 +62,7 @@ func (app *App) callArguments(flags *flag.FlagSet, options callOptions) (callPar
 		return callParams{}, err
 	}
 
-	body, err := app.initialContent(flags, *options.body, *options.file)
+	body, err := app.messageContent(flags, *options.body, *options.file)
 	if err != nil {
 		return callParams{}, err
 	}
@@ -86,7 +86,7 @@ func (app *App) callArguments(flags *flag.FlagSet, options callOptions) (callPar
 	return callParams{projectSelection: selection, To: *options.to, Topic: *options.topic, Body: body, RequestKey: key}, nil
 }
 
-func (app *App) initialContent(flags *flag.FlagSet, body, path string) (string, error) {
+func (app *App) messageContent(flags *flag.FlagSet, body, path string) (string, error) {
 	messageSet, fileSet := false, false
 
 	flags.Visit(func(value *flag.Flag) {
@@ -103,37 +103,37 @@ func (app *App) initialContent(flags *flag.FlagSet, body, path string) (string, 
 	}
 
 	if messageSet {
-		return checkedInitialContent(body)
+		return checkedMessageContent(body)
 	}
 
 	reader := app.stdin
 
 	if fileSet {
-		return initialContentFile(path)
+		return messageContentFile(path)
 	}
 
 	if file, ok := reader.(*os.File); ok {
 		info, err := file.Stat()
 		if err != nil || info.Mode()&os.ModeCharDevice != 0 {
-			return "", &usageError{message: "call requires --message, --file or piped stdin"}
+			return "", &usageError{message: "content requires --message, --file or piped stdin"}
 		}
 	}
 
-	return readInitialContent(reader)
+	return readMessageContent(reader)
 }
 
-func readInitialContent(reader io.Reader) (string, error) {
+func readMessageContent(reader io.Reader) (string, error) {
 	data, err := io.ReadAll(io.LimitReader(reader, maxMessageBodyBytes+1))
 	if err != nil {
-		return "", problem("invalid_request", "cannot read initial message")
+		return "", problem("invalid_request", "cannot read message")
 	}
 
-	return checkedInitialContent(string(data))
+	return checkedMessageContent(string(data))
 }
 
-func checkedInitialContent(body string) (string, error) {
+func checkedMessageContent(body string) (string, error) {
 	if !validText(body, maxMessageBodyBytes) {
-		return "", problem("invalid_request", "initial message must be nonempty UTF-8 within the body limit")
+		return "", problem("invalid_request", "message must be nonempty UTF-8 within the body limit")
 	}
 
 	return body, nil
@@ -154,13 +154,13 @@ func (app *App) printConversation(reply response, jsonOutput bool) error {
 	return err
 }
 
-func initialContentFile(path string) (string, error) {
+func messageContentFile(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return "", problem("invalid_request", "cannot open initial message file")
+		return "", problem("invalid_request", "cannot open message file")
 	}
 
-	content, readErr := readInitialContent(file)
+	content, readErr := readMessageContent(file)
 	closeErr := file.Close()
 
 	if readErr != nil {
@@ -168,7 +168,7 @@ func initialContentFile(path string) (string, error) {
 	}
 
 	if closeErr != nil {
-		return "", problem("invalid_request", "cannot close initial message file")
+		return "", problem("invalid_request", "cannot close message file")
 	}
 
 	return content, nil

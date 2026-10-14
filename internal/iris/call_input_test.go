@@ -42,7 +42,7 @@ func TestCallInitialInputs(t *testing.T) {
 			app := NewApp(nil, nil)
 			app.stdin = strings.NewReader(test.stdin)
 
-			body, err := app.initialContent(flags, *options.body, *options.file)
+			body, err := app.messageContent(flags, *options.body, *options.file)
 			if (err == nil) != test.valid || body != test.want {
 				t.Fatalf("body=%q error=%v", body, err)
 			}
