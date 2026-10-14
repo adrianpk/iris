@@ -1,6 +1,6 @@
 # Slice 1: Audit and Contracts
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -114,8 +114,9 @@ Passed through Looper for `dcefd22ca18a863520bca0013b6bcb75dd5e05b8`:
 - `python3 scripts/check-contracts.py` — passed.
 - `git diff --check` — passed.
 
-The PR-reference follow-up must regenerate the same ordered checks for its
-final clean HEAD before handoff; controller evidence owns that exact identity.
+The controller repeated the same ordered checks for the final PR head
+`06041b58bf5dd44c42202c5463ab202da511308a`; all three passed. PR `#1` was merged
+through Rebase + Fast-forward into `dev` at that same commit.
 
 The focused contract checker covers relative links, ten slice identities,
 44 task identities, schema creation, eleven constraint violations, transaction
