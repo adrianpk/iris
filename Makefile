@@ -1,12 +1,22 @@
 GO := go
 GOTOOLCHAIN ?= go1.26.3
 export GOTOOLCHAIN
+PREFIX ?= $(HOME)/.local
 DEV_ROOT ?= _workspace
 GO_BUILD_CACHE := $(CURDIR)/$(DEV_ROOT)/go-build-cache
 GOLANGCI_LINT_CACHE := $(CURDIR)/$(DEV_ROOT)/golangci-lint-cache
 COVERAGE_OUT ?= /tmp/iris-coverage.out
 
-.PHONY: fmt test test-integration test-bridge test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
+.PHONY: build install uninstall fmt test test-integration test-bridge test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
+
+build:
+	@CGO_ENABLED=0 $(GO) build -trimpath -buildvcs=false -ldflags=-buildid= -o $(DEV_ROOT)/bin/iris .
+
+install: build
+	@python3 scripts/install.py install --prefix "$(PREFIX)" --binary "$(CURDIR)/$(DEV_ROOT)/bin/iris"
+
+uninstall:
+	@python3 scripts/install.py uninstall --prefix "$(PREFIX)"
 
 fmt:
 	@$(GO) fmt ./...

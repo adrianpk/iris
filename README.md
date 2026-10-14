@@ -21,6 +21,9 @@ each joined project. The [Codex bridge reference](docs/reference/bridge.md)
 explains separate owned threads, sandbox/approval settings, completion, limits,
 and `bridge status` / `bridge stop`.
 
+For source installation, user-systemd activation, upgrades and removal, follow
+[Linux operation](docs/how-to/linux-operation.md).
+
 ## Run the service
 
 Requirements: Linux, Go 1.26.3, and an existing private `XDG_RUNTIME_DIR`.
@@ -49,7 +52,8 @@ iris stats --all-projects --json
 The service listens on `$XDG_RUNTIME_DIR/iris/iris.sock`, with mode 0600
 inside a user-owned mode-0700 directory. A runtime lock prevents another daemon
 from replacing the socket. SIGINT or SIGTERM closes owned connections, waits
-for workers, and removes the socket while preserving committed data.
+for workers, and removes a manually owned socket while preserving committed data. With
+systemd activation, the manager retains its socket across daemon restarts.
 
 The database is `$XDG_DATA_HOME/iris/iris.db`, defaulting to
 `~/.local/share/iris/iris.db`. Only the daemon opens it during normal operation.

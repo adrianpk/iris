@@ -26,3 +26,6 @@ All notable changes to Iris are documented here.
 - Recover completed bridge results after restart without invoking the model
   again, inspect uncertain work without replaying tools, and retain execution
   budgets and authority decisions across worker restarts.
+- Install the user service from source, activate its private socket on demand,
+  upgrade and restart deliberately, and remove the binary and units while
+  preserving conversation data and configuration.

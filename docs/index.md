@@ -12,6 +12,9 @@ history and exact-confirmation pruning.
 See the [history reference](reference/history.md) for bounded discovery, complete
 text/JSON transcripts and scoped storage statistics.
 
+See [Linux operation](how-to/linux-operation.md) for source installation,
+explicit socket activation, upgrades, shutdown and removal.
+
 - `tutorials/`: guided learning paths.
 - `how-to/`: task procedures.
 - `reference/`: public contracts and exact behavior.
