@@ -9,3 +9,4 @@
 - [Bridge](bridge.md): explicit workers, authority, limits and recovery.
 - [Lifecycle](lifecycle.md): expiration, retention and exact pruning.
 - [History](history.md): scoped discovery, exports and storage statistics.
+- [Acceptance](acceptance.md): ten required groups and decisive real-boundary checks.

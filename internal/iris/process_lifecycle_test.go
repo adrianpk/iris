@@ -175,6 +175,7 @@ func TestProcessLifecycleRecovery(t *testing.T) {
 	started := time.Now().Add(-time.Millisecond)
 	process := fixture.start(t)
 	assertPruneHumanPreview(t, fixture)
+	assertRetainedLifecycleExport(t, fixture, seed.active.ID)
 
 	preview := processJSON[prunePreview](t, fixture, fixture.projects[0], "prune", "--all-projects", "--json")
 	if len(preview.Candidates) != 0 {
@@ -212,7 +213,16 @@ func TestProcessLifecycleRecovery(t *testing.T) {
 		t.Fatalf("deletion=%+v", result)
 	}
 
+	stdout, stderr, err = fixture.command(t.Context(), fixture.projects[0], "show", "--json", seed.active.ID)
+	assertLifecycleFailure(t, stdout, stderr, err, "not_found")
+
 	fresh := assertProcessFreshConversation(t, fixture, seed)
+
+	exported := processJSON[transcript](t, fixture, fixture.projects[0], "dump", "--json", fresh.ID)
+	if len(exported.Messages) != 2 || exported.Conversation.ID != fresh.ID {
+		t.Fatal("fresh export inherited deleted history")
+	}
+
 	stopProcess(t, process, syscall.SIGTERM)
 	withLifecycleStore(t, fixture, func(s *store) { assertFreshStoredContext(t, s, fresh) })
 }
@@ -281,5 +291,25 @@ func assertPruneHumanPreview(t *testing.T, fixture processFixture) {
 	stdout, stderr, err := fixture.command(t.Context(), fixture.projects[0], "prune", "--all-projects")
 	if err != nil || len(stderr) != 0 || !strings.Contains(string(stdout), "Preview: 0 eligible conversations") || !strings.Contains(string(stdout), "Confirmation token:") {
 		t.Fatalf("human prune: stdout=%s stderr=%s error=%v", stdout, stderr, err)
+	}
+}
+
+func assertRetainedLifecycleExport(t *testing.T, fixture processFixture, id string) {
+	t.Helper()
+
+	value := processJSON[transcript](t, fixture, fixture.projects[0], "dump", "--json", id)
+	if value.Conversation.State != "expired" || len(value.Messages) != 3 || value.Messages[2].Kind != "system" {
+		t.Fatalf("retained export=%+v", value)
+	}
+
+	for index, message := range value.Messages {
+		if message.Sequence != int64(index+1) || message.ConversationID != id {
+			t.Fatal("retained export lost chronological identity")
+		}
+	}
+
+	text, stderr, err := fixture.command(t.Context(), fixture.projects[0], "dump", "--format", "text", id)
+	if err != nil || len(stderr) != 0 || !strings.Contains(string(text), value.Messages[0].Body) {
+		t.Fatalf("retained text export: %v %s", err, stderr)
 	}
 }

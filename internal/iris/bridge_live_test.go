@@ -35,6 +35,7 @@ func TestBridgeLiveExchange(t *testing.T) {
 	flow.assertFinalIdle(t)
 	flow.stopWorkers(t)
 	flow.verifyRestartExchange(t)
+	flow.verifyFreshConversation(t)
 }
 
 func prepareLiveExchange(t *testing.T) *liveExchange {

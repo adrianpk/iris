@@ -24,6 +24,13 @@ framing, migrations, bounds and recovery. Explanation separates persistence,
 processing and explicit worker context. Planned capabilities retain forum/group,
 broadcast, claims, other adapters and remote/multiuser work as future behavior.
 
+The acceptance map binds ten groups to 28 existing cases and their actual gate
+selectors. Lifecycle process acceptance exports expired retained history before
+confirmed pruning, then rejects deleted lookup and exports only fresh content.
+Live Codex acceptance now creates a second conversation after recovery/resumption
+and checks two new owned threads/consumers, a new random local proof, preserved
+old history and idle counts.
+
 ## Implementation Notes
 
 An actual-binary test executes the published invitation/history shell blocks
@@ -59,6 +66,14 @@ fourteen SQL tables and eleven rejected invalid cases.
 Passed: `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^TestReferenceConfiguration$|^TestMigrationMatchesContract$' -count=1`.
 The full published configuration equals actual defaults; the embedded migrations
 match the accepted SQL model. Combined-tag lint also passed.
+
+Passed: `python3 scripts/check-acceptance.py`: ten consecutive groups and 28
+existing cases assigned to their actual gates and selectors.
+
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessUserGuide$|^TestProcessLifecycleRecovery$|^TestReferenceConfiguration$' -count=1`.
+Real guide commands, expired history exports, confirmed prune, deleted lookup,
+fresh transcript context and documented configuration passed. The changed live
+bridge fixture requires ordered clean-head execution before PR readiness.
 
 ## Risks and Follow-ups
 

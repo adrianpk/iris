@@ -152,8 +152,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T10.1 | completed | `docs(guide): explain Iris project conversations` | `790b6f6007ca` | Published invitation/history snippets execute unchanged against the real binary with race checks; source installation and bounded worker forms match owning fixtures. Live fresh-context acceptance follows in T10.3. |
-| T10.2 | completed | `docs(reference): document Iris contracts and future capabilities` | pending | Contract checker passed forty documents, eighteen typed operation names, storage schema 4 and SQL constraints. Published configuration equals executable defaults; migration/model and reference tests passed. Planned capabilities and separate-worker limitations documented. |
-| T10.3 | pending | `test(acceptance): verify the complete Iris v1 workflow` | pending | All ten required test groups; real processes/systemd/Codex, retention/export/prune, and fresh-context isolation. |
+| T10.2 | completed | `docs(reference): document Iris contracts and future capabilities` | `c668448ca53c` | Contract checker passed forty documents, eighteen typed operation names, storage schema 4 and SQL constraints. Published configuration equals executable defaults; migration/model and reference tests passed. Planned capabilities and separate-worker limitations documented. |
+| T10.3 | in-progress | `test(acceptance): verify the complete Iris v1 workflow` | pending | Ten-group coverage map checks 28 actual cases and owning selectors. Changed guide/lifecycle/reference race checks passed; real fresh-conversation bridge extension awaits ordered clean-head validation. |
 | T10.4 | pending | `chore(delivery): finalize Iris v1 validation` | pending | Immutable candidate SHA, full gate, canonical reports, and concrete limits; release publication remains separate. |
 
 ## Validation evidence
