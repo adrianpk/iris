@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-5-iris-codex-exchange`
-PR: pending
+PR: [#5](https://forge.adrianpk.com/adrianpk/iris/pulls/5)
 
 ## Purpose
 
