@@ -81,6 +81,13 @@ Passed bounded fuzz commands:
 The request and recovery campaigns executed 30,971 and 20,918 inputs without
 failure. These bounded campaigns supplement deterministic boundary/race checks.
 
+The first ordered candidate failed `make test-bridge` during the resumed
+exchange after proving real no-invocation recovery and initial idle stability.
+A deterministic regression reproduced prior-turn notifications arriving before
+the new turn identity. The adapter now ignores those pre-identity history
+notifications while continuing to reject foreign events after binding the turn.
+Focused resume/protocol race checks passed; the ordered gate must be regenerated.
+
 ## Risks and Follow-ups
 
 Required ordered controller validation, including the extended real adapter

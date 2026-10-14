@@ -52,3 +52,22 @@ func TestCodexRecoveryFailures(t *testing.T) {
 		})
 	}
 }
+
+// Resume can replay prior-turn notifications before confirming a new turn; they cannot replace its identity or final output.
+func TestCodexResumeNotifications(t *testing.T) {
+	client, script := scriptClient(t)
+	thread := "own-thread"
+	script.steps = []func(map[string]json.RawMessage){func(frame map[string]json.RawMessage) {
+		assertCodexMethod(t, frame, "turn/start")
+		script.push(`{"method":"thread/tokenUsage/updated","params":{"threadId":"own-thread","turnId":"prior-turn","tokenUsage":{"total":{"totalTokens":17}}}}`)
+		script.push(`{"method":"turn/completed","params":{"threadId":"own-thread","turn":{"id":"prior-turn","status":"completed"}}}`)
+		script.push(`{"method":"turn/started","params":{"threadId":"own-thread","turn":{"id":"turn-1"}}}`)
+		script.push(`{"id":1,"result":{"turn":{"id":"turn-1"}}}`)
+		pushCodexResult(script)
+	}}
+
+	result, err := client.runTurn(t.Context(), bridgeBinding{ThreadID: &thread, ProjectPath: "/fixture/project", Options: defaultBridgeOptions()}, "new input", ignoreCodexCheckpoint)
+	if err != nil || result.Answer.Body != "verified response" || result.TurnID != "turn-1" {
+		t.Fatalf("resumed turn=%+v %v", result, err)
+	}
+}

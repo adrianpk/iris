@@ -45,6 +45,11 @@ func (progress *codexProgress) handle(ctx context.Context, frame codexFrame) err
 		return progress.started(ctx, frame.Params)
 	}
 
+	// Resumed threads can replay historical notifications before the new turn identity arrives.
+	if progress.turnID == "" {
+		return nil
+	}
+
 	if event.TurnID != "" && event.TurnID != progress.turnID {
 		return problem("worker_uncertain", "unexpected concurrent Codex turn")
 	}
