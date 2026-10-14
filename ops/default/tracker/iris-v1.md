@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 8, in-progress; bridge recovery.
+Active slice: Slice 8, reviewing; bridge recovery.
 
-Active task: T8.5.
+Active tasks: none; canonical PR `#8` awaits controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 7 of 10 slices delivered; 35 of 44 tasks completed.
+Progress: 7 of 10 slices delivered; 36 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -55,7 +55,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 5 | Codex exchange | delivered | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | `#5` | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | delivered | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | `#6` | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
 | Slice 7 | history and export | delivered | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | `#7` | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
-| Slice 8 | bridge recovery | in-progress | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
+| Slice 8 | bridge recovery | reviewing | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | `#8` | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
@@ -136,7 +136,7 @@ future artifacts; create each during its owning slice.
 | T8.2 | completed | `feat(bridge): report uncertain Iris worker outcomes` | `32a9b0816257` | Distinct failure/status hints, expired-lease uncertainty, three safe startup retries with 1/2/4-second delays, definitive rejection and durable approval-decline recovery checks passed; no turn invocation retries. |
 | T8.3 | completed | `feat(bridge): enforce Iris execution limits` | `c6e7ce18fe48` | Persisted restart policy, pre-provider budgets, nullable telemetry with observed floor, expired-budget saved-result recovery, global owner cap, blocked-stdin deadlines and owned process cleanup passed with race checks. |
 | T8.4 | completed | `test(security): verify Iris input and authority boundaries` | `1f1c2b352c1d` | Actual Unix malformed/oversized/UTF-8/scope rejection, literal peer injection, forged owner and private mode checks passed with race detection; bounded request/recovery fuzzing passed with two workers. |
-| T8.5 | in-progress | `test(bridge): verify Iris recovery and idle behavior` | pending | Live fixture now injects a lost result checkpoint, recovers the recorded real turn, restarts both original threads with pending work and samples bounded idle CPU/RSS. Required controller validation is pending. |
+| T8.5 | completed | `test(bridge): verify Iris recovery and idle behavior` | `24099e0d5d52` | All ten ordered Looper checks passed on candidate `e8e23503a43ca443dac802eb1b312894df003c34`: real lost-result recovery without another invocation, both original threads resumed with pending work, unchanged idle counts and measured CPU/RSS. Resume-event regression fixed in `e8e23503a43c`. |
 
 ## Slice 9 Tasks
 
@@ -171,6 +171,7 @@ future artifacts; create each during its owning slice.
 | Codex exchange gate | passed | Eight ordered Looper checks passed on final PR head `c0bb1ff0c0221a3c3d12e962529fbf42f333c563`, including the real two-project exchange, durable acknowledgment, idle counts and integration race checks. Canonical PR `#5` merged at that head; report/tracker entries are closed. |
 | Lifecycle and retention gate | passed | All seven ordered Looper checks passed on final PR head `f802b42de7d94253aa3545ae382f9d6c74dc312b`, including actual daemon/CLI expiration, retention/pruning, fresh context and all integration-tag race checks. Canonical PR `#6` merged at that head; report/tracker entries are closed. |
 | History and export gate | passed | All seven ordered controller checks passed on final PR head `cb35ff0ce59feb94db6d453626d328eeb875b7e3`, including actual binaries, complete exports, jq and integration race checks. Canonical PR `#7` merged at that head; report/tracker entries are closed. |
+| Bridge recovery gate | passed | Ten ordered controller checks passed on clean implementation candidate `e8e23503a43ca443dac802eb1b312894df003c34`, including real recovery/restart, two bounded fuzz campaigns, integration race checks and combined-tag lint. PR-reference follow-up requires exact-HEAD regeneration. |
 | User-systemd acceptance | not run | This target remains assigned to its owning slice. |
 
 ## Completion gates

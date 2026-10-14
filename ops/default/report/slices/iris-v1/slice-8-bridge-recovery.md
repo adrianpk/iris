@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-8-iris-bridge-recovery`
-PR: pending
+PR: [#8](https://forge.adrianpk.com/adrianpk/iris/pulls/8)
 
 ## Purpose
 
@@ -58,7 +58,7 @@ turn, completion status, tool outcomes and final answer schema.
 Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestBridgeRecorded|^TestBridgeInvocationRecovery|^TestBridgeLost|^TestBridgeUnconfirmed|^TestCodex.*Recover|^TestMigration' -count=1`.
 Real SQLite reopen, scoped owner replacement, immutable checkpoint retries,
 publication without a model, lost confirmation and failed/foreign/incomplete
-provider history checks passed. Slice validation remains pending.
+provider history checks passed. The ordered controller gate below passed.
 
 Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestBridgeStartup|^TestBridgeUncertain|^TestBridgeFailed|^TestBridgeRetry|^TestBridgeDeclined|^TestCodexRejected|^TestCodexFailures|^TestBridgeRecorded' -count=1`.
 Failure-policy race checks cover startup retry bounds/cancellation,
@@ -86,12 +86,42 @@ exchange after proving real no-invocation recovery and initial idle stability.
 A deterministic regression reproduced prior-turn notifications arriving before
 the new turn identity. The adapter now ignores those pre-identity history
 notifications while continuing to reject foreign events after binding the turn.
-Focused resume/protocol race checks passed; the ordered gate must be regenerated.
+Focused resume/protocol race checks passed; the regenerated ordered gate passed.
+
+The extended real fixture passed with Codex 0.161.0 in 42.889 seconds. It
+recovered the completed owned turn after a dropped result checkpoint without
+another invocation, then restarted both workers on their original threads and
+consumers to process a fresh project-local proof. Budgets persisted, counts
+remained one turn per worker before restart and two afterward, and idle intervals
+produced no additional turns. The one-second sample observed 0 CPU ticks and
+36,520 KiB combined RSS for the daemon and two Iris workers, excluding provider
+subprocesses. These are bounded observations.
+
+All ten ordered checks passed through Looper on clean implementation candidate
+`e8e23503a43ca443dac802eb1b312894df003c34` before canonical PR #8 opened:
+
+- `make check`
+- `make lint`
+- `make docs-check`
+- `make test-bridge`
+- `python3 scripts/check-contracts.py`
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^$' -fuzz '^FuzzIrisFrame$' -fuzztime=5s -parallel=2`
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^$' -fuzz '^FuzzCodexRecovery$' -fuzztime=5s -parallel=2`
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -count=1`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
+- `git diff --check`
+
+The integration-tag race check passed in 57.314 seconds. The PR-reference
+follow-up requires regeneration on its exact clean head with this same ordered
+list; the canonical PR head and controller ledger identify final evidence.
 
 ## Risks and Follow-ups
 
-Required ordered controller validation, including the extended real adapter
-recovery/idle fixture, remains pending before PR creation.
+Unconfirmed external effects require operator inspection and deliberate
+replacement; recovery never automatically repeats tools or grants a prior
+disconnected approval. Usage bounds cover reported cumulative tokens and can
+be exceeded within a running turn. Idle measurements cover only the sampled
+Iris processes and interval, not provider memory or general performance.
 The installed 0.161.0 schema supports `thread/read` with `includeTurns`;
 recovery fails explicitly if bounded complete history is unavailable.
 [Official app-server reference](https://learn.chatgpt.com/docs/app-server).
