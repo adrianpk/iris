@@ -1,6 +1,6 @@
 # Slice 4: Durable Delivery
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -77,8 +77,8 @@ bounds encoded bytes as well as item count. Public details are in the
 
 ## Validation
 
-Controller-recorded checks passed in this order for clean implementation head
-`936a275e4a841b39994c463a60f7511793cbd2a0`:
+Controller-recorded checks passed in this order for final PR head
+`2d3a02e33e450563ee7758df44ea765cb3f8200e`, merged through PR #4 at the same head:
 
 - `make check`
 - `make lint`
@@ -106,10 +106,9 @@ failures were fixture issues: an unnormalized page limit and a transient
 connection-count assertion. The corrected check proves a concurrent writer
 can commit while a receiver waits. Required repository commands are unchanged.
 
-PR readiness requires regenerating this exact ordered command list on the
-clean PR head after reference commits. The controller evidence store binds
-that final SHA. The PR report link uses introduction commit
-`ea515bdcd08cb8df921f4401f20786e7b338f727`. These are focused slice checks, not the delivery-set full gate.
+Exact-HEAD evidence was regenerated after reference commits before controller
+integration. The report introduction is
+`ea515bdcd08cb8df921f4401f20786e7b338f727`. These are focused slice checks.
 
 ## Risks and Follow-ups
 
