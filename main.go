@@ -1,3 +1,4 @@
+// Command iris runs the private local conversation service and CLI.
 package main
 
 import (

@@ -23,7 +23,7 @@ Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: Slice 2, in-progress; service and storage. Slice 1 is integrated.
+Active slice: Slice 2, reviewing; service and storage. Slice 1 is integrated.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.
@@ -341,14 +341,14 @@ to fill a slice.
 | --- | --- | --- |
 | Documentation | `make docs-check`; relative-link checks; `git diff --check` | Available now; required for each documentation change. |
 | Changed Go behavior | Focused `go test` on implemented packages/cases; appropriate formatting/static checks | Starts in Slice 2. Record exact commands and test results; an empty test selection is not evidence. |
-| Process integration | `make test-integration` | Added in T2.4; actual CLI, daemon, socket, SQLite, and temporary projects, without provider calls. |
+| Process integration | `make test-integration` | Implemented in T2.4; actual CLI/daemon, private socket, SQLite, two temporary projects, clean/crashed restart, and no provider calls. |
 | Concurrency | Targeted `go test -race`; bounded parser fuzzing where relevant | Apply to transaction/wait/bridge ownership changes, then include necessary regressions. |
 | Live bridge | `make test-bridge` | Added in T5.5; real Codex workers, bounded turns, no per-message human relay, and zero idle model calls. Fakes do not satisfy this gate. |
 | User systemd | `make test-systemd` | Added in T9.4; real isolated user units. Unavailable user-manager access is a blocker, not a pass. |
 | Final delivery | `make verify`; `make docs-check`; `make test-integration`; `make test-systemd`; `make test-bridge`; `git diff --check` | Run once for the immutable integrated candidate. Bind every result to its actual tested SHA. |
 
-The three additional Make targets above are planned interfaces, not commands
-that exist or passed today. The current `make verify` covers lint and ordinary
+The process-integration target is implemented in Slice 2. The live bridge
+and user-systemd targets remain planned interfaces until their owning slices. The current `make verify` covers lint and ordinary
 Go tests; it is insufficient by itself to prove autonomous communication or
 real systemd operation.
 
@@ -400,9 +400,8 @@ and cleanup outcomes. No credential or transcript is written into a report.
 | 9. Bridge | Two real project workers exchange question, response and acknowledgment with no manual relay; count `turn/start` calls during idle wait; interrupt/restart only owned adapters at recovery checkpoints. | Slices 1/5/8/10; `make test-bridge` |
 | 10. Security | Malformed/oversized frames, wrong project, denied approval, untrusted peer text, private file/socket modes and stale owner tokens; failures cannot grant authority or publish under another worker's ownership. | Slices 2/4/5/8/9 focused parser/race/process checks |
 
-T2.4 adds `make test-integration`; T5.5 adds `make test-bridge`; T9.4 adds
-`make test-systemd`. They are required future interfaces, not current passing
-targets. Live provider tests require authenticated access and bounded turns.
+T2.4 implements `make test-integration`. T5.5 adds `make test-bridge` and
+T9.4 adds `make test-systemd`; those two remain required future interfaces. Live provider tests require authenticated access and bounded turns.
 The systemd fixture requires a working user manager and private, uniquely
 named test units; unavailable access is an explicit blocker. The installed
 Codex probe in Slice 1 is feasibility evidence only. It does not replace the

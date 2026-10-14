@@ -1,6 +1,6 @@
 # Slice 2: Service and Storage
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -19,7 +19,8 @@ separate output/error streams and stable exit codes. Configuration resolves
 XDG roots, validates versioned bounded JSON, and rejects unsupported input.
 The selected pure-Go SQLite driver creates the accepted schema, verifies
 applied migration checksums, serializes immediate transactions, and preserves
-committed state across reopening. Online backup includes committed WAL data. The foreground daemon exposes
+committed state across reopening. Online backup includes committed WAL data.
+The foreground daemon exposes
 `iris stats --all-projects [--json]` through a private bounded Unix socket
 after migration, with stable JSON results/errors and explicit human scope.
 
@@ -43,6 +44,13 @@ listening, and reclaims only an owned private stale socket. Saturation returns
 retryable backpressure. Cancellation closes owned connections and waits for
 workers before closing SQLite; peer disconnect does not stop the daemon.
 
+The process integration fixture builds the executable, creates two isolated
+project roots and private XDG locations, checks successful JSON readiness, and
+rejects a second daemon. Test-only SQL seeds committed state while the daemon
+is stopped; the real CLI observes that state after clean and crash restarts.
+A deliberately changed checksum rejects startup before any listener. Only
+fixture-owned processes and temporary resources are stopped or removed.
+
 ## Contracts Added or Changed
 
 The optional version-1 configuration accepts `schema_version`,
@@ -64,19 +72,34 @@ A size error replaces a response before any partial payload is published.
 - `internal/iris/backup.go`: consistent online backup primitive.
 - `internal/iris/runtime.go`, `server.go`, `client.go`, and `protocol.go`: private ownership, bounded IPC and cancellation.
 - `internal/iris/service.go` and `cli.go`: readiness counts and public output/errors.
+- `internal/iris/process*_test.go` and `make test-integration`: actual binary and isolated process recovery.
+- `README.md`: current commands, configuration, output and development checks.
 
 ## Validation
 
-- `go test ./internal/iris` — passed for executable/configuration behavior.
-- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix ./internal/iris` — passed.
+Task checks passed for configuration/CLI behavior, real SQLite migrations and
+backup, socket/protocol/ownership/cancellation cases, and focused race tests.
+`make test-integration` passed with graceful restart, crash/stale-socket
+recovery, persisted state, second-owner refusal and schema-checksum failure.
+Integration-tag lint passed with the configured checks unchanged.
 
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestStore|TestMigration|TestBackup' -count=1` — passed.
+Required final exact-HEAD checks are recorded through Looper before readiness:
 
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestService|TestClient|TestRuntime|TestStats|TestCommandHelp' -count=1` — passed.
+- `make check`
+- `make lint`
+- `make docs-check`
+- `make test-integration`
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --build-tags=integration ./...`
+- `python3 scripts/check-contracts.py`
+- `git diff --check`
 
-Final controller-owned exact-HEAD validation follows completion of the slice.
+This is the slice gate. The full delivery-set gate is controller-owned after
+all configured slices are integrated.
 
 ## Risks and Follow-ups
 
-Real-binary process recovery remains in T2.4. Project registration and
-conversation workflows remain assigned to Slice 3.
+Project registration and conversation workflows remain assigned to Slice 3.
+User-systemd activation, public backup/restore commands, and live agent exchange
+retain their owning slices. The online backup implementation here is a tested
+store primitive; it is not presented as an available CLI command.

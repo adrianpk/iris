@@ -48,7 +48,7 @@ func serveConfigured(ctx context.Context, cfg config) (resultErr error) {
 
 	s, err := openStore(ctx, cfg)
 	if err != nil {
-		return &serviceError{Code: "storage_unavailable", Message: "cannot initialize private SQLite storage", cause: err}
+		return storageFailure(err)
 	}
 
 	defer func() { resultErr = errors.Join(resultErr, s.close()) }()
@@ -131,4 +131,12 @@ func (app *App) reportError(err error, jsonOutput bool) error {
 	}
 
 	return writeFrame(app.stderr, failure(service.Code, service.Message, service.Retryable), maxResponseBytes)
+}
+
+func storageFailure(err error) *serviceError {
+	if errors.Is(err, errSchemaMismatch) {
+		return &serviceError{Code: "schema_mismatch", Message: "database schema does not match this executable", cause: err}
+	}
+
+	return &serviceError{Code: "storage_unavailable", Message: "cannot initialize private SQLite storage", cause: err}
 }

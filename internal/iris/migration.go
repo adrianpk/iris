@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var errSchemaMismatch = errors.New("schema mismatch")
+
 //go:embed migrations/001_initial.sql
 var initialSchema string
 
@@ -69,7 +71,7 @@ func migrationHistory(ctx context.Context, tx *sql.Tx) ([]migrationRecord, error
 		}
 
 		if tables != 0 {
-			return nil, fmt.Errorf("unversioned nonempty database")
+			return nil, fmt.Errorf("%w: unversioned nonempty database", errSchemaMismatch)
 		}
 
 		return nil, nil
@@ -99,7 +101,7 @@ func readMigrationHistory(ctx context.Context, tx *sql.Tx) (history []migrationR
 
 func verifyMigrationHistory(history []migrationRecord, migrations []migration) error {
 	if len(history) > len(migrations) {
-		return fmt.Errorf("database schema is newer than this executable")
+		return fmt.Errorf("%w: database schema is newer than this executable", errSchemaMismatch)
 	}
 
 	for index, next := range migrations {
@@ -110,7 +112,7 @@ func verifyMigrationHistory(history []migrationRecord, migrations []migration) e
 
 	for index, record := range history {
 		if record.version != migrations[index].version || record.checksum != migrationChecksum(migrations[index].sql) {
-			return fmt.Errorf("migration ledger or checksum mismatch at version %d", record.version)
+			return fmt.Errorf("%w: migration ledger or checksum mismatch at version %d", errSchemaMismatch, record.version)
 		}
 	}
 

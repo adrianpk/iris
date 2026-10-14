@@ -24,3 +24,8 @@ The daemon holds a private runtime flock before opening SQLite. A second
 owner cannot replace its socket. Only a private, user-owned stale socket is
 reclaimed. `iris stats --all-projects --json` confirms readiness after schema
 migration and returns current project, conversation and message counts.
+
+`make test-integration` enables the integration build tag and runs the actual
+binary through graceful and crash recovery using isolated fixture roots.
+Only test-owned processes are signaled. A changed migration checksum is
+reported as `schema_mismatch` before the listener starts.

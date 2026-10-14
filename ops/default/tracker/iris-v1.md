@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 2, in-progress; service and storage.
+Active slice: Slice 2, reviewing; service and storage.
 
-Active tasks: T2.4.
+Active tasks: none; Slice 2 awaits required PR validation and controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 1 of 10 slices delivered; 7 of 44 tasks completed.
+Progress: 1 of 10 slices delivered; 8 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -36,7 +36,7 @@ Progress: 1 of 10 slices delivered; 7 of 44 tasks completed.
 | Approved plan/tracker committed on `dev` | satisfied | Canonical `dev` is `5b548d2851eb60e2a06140b17793157efe893fab`. |
 | Published canonical `dev` base | satisfied | Live origin refs match the planning baseline and initial `main`; Forgejo was inspected before branching. |
 | Detailed spec/model baseline | satisfied | Accepted `spec/iris.md` and `spec/iris-model.md` settle section 17 behavior and physical storage together. |
-| SQLite dependency selected and confirmed | satisfied | T1.3 selects modernc.org/sqlite v1.60.1; its module requires Go 1.26.0. Addition and driver tests belong to T2.2. |
+| SQLite dependency selected and confirmed | satisfied | T2.2 added modernc.org/sqlite v1.60.1 and verified migration, transaction, concurrency, reopen and online-backup behavior with the real driver. |
 | Real Codex integration feasibility | satisfied | T1.2 verified separate owned workers using real turns, own-thread resumption, denial, and interruption. The Iris exchange remains T5.5 acceptance. |
 | Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
 
@@ -49,7 +49,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
 | --- | --- | --- | --- | --- | --- | --- |
 | Slice 1 | audit and contracts | delivered | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | `#1` | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
-| Slice 2 | service and storage | in-progress | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
+| Slice 2 | service and storage | reviewing | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
@@ -77,8 +77,8 @@ artifacts; create each during its owning slice.
 | --- | --- | --- | --- | --- |
 | T2.1 | completed | `feat(core): establish Iris executable and configuration` | `d37086957a3f` | Focused path/config/help/error/cancellation tests passed; Go 1.26.3 lint passed. |
 | T2.2 | completed | `feat(store): establish Iris SQLite persistence` | `8f9d64b71c9c` | Driver tests passed for fresh/reopened data, atomic upgrade rollback/retry, checksum/newer-schema rejection, foreign keys/pragmas/private files, concurrent transactions, and online backup; race checks passed. |
-| T2.3 | completed | `feat(service): expose Iris local protocol` | pending | Real Unix round trips passed for version/JSON/size/scope errors, private socket and owner lock, stale recovery, retryable connection limits, cancellation/disconnect/shutdown, and CLI JSON/errors; focused race checks passed. |
-| T2.4 | pending | `test(service): verify Iris daemon and database recovery` | pending | `make test-integration` added; real binary/daemon restart and persisted-state checks. |
+| T2.3 | completed | `feat(service): expose Iris local protocol` | `231c20bc091c` | Real Unix round trips passed for version/JSON/size/scope errors, private socket and owner lock, stale recovery, retryable connection limits, cancellation/disconnect/shutdown, and CLI JSON/errors; focused race checks passed. |
+| T2.4 | completed | `test(service): verify Iris daemon and database recovery` | pending | `make test-integration` passed: actual binary, two isolated project roots, persisted state across graceful/crash restart, exclusive ownership, invalid-checksum startup rejection, and owned cleanup; integration-tag lint passed. |
 
 ## Slice 3 Tasks
 
@@ -165,7 +165,8 @@ artifacts; create each during its owning slice.
 | Plan/tracker documentation and structural checks | passed | `make docs-check`; agreement of ten slice identities and 44 task/commit identities; all ten acceptance groups; relative links, branch syntax, whitespace, and context privacy checks. |
 | Live Codex probe for Slice 1 | passed | Six bounded assertions verified separate owned workers, cwd, real results, resumption, denied approval, and interruption. This is feasibility evidence, not the future Iris exchange. |
 | Contract gate for Slice 1 | passed | Looper validated the final PR head `06041b58bf5dd44c42202c5463ab202da511308a` with `make docs-check`, `python3 scripts/check-contracts.py`, then `git diff --check`: fourteen tables, eleven rejected invalid cases, rollback and allocation retention. The canonical PR merged at that same head. |
-| Runtime unit/process/systemd/live Iris bridge checks | not run | No Iris application implementation exists yet. Future acceptance commands are defined in the plan, not claimed as available or passing now. |
+| Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. Final PR checks are recorded by the controller for its exact clean HEAD. |
+| User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
 
 ## Completion gates
 
