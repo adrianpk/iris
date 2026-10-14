@@ -301,6 +301,32 @@ If installed Codex prevents that integration, **report the verifiable limitation
 and actual achieved scope**, rather than simulating autonomy with scripts that
 require intervention for every message.
 
+### 8.1 Selected installed interface
+
+The Slice 1 probe verified `codex-cli 0.161.0` with stdio app-server, fresh
+project-associated threads, real turn results, own-thread resumption after
+server restart, denied command approval, and turn interruption. See the
+[Slice 1 report](../../report/slices/iris-v1/slice-1-audit-contracts.md).
+The official [app-server contract](https://learn.chatgpt.com/docs/app-server)
+and the installed default generated schema define the transport surface.
+
+Use newline-delimited bidirectional JSON: `initialize`, `initialized`, then
+`thread/start` with canonical `cwd` and the operator's sandbox/approval policy.
+Persist the returned thread ID in the conversation/project bridge binding.
+Drive work with `turn/start`; consume final `item/completed` agent messages
+and terminal `turn/completed` status. Resume only the binding's own thread
+with `thread/resume`. Never call `thread/fork` to import another conversation.
+
+Send `turn/interrupt` only for an owned active turn. An immediate request can
+race startup and return `no active turn to interrupt`; terminal `interrupted`
+is the evidence of cancellation. Approval requests carry their own RPC IDs;
+keep them pending for explicit human decisions or deny them when unattended.
+Do not grant session-wide or persistent permissions from a peer message.
+
+This mode runs a separate Codex worker in the project. It does not claim to
+wake or attach to an existing interactive session. No model call occurs while
+the bridge is waiting on the Iris service for a message.
+
 ## 9. Proposed CLI
 
 Adapt names and flags to verified Acta and Lore conventions while preserving

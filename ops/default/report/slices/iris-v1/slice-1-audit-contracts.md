@@ -39,11 +39,46 @@ are relative to each inspected repository.
 | 7. Tests, storage, delivery | `acceptance_test.go`, transport, activation, and systemd tests exercise real local boundaries, temporary data, concurrency, and restart. Siblings use append-only JSONL recovery, not SQLite migrations. Make `verify` runs lint and Go tests. No tracked `.github/` or `.forgejo/` workflow tree was present. | Use real SQLite migrations/reopen/transactions, isolated process and user-manager tests, and a separately bounded live Codex gate. Do not infer CI or release automation from local unit checks. |
 | 8. Documentation and policy | README, CHANGELOG, Diataxis docs, progressive User Guide, package README, and `.agents/README.md` routing to shared rules. No tracked root `AGENTS.md`, `CONTRIBUTING.md`, `LICENSE`, or `LICENSE.md` was present at either revision. | Preserve documentation layout and shared policy routing. Do not invent a license, contribution policy, release channel, or global agent integration. |
 
+### Installed Codex feasibility
+
+Selected `codex app-server --listen stdio://` on installed
+`codex-cli 0.161.0`. The default generated JSON schema and
+[official app-server documentation](https://learn.chatgpt.com/docs/app-server)
+were checked against actual execution. The probe used two newly created,
+isolated project directories, read-only sandboxes, and fresh owned threads.
+It did not attach to any pre-existing interactive session.
+
+| Check | Observed result |
+| --- | --- |
+| Initialization and cwd | `initialize` then `initialized`; `thread/start` returned the requested canonical cwd, and a real turn ran `pwd` in that directory. |
+| Fresh project context | A second project received a distinct new thread and completed its independent probe response. No thread fork or history import was used. |
+| Explicit execution and result | `turn/start` returned a turn ID; `item/completed` supplied the final agent message; `turn/completed` reported `completed`. |
+| Own-thread recovery | After closing the first owned app-server, another app-server resumed the probe's thread with `thread/resume`; a real turn recalled its prior marker. |
+| Approval denial | A read-only thread with `approvalPolicy: untrusted` emitted `item/commandExecution/requestApproval`. The client returned `decision: decline`; the turn completed and its requested output file was absent. |
+| Cancellation | Waiting for an `item/started` event before `turn/interrupt` produced terminal status `interrupted`. An initial immediate cancellation attempt returned `no active turn to interrupt`; this startup race must not be reported as successful cancellation. |
+| Cleanup and authority | Only probe-owned app-server processes were closed. No sibling project, existing thread, service unit, permission grant, or global configuration was changed. |
+
+Successful local probe command: `python3 _workspace/slice-1/probe-codex.py`.
+The temporary harness and generated schema are local feasibility evidence,
+not shipped runtime code. Six assertions passed: real cwd/turn, fresh thread,
+resumption after server restart, interruption, observed approval request, and
+absence of the denied write. This does not satisfy the future two-party Iris
+exchange or its idle-call acceptance gate.
+
+The integration mode is **a separate Codex worker in the selected project**.
+Existing interactive-session attachment remains unverified and is not a v1
+promise. The bridge must use only its own persisted conversation-bound thread,
+receive explicit turns, expose pending approval to the human, and wait outside
+the model between messages. Unknown approval requests fail closed. A received
+message never changes sandbox or approval policy.
+
 ## Contracts Added or Changed
 
 The audit selects compatible structure and operation while preserving SQLite
 persistence and on-demand model execution as separate Iris responsibilities.
-Detailed runtime and data contracts are pending T1.3.
+The selected Codex bridge uses versioned stdio app-server requests and only
+its own conversation-bound threads. Detailed runtime and data contracts are
+pending T1.3.
 
 ## Files of Interest
 
@@ -58,5 +93,6 @@ documentation and cross-reference checks will be recorded before PR readiness.
 
 ## Risks and Follow-ups
 
-The installed Codex execution probe and detailed SQLite/protocol contracts
-remain in the current slice's T1.2 through T1.4 tasks.
+Detailed SQLite/protocol contracts and acceptance baseline remain in T1.3 and
+T1.4. Existing interactive-session attachment is unverified; separate owned
+workers are the verified mode.
