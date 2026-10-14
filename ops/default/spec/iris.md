@@ -724,7 +724,10 @@ transactionally. Delivery is at least once until acknowledgment; no guarantee
 of exactly-once agent execution is made. Closed/expired histories are
 available through explicit inspection/export, not ordinary receive.
 
-Use one bounded newline-terminated JSON request and response per Unix stream:
+Use one bounded newline-terminated JSON request and response per Unix stream.
+The client half-closes its write side after the request while keeping its read
+side open; the daemon requires request EOF before dispatch so trailing frames
+are rejected. The response ends with connection EOF:
 `{"protocol":"iris/v1","operation":"send","params":{}}`.
 The success shape is
 `{"protocol":"iris/v1","schema_version":1,"ok":true,"result":{}}`;

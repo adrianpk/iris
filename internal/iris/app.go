@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 )
 
 // App owns command dispatch and process-level dependency assembly.
@@ -23,7 +24,7 @@ func NewApp(stdout, stderr io.Writer) *App {
 // Run executes one command and returns its process exit code.
 func (app *App) Run(ctx context.Context, args []string) int {
 	if err := app.run(ctx, args); err != nil {
-		if _, writeErr := fmt.Fprintln(app.stderr, err); writeErr != nil {
+		if writeErr := app.reportError(err, slices.Contains(args, "--json") || slices.Contains(args, "--json=true")); writeErr != nil {
 			return 1
 		}
 
@@ -39,9 +40,16 @@ func (app *App) run(ctx context.Context, args []string) error {
 	}
 
 	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
-		_, err := io.WriteString(app.stdout, "Usage: iris <command> [options]\n\nCommands:\n  help       Show command help\n")
+		_, err := io.WriteString(app.stdout, rootHelp)
 
 		return err
+	}
+
+	switch args[0] {
+	case "serve":
+		return app.runServe(ctx, args[1:])
+	case "stats":
+		return app.runStats(ctx, args[1:])
 	}
 
 	return &usageError{message: fmt.Sprintf("unknown command %q; run iris --help", args[0])}

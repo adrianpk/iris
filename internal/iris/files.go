@@ -12,6 +12,10 @@ func privateDirectory(path string) error {
 		return fmt.Errorf("create private directory: %w", err)
 	}
 
+	return checkPrivateDirectory(path)
+}
+
+func checkPrivateDirectory(path string) error {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return fmt.Errorf("inspect private directory: %w", err)
