@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-6-iris-lifecycle-retention`
-PR: pending
+PR: [#6](https://forge.adrianpk.com/adrianpk/iris/pulls/6)
 
 ## Purpose
 
@@ -86,8 +86,20 @@ requires the terminal event's processing acknowledgment without a model turn.
 Actual-binary fixtures also prove readiness reconciliation before stateful
 requests, retained metadata/messages while the daemon is stopped, policy reload,
 prune/restart, and fresh conversation context. Clock rollback cannot reopen
-terminal state or cause ordinal reuse. Required ordered PR checks and final
-exact-HEAD evidence remain pending controller validation.
+terminal state or cause ordinal reuse. All seven ordered PR checks passed through Looper on clean candidate
+`a11af121a744bbae19385574bfdf536f8343fd5a`:
+
+- `make check`
+- `make lint`
+- `make docs-check`
+- `python3 scripts/check-contracts.py`
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -count=1`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
+- `git diff --check`
+
+The complete integration-tag race check passed in 34.831 seconds. Final evidence
+must be regenerated after this PR-reference follow-up and match the canonical
+PR head and this exact ordered command list.
 
 ## Risks and Follow-ups
 
