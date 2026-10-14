@@ -110,6 +110,10 @@ func validateBridgeCompletion(value bridgeRecord, params bridgeCompletion, input
 		return validateInformationalCompletion(value, params)
 	}
 
+	if err := checkBridgeAuthority(value.bridgeBinding); err != nil {
+		return err
+	}
+
 	if (value.State != "invoking" && value.State != "result_recorded") || value.TurnID == nil || *value.TurnID != params.TurnID || value.InputMessageID == nil || *value.InputMessageID != input.ID {
 		return problem("worker_uncertain", "completion does not match the owned invocation")
 	}

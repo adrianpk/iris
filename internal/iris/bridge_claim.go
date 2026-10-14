@@ -17,7 +17,7 @@ func (s *store) checkBridgeClaim(ctx context.Context, tx *sql.Tx, existing bridg
 			return problem("worker_uncertain", "prior invocation requires explicit recovery")
 		}
 	case "failed", "capacity", "interrupted":
-		return problem("worker_failed", "prior failed execution requires explicit recovery")
+		return failedBridgeClaim(existing)
 	}
 
 	var count int
@@ -102,7 +102,7 @@ func (s *store) bridgeStatus(ctx context.Context, params conversationParams, sto
 		s.notify(params.ConversationID)
 	}
 
-	return result.bridgeBinding, err
+	return publicBridgeStatus(result, s.now()), err
 }
 
 func (s *store) renewBridge(ctx context.Context, owner bridgeOwner) (bridgeBinding, error) {

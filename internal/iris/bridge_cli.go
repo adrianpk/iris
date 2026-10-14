@@ -131,8 +131,11 @@ func (app *App) printBridge(value bridgeBinding, jsonOutput bool) error {
 	}
 
 	_, err := fmt.Fprintf(app.stdout, "Bridge %s: %s; project %s; conversation %s; turns %d/%d\n", value.ID, value.State, value.ProjectID, value.ConversationID, value.TurnsUsed, value.Options.MaxTurns)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return app.printBridgeRecovery(value)
 }
 
 func (app *App) runBridgeRecover(ctx context.Context, args []string) error {
@@ -171,4 +174,20 @@ func (app *App) runBridgeRecover(ctx context.Context, args []string) error {
 	}
 
 	return app.printBridge(value, *jsonOutput)
+}
+
+func (app *App) printBridgeRecovery(value bridgeBinding) error {
+	if value.ErrorCode != nil {
+		if _, err := fmt.Fprintln(app.stdout, "Error:", *value.ErrorCode); err != nil {
+			return err
+		}
+	}
+
+	if value.RecoveryHint != nil {
+		_, err := fmt.Fprintln(app.stdout, *value.RecoveryHint)
+
+		return err
+	}
+
+	return nil
 }

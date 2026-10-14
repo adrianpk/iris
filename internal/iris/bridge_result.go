@@ -126,6 +126,10 @@ func (worker *bridgeWorker) recover(ctx context.Context) error {
 }
 
 func (worker *bridgeWorker) recoverInvocation(ctx context.Context) error {
+	if err := checkBridgeAuthority(worker.binding); err != nil {
+		return err
+	}
+
 	if worker.binding.PendingRequestID != nil {
 		return problem("approval_required", "prior connected approval cannot be resumed")
 	}

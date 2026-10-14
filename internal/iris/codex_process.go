@@ -20,8 +20,9 @@ type codexFrame struct {
 }
 
 type codexRPCError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int             `json:"code"`
+	Message string          `json:"message"`
+	Data    json.RawMessage `json:"data,omitempty"`
 }
 
 type codexRead struct {

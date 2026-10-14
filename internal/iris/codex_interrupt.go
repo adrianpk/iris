@@ -3,6 +3,7 @@ package iris
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 )
 
@@ -48,7 +49,7 @@ func (progress *codexProgress) interrupt(ctx context.Context) error {
 }
 
 func (progress *codexProgress) interrupted(ctx context.Context, err error) error {
-	if err == nil || progress.completed {
+	if err == nil || progress.completed || (progress.turnID == "" && errors.Is(err, errCodexRejected)) {
 		return err
 	}
 

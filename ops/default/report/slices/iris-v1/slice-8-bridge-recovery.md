@@ -18,6 +18,10 @@ Completed final results are checkpointed before reply/ack publication. A new
 owner can publish a saved result without another model invocation. Explicit
 bridge recovery inspects only the recorded owned thread/turn; unconfirmed,
 foreign or unfinished execution cannot become successful processing.
+Failed, interrupted, capacity and uncertain outcomes remain distinct. Expired
+invoking leases report uncertainty with an operator recovery hint. Only safe
+setup retries, at most three times with 1/2/4-second delays; turn invocation
+never retries automatically. A declined authority request remains durable.
 
 ## Implementation Notes
 
@@ -46,9 +50,14 @@ Real SQLite reopen, scoped owner replacement, immutable checkpoint retries,
 publication without a model, lost confirmation and failed/foreign/incomplete
 provider history checks passed. Slice validation remains pending.
 
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestBridgeStartup|^TestBridgeUncertain|^TestBridgeFailed|^TestBridgeRetry|^TestBridgeDeclined|^TestCodexRejected|^TestCodexFailures|^TestBridgeRecorded' -count=1`.
+Failure-policy race checks cover startup retry bounds/cancellation,
+expired owner status, distinct blocked outcomes, definite RPC overload and
+restart after an authority decline.
+
 ## Risks and Follow-ups
 
-Failure states/retry policy, execution limits, security and real adapter
+Execution limits, security and real adapter
 recovery/idle measurements remain in this slice's recorded tasks.
 The installed 0.161.0 schema supports `thread/read` with `includeTurns`;
 recovery fails explicitly if bounded complete history is unavailable.

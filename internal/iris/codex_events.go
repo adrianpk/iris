@@ -100,7 +100,7 @@ func codexTurnFailure(event codexEvent) error {
 		CodexErrorInfo json.RawMessage `json:"codexErrorInfo"`
 	}
 
-	if err := json.Unmarshal(event.Turn.Error, &failure); err == nil && string(failure.CodexErrorInfo) == `"usageLimitExceeded"` {
+	if err := json.Unmarshal(event.Turn.Error, &failure); err == nil && codexCapacityInfo(failure.CodexErrorInfo) {
 		return problem("provider_capacity", "Codex reported a usage limit")
 	}
 

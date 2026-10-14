@@ -66,7 +66,7 @@ func (client *codexClient) call(ctx context.Context, method string, params any, 
 		}
 
 		if frame.Error != nil {
-			return nil, problem("worker_failed", "Codex rejected the protocol request")
+			return nil, codexRequestFailure(frame.Error)
 		}
 
 		return frame.Result, nil

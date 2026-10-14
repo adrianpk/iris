@@ -64,7 +64,7 @@ func recoverCodexResult(raw json.RawMessage, binding bridgeBinding) (codexResult
 }
 
 func storedTurnFailure(turn codexStoredTurn) error {
-	if turn.Status == "inProgress" || turn.Status == "" {
+	if turn.Status != "failed" && turn.Status != "interrupted" {
 		return problem("worker_uncertain", "recorded invocation has no confirmed completion")
 	}
 

@@ -22,22 +22,7 @@ func (worker *bridgeWorker) openCodex(ctx context.Context) error {
 		return nil
 	}
 
-	if err := worker.connectCodex(ctx); err != nil {
-		return err
-	}
-
-	setup, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	thread, err := worker.client.openThread(setup, worker.binding)
-	if err != nil {
-		return err
-	}
-
-	err = worker.checkpoint(ctx, bridgeCheckpoint{Action: "thread", ThreadID: thread})
-	worker.threadReady = err == nil
-
-	return err
+	return retryBridgeStartup(ctx, worker.setupCodex, bridgeRetryPause)
 }
 
 func (worker *bridgeWorker) consume(ctx context.Context, input message) error {

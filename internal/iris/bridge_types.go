@@ -60,6 +60,7 @@ type bridgeBinding struct {
 	State            string        `json:"state"`
 	Options          bridgeOptions `json:"options"`
 	UsageTokens      *int64        `json:"usage_tokens"`
+	RecoveryHint     *string       `json:"recovery_hint"`
 	UsageLimitation  *string       `json:"usage_limitation"`
 	TurnsUsed        int           `json:"turns_used"`
 	StartedAt        time.Time     `json:"started_at"`

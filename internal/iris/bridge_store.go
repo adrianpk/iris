@@ -189,7 +189,7 @@ func (s *store) reclaimBridge(ctx context.Context, tx *sql.Tx, options bridgeOpt
 		return bridgeOutcome{}, err
 	}
 
-	_, err = tx.ExecContext(ctx, `UPDATE bridge_bindings SET owner_token=?,lease_until=?,state=CASE WHEN pending_result_json IS NOT NULL THEN 'result_recorded' WHEN state IN ('waiting','acked','stopped') THEN 'waiting' ELSE state END,limits_json=?,updated_at=?,stop_requested_at=NULL,error_code=NULL WHERE id=?`, token, s.now().Add(bridgeLease).UnixMilli(), string(encoded), s.now().UnixMilli(), id)
+	_, err = tx.ExecContext(ctx, `UPDATE bridge_bindings SET owner_token=?,lease_until=?,state=CASE WHEN pending_result_json IS NOT NULL THEN 'result_recorded' WHEN state IN ('waiting','acked','stopped') THEN 'waiting' ELSE state END,limits_json=?,updated_at=?,stop_requested_at=NULL,error_code=CASE WHEN state IN ('waiting','acked','stopped','result_recorded') THEN NULL ELSE error_code END WHERE id=?`, token, s.now().Add(bridgeLease).UnixMilli(), string(encoded), s.now().UnixMilli(), id)
 	if err != nil {
 		return bridgeOutcome{}, err
 	}

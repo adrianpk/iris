@@ -33,7 +33,12 @@ func (progress *codexProgress) approval(ctx context.Context, frame codexFrame) e
 		return err
 	}
 
-	return progress.observe(ctx, bridgeCheckpoint{Action: "running", TurnID: progress.turnID})
+	running := bridgeCheckpoint{Action: "running", TurnID: progress.turnID}
+	if !accepted {
+		running.ErrorCode = "approval_denied"
+	}
+
+	return progress.observe(ctx, running)
 }
 
 func (progress *codexProgress) approvalDecision(ctx context.Context, frame codexFrame) (bool, error) {

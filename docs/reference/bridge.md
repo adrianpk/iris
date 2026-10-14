@@ -80,8 +80,39 @@ model; earlier unfinished ordinary work remains unacknowledged.
 
 Expired idle ownership can be reclaimed. Invoking, approval-pending, failed,
 interrupted, capacity, or uncertain execution is not automatically replayed.
-Further recovery belongs to the recorded bridge recovery work. Idle workers
-wait on bounded service subscriptions and generate no model turns.
+Idle workers wait on bounded service subscriptions and generate no model turns.
+
+## Recovery and failures
+
+```sh
+iris bridge status --json CONVERSATION_ID
+iris bridge recover --json CONVERSATION_ID
+```
+
+Completed results are stored before publication. A restart can publish a saved
+result without contacting the model. Reply and acknowledgment still commit
+together with a stable response key; losing the success response cannot cause
+a duplicate reply or another invocation.
+
+`bridge recover` acquires only a prior binding and retains its options, thread,
+turn and consumer. It inspects the exact recorded turn through bounded stored
+history. Only confirmed completion, successful tool outcomes and a valid final
+answer can be published. A missing turn ID, unfinished/mismatched history,
+unknown completion or disconnected approval remains blocked. A recorded
+authority decline survives restart and cannot become success through recovery.
+
+Status distinguishes failed, interrupted, capacity, approval-required and
+uncertain execution. Expired invoking ownership is reported as uncertain.
+`recovery_hint` explains the next action. If completion remains unknown, inspect
+external effects, close the old conversation and create a deliberate replacement
+request. Iris does not automatically retry a possibly executed tool operation
+or claim exactly-once external execution. Failed input stays unacknowledged.
+
+Only setup before the invocation checkpoint can retry. Transient disconnects
+and provider-capacity errors have at most three retries, delayed by 1, 2 and
+4 seconds; cancellation ends the delay. No turn-start request is automatically
+retried. A definite overload rejection reports capacity; a lost invocation
+confirmation remains uncertain.
 
 ## Live acceptance
 
