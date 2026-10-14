@@ -24,6 +24,9 @@ With Iris, you can:
 - Ask follow-up questions to clarify an answer or explore a proposed solution.
 - Check an agent's summary or recommendation against the conversation that led to it.
 
+[A conversation in practice](docs/tutorials/agent-exchange.md) shows two agents
+writing a four-line verse, taking turns after one initial prompt per agent.
+
 ## Start a conversation
 
 From the intended root of project `alpha`, register the project and invite
