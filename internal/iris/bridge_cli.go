@@ -59,6 +59,10 @@ func (app *App) runBridgeStart(ctx context.Context, args []string) error {
 		return &usageError{message: "bridge start requires one conversation ID"}
 	}
 
+	if _, err := app.bridgeTerminal(options.params.Options); err != nil {
+		return err
+	}
+
 	selection, err := app.selectReference(options.project)
 	if err != nil {
 		return err

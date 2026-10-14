@@ -30,12 +30,13 @@ type codexRead struct {
 }
 
 type codexClient struct {
-	input  io.WriteCloser
-	frames <-chan codexRead
-	done   <-chan struct{}
-	cmd    *exec.Cmd
-	nextID int
-	cancel context.CancelFunc
+	input   io.WriteCloser
+	frames  <-chan codexRead
+	done    <-chan struct{}
+	cmd     *exec.Cmd
+	nextID  int
+	cancel  context.CancelFunc
+	approve codexApproval
 }
 
 func startCodex(ctx context.Context, path string) (*codexClient, error) {

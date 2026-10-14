@@ -7,9 +7,11 @@ import (
 
 type bridgeCheckpoint struct {
 	bridgeOwner
-	Action   string `json:"action"`
-	TurnID   string `json:"turn_id,omitempty"`
-	ThreadID string `json:"thread_id,omitempty"`
+	Action           string `json:"action"`
+	TurnID           string `json:"turn_id,omitempty"`
+	ThreadID         string `json:"thread_id,omitempty"`
+	PendingRequestID string `json:"pending_request_id,omitempty"`
+	PendingMethod    string `json:"pending_method,omitempty"`
 }
 
 func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (bridgeBinding, error) {
@@ -77,6 +79,8 @@ func (s *store) updateBridgeCheckpoint(ctx context.Context, tx *sql.Tx, value br
 		return s.releaseBridge(ctx, tx, value)
 	case "thread":
 		return s.bindBridgeThread(ctx, tx, value, params.ThreadID)
+	case "approval", "running":
+		return s.checkpointApproval(ctx, tx, value, params)
 	case "turn":
 		if value.State != "invoking" || !validText(params.TurnID, 128) {
 			return problem("worker_uncertain", "turn does not match an invoking binding")

@@ -29,9 +29,7 @@ type codexEvent struct {
 
 func (progress *codexProgress) handle(ctx context.Context, frame codexFrame) error {
 	if len(frame.ID) != 0 {
-		progress.denied = true
-
-		return progress.client.rejectRequests(ctx, frame)
+		return progress.approval(ctx, frame)
 	}
 
 	var event codexEvent
@@ -86,7 +84,7 @@ func (progress *codexProgress) completedItem(event codexEvent) error {
 		progress.final = event.Item.Text
 	}
 
-	if event.Item.Status == "failed" || event.Item.Status == "declined" {
+	if event.Item.Status == "failed" || event.Item.Status == "declined" || (event.Item.ExitCode != nil && *event.Item.ExitCode != 0) {
 		return problem("worker_failed", "Codex tool execution did not succeed")
 	}
 

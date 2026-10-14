@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 5, in-progress; Codex exchange.
 
-Active tasks: T5.3 through T5.5.
+Active tasks: T5.4 through T5.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 4 of 10 slices delivered; 20 of 44 tasks completed.
+Progress: 4 of 10 slices delivered; 21 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -105,8 +105,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T5.1 | completed | `feat(bridge): manage conversation-scoped Iris workers` | `842f9dcb8f89` | Lease, concurrent ownership, stop/restart, public status isolation and migration race checks passed; foreground worker cleanup releases only its own binding. |
-| T5.2 | completed | `feat(bridge): run Iris exchanges through Codex` | this commit | Installed app-server protocol adapter passes race checks for handshake, bound thread/resumption, final-only output, usage, failure/interrupt, and owned process cwd/cleanup. Live end-to-end exchange remains T5.5. |
-| T5.3 | pending | `feat(bridge): preserve Codex authority boundaries` | pending | Sandbox/approval decisions preserved; no silent auto-approval or false success ack. |
+| T5.2 | completed | `feat(bridge): run Iris exchanges through Codex` | `eb4150888e0c` | Installed app-server protocol adapter passes race checks for handshake, bound thread/resumption, final-only output, usage, failure/interrupt, and owned process cwd/cleanup. Live end-to-end exchange remains T5.5. |
+| T5.3 | completed | `feat(bridge): preserve Codex authority boundaries` | this commit | Denial, one-request human acceptance, foreign/unknown requests, empty permission grants, durable pending identity, nonterminal refusal and final-success rejection passed under race checks. |
 | T5.4 | pending | `feat(bridge): complete bounded Iris exchanges` | pending | Response-before-ack, idempotent completion, time/turn bounds, and no acknowledgment echo loop. |
 | T5.5 | pending | `test(bridge): demonstrate autonomous Iris communication` | pending | `make test-bridge` added; real question/response/ack without human relay; zero idle model invocations. |
 

@@ -31,6 +31,12 @@ process, creates or resumes only the bound thread, and reads completed final
 agent output. Reasoning, progress, tools and unrelated threads cannot become
 Iris responses. Unknown usage stays unavailable; confirmed usage is retained.
 
+Command/file approval requests default to decline. Interactive mode requires
+a connected local terminal and an exact once-only operator decision. Pending
+request identity is durable before answering; foreign/unknown requests and
+additional permission profiles cannot grant authority. A declined tool request
+cannot become a successful processing acknowledgment.
+
 ## Contracts Added or Changed
 
 Migration 2 adds turn count, lifetime origin, and pending approval identity to
@@ -56,6 +62,6 @@ before ownership is acquired.
 
 ## Risks and Follow-ups
 
-Interactive authority handling, atomic completion, and the real exchange are
+Atomic completion and the real exchange are
 remaining tasks in this slice. Initial ownership management does not establish
 live model acceptance.
