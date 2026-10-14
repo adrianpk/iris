@@ -23,7 +23,7 @@ func TestMaintenanceStopsBridge(t *testing.T) {
 	awaitWaiterCount(t, f.store, 1)
 	startMaintenance(t, f.store)
 	clock.advance(time.Second)
-	f.store.notify(f.conversation.ID)
+	f.store.wakeMaintenance()
 
 	select {
 	case err := <-done:
@@ -38,4 +38,6 @@ func TestMaintenanceStopsBridge(t *testing.T) {
 	if err != nil || value.State != "stopped" || value.StopRequestedAt == nil || value.TurnsUsed != 0 || value.ThreadID != nil {
 		t.Fatalf("terminal binding=%+v, error=%v", value, err)
 	}
+
+	assertBridgePosition(t, f, claim, 3, 3)
 }

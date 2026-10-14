@@ -15,7 +15,10 @@ const (
 
 func (s *store) notify(id string) {
 	s.events.notify(id)
+	s.wakeMaintenance()
+}
 
+func (s *store) wakeMaintenance() {
 	select {
 	case s.maintenanceWake <- struct{}{}:
 	default:
@@ -95,7 +98,8 @@ func (s *store) maintenanceDelay(ctx context.Context) (time.Duration, error) {
 
 	err := s.db.QueryRowContext(ctx, `SELECT min(deadline) FROM (
  SELECT min(i.expires_at) AS deadline FROM invitations i JOIN conversations c ON c.id=i.conversation_id WHERE c.state='pending'
- UNION ALL SELECT min(last_activity_at)+? FROM conversations WHERE state='active')`, s.policy.inactivityLifetime().Milliseconds()).Scan(&next)
+ UNION ALL SELECT min(last_activity_at)+? FROM conversations WHERE state='active'
+ UNION ALL SELECT min(expires_at) FROM prune_previews)`, s.policy.inactivityLifetime().Milliseconds()).Scan(&next)
 	if err != nil {
 		return 0, err
 	}

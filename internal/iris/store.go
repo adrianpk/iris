@@ -19,6 +19,7 @@ type store struct {
 	events          waitHub
 	policy          lifecyclePolicy
 	maintenanceWake chan struct{}
+	exports         map[string]exportLease
 }
 
 func openStore(ctx context.Context, cfg config) (*store, error) {
@@ -43,7 +44,7 @@ func openStore(ctx context.Context, cfg config) (*store, error) {
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
 
-	s := &store{db: db, now: time.Now, makeCode: newInvitationCode, policy: cfg.settings.Lifecycle, maintenanceWake: make(chan struct{}, 1)}
+	s := &store{db: db, now: time.Now, makeCode: newInvitationCode, policy: cfg.settings.Lifecycle, maintenanceWake: make(chan struct{}, 1), exports: make(map[string]exportLease)}
 
 	if err := s.migrate(ctx, initialMigrations()); err != nil {
 		return nil, errors.Join(err, db.Close())

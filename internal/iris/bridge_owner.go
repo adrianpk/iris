@@ -82,7 +82,7 @@ func (worker *bridgeWorker) run(ctx context.Context) error {
 			return bridgeRunError(ctx, err)
 		}
 
-		if value.Stopping {
+		if bridgeShouldStop(value) {
 			return problem("worker_stopped", "bridge shutdown was requested")
 		}
 
@@ -148,4 +148,12 @@ func bridgeRunCode(err error) string {
 	}
 
 	return "worker_uncertain"
+}
+
+func bridgeShouldStop(value bridgeDelivery) bool {
+	if !value.Stopping {
+		return false
+	}
+
+	return value.Active || len(value.Page.Messages) == 0 || value.Page.Messages[0].Kind == "message"
 }

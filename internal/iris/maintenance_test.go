@@ -96,7 +96,7 @@ func TestMaintenanceExpiration(t *testing.T) {
 	awaitWaiterCount(t, f.store, 1)
 	startMaintenance(t, f.store)
 	clock.advance(time.Second)
-	f.store.notify(f.conversation.ID)
+	f.store.wakeMaintenance()
 	awaitConversationState(t, f.store, f.conversation.ID, "expired")
 	awaitConversationState(t, f.store, pending.ID, "expired")
 

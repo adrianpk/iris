@@ -28,7 +28,9 @@ func (s *store) expireBatch(ctx context.Context) (int, error) {
 			}
 		}
 
-		return nil
+		_, err = tx.ExecContext(ctx, "DELETE FROM prune_previews WHERE expires_at<=?", s.now().UnixMilli())
+
+		return err
 	})
 	if err != nil {
 		return 0, err

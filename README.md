@@ -11,8 +11,8 @@ processing. See the [delivery reference](docs/reference/delivery.md) for the
 CLI, protocol fields, cursor rules and limits.
 
 The [accepted specification](ops/default/spec/iris.md) and
-[data model](ops/default/spec/iris-model.md) also define automatic lifecycle maintenance and history export. Those
-capabilities remain in the implementation plan.
+[data model](ops/default/spec/iris-model.md) also define history inspection and export, which remain in the implementation
+plan.
 
 Run explicit foreground workers with `iris bridge start CONVERSATION_ID` in
 each joined project. The [Codex bridge reference](docs/reference/bridge.md)
@@ -159,6 +159,18 @@ to its project, conversation and consumer and cannot skip undelivered work.
 Each project/conversation supports at most 64 consumers. Conversations allow
 10,000 messages and 64 MiB of stored body content, with the final message slot
 reserved for a terminal service event.
+
+## Retained history
+
+Closed and expired histories remain stored until current retention policy makes
+them eligible and an exact preview is explicitly confirmed. Bare `iris prune`
+only previews. See the [lifecycle reference](docs/reference/lifecycle.md) for
+policy, scope, filters, stale confirmation, and irreversible deletion:
+
+```sh
+iris prune --dry-run --json
+iris prune --confirm PREVIEW_TOKEN --json
+```
 
 ## Project identities
 

@@ -25,6 +25,14 @@ transaction; timers use the nearest deadline with a 30-second maximum recheck.
 Terminal state, its system event and bridge shutdown markers commit together;
 only committed transitions notify waiters.
 
+Bare prune previews terminal history without changing it. Explicit confirmation
+revalidates exact membership, revisions, terminal times, policy, cutoff, token
+lifetime and export leases before deleting. New eligibility is not silently
+added. The token is consumed atomically with deletion; retained allocation and
+code/request tombstones survive. Previews cap at 1,000 candidates and 64 live
+120-second tokens. A terminal bridge drains reachable informational events
+before stopping, without processing unfinished ordinary work.
+
 ## Implementation Notes
 
 The store's injected clock owns durable timestamps, including migration
@@ -39,6 +47,10 @@ Version-1 configuration accepts a partial `lifecycle` object with
 
 ## Files of Interest
 
+- `internal/iris/prune_confirm.go`: transactional revalidation and deletion.
+- `internal/iris/prune_preview.go`: bounded exact membership and tokens.
+- `internal/iris/prune_cli.go`: default preview and noninteractive confirmation.
+- `docs/reference/lifecycle.md`: policy and operation contracts.
 - `internal/iris/maintenance.go`: bounded scheduling, startup and shutdown.
 - `internal/iris/maintenance_expire.go`: transactional expiration batches.
 - `internal/iris/lifecycle_policy.go`: defaults, bounds and durations.
@@ -52,7 +64,9 @@ Version-1 configuration accepts a partial `lifecycle` object with
 
 - Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestMaintenance|TestLifecycle|TestBridgeIdle|TestCallBounds' -count=1`.
 
+- Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestPrune|TestMaintenance|TestLifecycle|TestBridge' -count=1`.
+
 ## Risks and Follow-ups
 
-Confirmed pruning and process-level retention acceptance
+Process-level retention acceptance
 remain tasks in this slice.

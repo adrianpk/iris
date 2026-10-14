@@ -84,3 +84,18 @@ Local interactive authority requires a terminal and a once-only decision.
 `make test-bridge` enables a separate live build tag and exercises real Codex
 question/response/acknowledgment with two isolated projects. Ordinary unit and
 integration targets do not invoke a model.
+
+
+Lifecycle policy is loaded once and all durable timestamps use the store clock.
+The daemon reconciles overdue state before readiness, then owns nearest-deadline
+maintenance with 128-item batches and a 30-second maximum recheck. Terminal
+state, event and bridge stop markers share a transaction; notifications follow
+commit. No agent or model runs maintenance.
+
+Prune previews retain exact membership/revisions and policy/cutoff digests for
+120 seconds. Confirmation revalidates them and runtime export leases in the
+same transaction as cascaded deletion and token consumption. Project IDs,
+pair counters, code digests and request-key tombstones survive deletion.
+Only confirmation metadata changes during a preview; selections are complete
+and bounded to 1,000 candidates and 64 live tokens. Runtime export leases are
+accessed only under the daemon's serialized store transactions.

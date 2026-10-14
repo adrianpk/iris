@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 6, in-progress; lifecycle and retention.
 
-Active tasks: T6.3 through T6.4.
+Active tasks: T6.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 5 of 10 slices delivered; 25 of 44 tasks completed.
+Progress: 5 of 10 slices delivered; 26 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -115,8 +115,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T6.1 | completed | `feat(lifecycle): define Iris expiration policy` | `64b475195ae1` | Configured defaults, invalid/null/overflow policy rejection, fixed invitation deadlines, exact inactivity boundaries and receive/ack non-renewal passed; focused lint passed. |
-| T6.2 | completed | `feat(lifecycle): expire inactive Iris conversations` | this commit | Independent timer, receive wakeup, idle bridge shutdown, bounded startup reconciliation, rollback/no false notification, significant activity and exact-deadline join/send races passed with the race detector; lint passed. |
-| T6.3 | pending | `feat(retention): prune confirmed Iris history` | pending | Read-only preview, exact/stale confirmation, eligibility, and preserved pair ordinals. |
+| T6.2 | completed | `feat(lifecycle): expire inactive Iris conversations` | `c3a5d34ec8fb` | Independent timer, receive wakeup, idle bridge shutdown, bounded startup reconciliation, rollback/no false notification, significant activity and exact-deadline join/send races passed with the race detector; lint passed. |
+| T6.3 | completed | `feat(retention): prune confirmed Iris history` | this commit | Preview non-mutation, exact/frozen selections, stale revisions/time/policy/membership/leases, deletion rollback, one-use tokens, bounds, scope, noninteractive IPC and retained allocations passed with race checks; terminal event acknowledgment regression fixed and lint passed. |
 | T6.4 | pending | `test(lifecycle): verify Iris retention and conversation isolation` | pending | Retained closed/expired history; prune/restart and fresh conversation ID/context. |
 
 ## Slice 7 Tasks

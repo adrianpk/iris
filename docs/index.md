@@ -6,6 +6,9 @@ acknowledgment, cursors and bounded waiting.
 See the [Codex bridge reference](reference/bridge.md) for explicit worker
 activation, authority handling, completion, bounds and live acceptance.
 
+See the [lifecycle reference](reference/lifecycle.md) for expiration, retained
+history and exact-confirmation pruning.
+
 - `tutorials/`: guided learning paths.
 - `how-to/`: task procedures.
 - `reference/`: public contracts and exact behavior.

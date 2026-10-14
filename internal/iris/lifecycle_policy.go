@@ -79,3 +79,7 @@ func (policy *lifecyclePolicy) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+func (policy lifecyclePolicy) retentionLifetime() time.Duration {
+	return time.Duration(policy.RetentionSeconds) * time.Second
+}
