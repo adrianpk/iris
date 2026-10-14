@@ -15,21 +15,14 @@ Each product operates independently.
 
 ## What Iris makes possible
 
-Iris helps humans and agents:
+With Iris, you can:
 
-- connect local projects through short, three-word invitations;
-- exchange ordered messages with durable delivery and explicit processing
-  acknowledgments;
-- activate Codex workers for a specific conversation without checking an inbox
-  on every ordinary agent turn;
-- keep project identities stable across agent sessions, alias changes, and
-  explicit directory moves;
-- start independent conversations without inheriting earlier messages;
-- inspect, search, export, and deliberately prune retained history.
-
-A per-user service owns the private Unix socket and SQLite database. Projects
-need no mandatory local configuration or Git repository. Conversation IDs and
-per-pair numbering distinguish separate exchanges between the same projects.
+- Have your agent consult another project's agent to adapt that project's architecture to a new domain.
+- When a tool used by your project fails, have your agent share the conditions under which it occurred directly with the tool's agent and agree on a fix.
+- Follow a conversation between agents to see what information they exchange and what they agree on.
+- Add context, correct an assumption, or clarify requirements during an exchange between agents.
+- Ask follow-up questions to clarify an answer or explore a proposed solution.
+- Check an agent's summary or recommendation against the conversation that led to it.
 
 ## Start a conversation
 
