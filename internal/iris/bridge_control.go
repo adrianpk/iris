@@ -7,14 +7,12 @@ import (
 
 type bridgeCheckpoint struct {
 	bridgeOwner
-	Action string `json:"action"`
+	Action   string `json:"action"`
+	TurnID   string `json:"turn_id,omitempty"`
+	ThreadID string `json:"thread_id,omitempty"`
 }
 
 func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (bridgeBinding, error) {
-	if params.Action != "stop" {
-		return bridgeBinding{}, problem("invalid_request", "invalid bridge checkpoint action")
-	}
-
 	var value bridgeRecord
 
 	err := s.write(ctx, func(tx *sql.Tx) error {
@@ -25,11 +23,7 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 			return err
 		}
 
-		if value.State != "waiting" && value.State != "acked" {
-			return problem("worker_uncertain", "invocation cannot be released as safely stopped")
-		}
-
-		if _, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='stopped',owner_token=NULL,lease_until=NULL,updated_at=? WHERE id=?", s.now().UnixMilli(), value.ID); err != nil {
+		if err := s.updateBridgeCheckpoint(ctx, tx, value, params); err != nil {
 			return err
 		}
 
@@ -75,4 +69,51 @@ func typedOperation[T, R any](ctx context.Context, req request, execute func(con
 	value, err := execute(ctx, params)
 
 	return operationResponse(ctx, value, err)
+}
+
+func (s *store) updateBridgeCheckpoint(ctx context.Context, tx *sql.Tx, value bridgeRecord, params bridgeCheckpoint) error {
+	switch params.Action {
+	case "stop":
+		return s.releaseBridge(ctx, tx, value)
+	case "thread":
+		return s.bindBridgeThread(ctx, tx, value, params.ThreadID)
+	case "turn":
+		if value.State != "invoking" || !validText(params.TurnID, 128) {
+			return problem("worker_uncertain", "turn does not match an invoking binding")
+		}
+
+		if value.TurnID != nil && *value.TurnID != params.TurnID {
+			return problem("worker_uncertain", "binding already has a different turn")
+		}
+
+		_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET turn_id=?,updated_at=? WHERE id=?", params.TurnID, s.now().UnixMilli(), value.ID)
+
+		return err
+	}
+
+	return problem("invalid_request", "invalid bridge checkpoint action")
+}
+
+func (s *store) releaseBridge(ctx context.Context, tx *sql.Tx, value bridgeRecord) error {
+	if value.State != "waiting" && value.State != "acked" {
+		return problem("worker_uncertain", "invocation cannot be released as safely stopped")
+	}
+
+	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='stopped',owner_token=NULL,lease_until=NULL,updated_at=? WHERE id=?", s.now().UnixMilli(), value.ID)
+
+	return err
+}
+
+func (s *store) bindBridgeThread(ctx context.Context, tx *sql.Tx, value bridgeRecord, thread string) error {
+	if !validText(thread, 128) || (value.ThreadID != nil && *value.ThreadID != thread) {
+		return problem("worker_uncertain", "cannot replace the bound Codex thread")
+	}
+
+	if value.State != "waiting" && value.State != "acked" {
+		return problem("worker_uncertain", "cannot bind a thread during invocation")
+	}
+
+	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET thread_id=?,updated_at=? WHERE id=?", thread, s.now().UnixMilli(), value.ID)
+
+	return err
 }
