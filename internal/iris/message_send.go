@@ -111,12 +111,16 @@ func (s *store) sendTx(ctx context.Context, tx *sql.Tx, params sendParams, sende
 	creation := messageCreation{params: params, sender: sender, state: state, digest: textDigest(string(encoded))}
 
 	original, found, err := findSentMessage(ctx, tx, creation)
-	if err != nil || found {
-		return sendOutcome{value: original}, err
+	if err != nil {
+		return sendOutcome{}, err
 	}
 
 	if err := s.expireIfDue(ctx, tx, &state); err != nil {
 		return sendOutcome{}, err
+	}
+
+	if found {
+		return sendOutcome{value: original}, nil
 	}
 
 	if state.state != "active" {

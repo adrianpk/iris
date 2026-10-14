@@ -6,10 +6,14 @@ topic and initial request; the invited project joins using only the code and
 reads that request immediately. Conversations have stable IDs, independent
 pair numbering, and retained history after closure.
 
+Messages persist in sequence order and consumers explicitly acknowledge
+processing. See the [delivery reference](docs/reference/delivery.md) for the
+CLI, protocol fields, cursor rules and limits.
+
 The [accepted specification](ops/default/spec/iris.md) and
-[data model](ops/default/spec/iris-model.md) also define ordered messaging,
-on-demand Codex workers, automatic lifecycle maintenance, and history export.
-Those capabilities remain in the implementation plan.
+[data model](ops/default/spec/iris-model.md) also define on-demand Codex
+workers, automatic lifecycle maintenance, and history export. Those
+capabilities remain in the implementation plan.
 
 ## Run the service
 
@@ -92,12 +96,63 @@ Closure retains the initial request and prevents another join from reactivating
 the conversation. Invitations reject acceptance at their two-hour deadline;
 active conversations reject operations at 24 hours without significant
 activity. Duplicate retries do not renew activity. Lifecycle checks currently
-run during call retries, join, and close; configurable policy and background
+run during call retries, join, send, receive, ack, and close; configurable policy and background
 maintenance remain in the implementation plan.
 
 The invitation code identifies a conversation within the same-user local
 service. It is not a strong credential or isolation between processes sharing
 a user account. The service also validates the selected recipient project.
+
+## Exchange and process messages
+
+After joining, either participant can send an ordered message or status. Use
+the conversation ID returned by call/join:
+
+```sh
+iris send --message "The accepted format is JSON." --reply-to INITIAL_MESSAGE_ID CONVERSATION_ID
+iris send --kind status --message "Checking the updated format." CONVERSATION_ID
+iris receive --consumer manual --wait 30 --json CONVERSATION_ID
+```
+
+Send also accepts `--file` or stdin and preserves the same content limits as
+call. The default recipient is the other participant. `--to` accepts a
+comma-separated list of participant project IDs. Reply targets must be in the
+same conversation; `--correlation-id` attaches a caller identifier. A send
+success means its message and recipients have committed to storage.
+
+Use a stable `--idempotency-key` when retrying an uncertain send. The same key
+and payload return the original ID, sequence and timestamp, including after
+closure. Changed content with the same key fails. Without a key, repeated
+sends are distinct messages.
+
+Receive returns addressed messages in sequence order, starting after that
+consumer's durable acknowledged position. Reading may record delivery but
+never acknowledges processing. Use a different `--consumer` for independent
+progress. When processing succeeds, acknowledge each addressed message in
+order using the ID returned by receive:
+
+```sh
+iris ack --consumer manual --message-id DELIVERED_MESSAGE_ID CONVERSATION_ID
+```
+
+Acknowledgment cannot skip an earlier addressed message, acknowledge a message
+not delivered to that consumer, or advance another consumer. A crash before
+acknowledgment leaves the work available for redelivery. This provides delivery
+at least once; a consumer must handle repeated work safely.
+
+`receive --wait 0` returns immediately. Empty waits block until a relevant
+commit, closure, cancellation or the requested timeout. Waits range from 0 to
+60 seconds and have an additional five-second wire deadline. They hold no
+storage transaction and do not renew inactivity. Closed or expired history is
+excluded from receive.
+
+Pages accept `--limit` from 1 through 100 and expose `next_cursor` and
+`truncated`. Large content can fill a page before its item limit. Pass the
+returned cursor to continue without implying acknowledgment. A cursor is bound
+to its project, conversation and consumer and cannot skip undelivered work.
+Each project/conversation supports at most 64 consumers. Conversations allow
+10,000 messages and 64 MiB of stored body content, with the final message slot
+reserved for a terminal service event.
 
 ## Project identities
 
@@ -168,7 +223,8 @@ Ordinary tests use temporary SQLite databases, real Unix sockets, and a
 controlled clock for invitation and inactivity boundaries. Integration tests
 build the actual binary, run private daemon fixtures, and check the two-project
 handshake, JSON through `jq`, human output, identity moves, conversation
-isolation, and graceful/crashed restart. Only owned processes are signaled.
+isolation, concurrent sends, independent consumers, lost-response retry, waits and
+graceful/crashed restart. Only owned processes are signaled.
 They do not install a service or invoke a model.
 
 See the [documentation index](docs/index.md) and

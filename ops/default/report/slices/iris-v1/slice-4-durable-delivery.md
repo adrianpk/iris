@@ -40,6 +40,12 @@ messages and retry keys. Receive defaults to consumer `manual` and a 30-second
 wait; `--wait 0` returns immediately. JSON success is one versioned envelope,
 with failures only on stderr.
 
+The actual-process fixture sends concurrently, loses a confirmation, crashes
+and restarts the daemon, verifies stable retry fields and independent consumer
+positions, and confirms terminal rejection and conversation/project isolation.
+A two-second receive succeeds with the ordinary timeout configured to one
+second. Product usage and the delivery reference document the public behavior.
+
 ## Implementation Notes
 
 The existing SQLite schema owns delivery identities and constraints. One write
@@ -56,12 +62,18 @@ no repeated SQLite query or timed socket probe runs while idle. The existing
 
 `send` returns the version-1 public message with UTC timestamps and nullable
 reply, correlation and idempotency fields. Ordinary messages reserve the final
-message slot for a terminal event and respect body/storage bounds.
+message slot for a terminal event and respect body/storage bounds. Receive
+returns consumer progress, addressed messages, a scoped cursor and truncation;
+ack returns only that consumer's processing/delivery position. Page construction
+bounds encoded bytes as well as item count. Public details are in the
+[delivery reference](../../../../../docs/reference/delivery.md).
 
 ## Files of Interest
 
 - `internal/iris/message_*.go`: public message reads and transactional sends.
-- `internal/iris/message_test.go`: concurrent writers, retry and rollback checks.
+- `internal/iris/delivery*.go`, `receive.go`, `ack.go`: cursor and consumer state.
+- `internal/iris/wait.go`, `peer_disconnect_linux.go`: bounded notification and cleanup.
+- `internal/iris/process_delivery_test.go`: actual-binary recovery and isolation.
 
 ## Validation
 
@@ -74,8 +86,15 @@ message slot for a terminal event and respect body/storage bounds.
 
 - `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^TestDeliveryCLI|TestCallInitial' -count=1` — passed for human/JSON, boundary-size content and input failures across the real Unix transport.
 
-Controller-recorded exact-HEAD validation follows the remaining tasks.
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessDelivery$|^TestSend|^TestDeliveryActivity$' -count=1 -timeout=30s` — passed.
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --build-tags=integration ./...` — passed.
+
+Controller-recorded exact-HEAD validation follows PR preparation.
 
 ## Risks and Follow-ups
 
-Actual-process delivery recovery and isolation acceptance remains in T4.5.
+Delivery is at least once, not exactly-once external execution. The internal
+result-plus-ack primitive is not an unowned public operation; bridge identity,
+lease and invocation checks belong to Slice 5. Configurable lifecycle policy
+and autonomous reconciliation remain in Slice 6. No model or installed service
+is used by these checks.

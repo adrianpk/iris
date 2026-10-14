@@ -230,3 +230,61 @@ func assertCommittedMessages(t *testing.T, other *store, results <-chan message)
 		}
 	}
 }
+
+// Independent SQLite connections racing the same key publish exactly one durable message identity.
+func TestSendConcurrentRetry(t *testing.T) {
+	f := newDeliveryFixture(t)
+
+	other, err := openStore(t.Context(), f.config)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := other.close(); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	key := "concurrent-retry"
+	params := sendReference(f.alpha, f.conversation.ID, "One durable input")
+	params.IdempotencyKey = &key
+	results := make(chan message, 8)
+
+	var workers sync.WaitGroup
+
+	for index := range 8 {
+		target := f.store
+		if index%2 == 1 {
+			target = other
+		}
+
+		workers.Go(func() {
+			value, err := target.send(t.Context(), params)
+			if err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			results <- value
+		})
+	}
+
+	workers.Wait()
+	close(results)
+
+	id := ""
+	for value := range results {
+		if id != "" && id != value.ID {
+			t.Fatal("concurrent retry allocated another message")
+		}
+
+		id = value.ID
+		if value.Sequence != 3 {
+			t.Fatalf("retry sequence=%d", value.Sequence)
+		}
+	}
+
+	assertHandshakeRows(t, f.store, f.conversation.ID, "active", 3, 0)
+}

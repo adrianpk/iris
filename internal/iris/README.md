@@ -53,3 +53,23 @@ The final event has a reserved sequence slot and can use an empty body.
 and crash/restart. Fixture database inspection happens while its daemon is
 stopped. Public history paging and autonomous lifecycle maintenance have their
 own tasks in the implementation plan.
+
+
+Delivery uses the existing message/recipient and consumer tables. Send compares
+normalized payload digests before rejecting a committed retry on terminal
+history. New sends validate joined membership, lifecycle, reply scope and
+budgets, then commit sequence, recipients, counters and significant activity
+before success. The internal result-plus-ack primitive shares that transaction;
+bridge ownership checks remain the caller's responsibility in its owning slice.
+
+Receive pages bound both item count and encoded bytes. Cursors carry version,
+conversation, project, consumer and sequence, and cannot jump beyond the
+consumer's delivered high-water mark. Reads update delivered state only; ack
+advances the next addressed message and ignores unaddressed sequence gaps.
+
+The service permits 64 waiters overall and 16 per project. Subscription precedes
+a storage recheck to prevent lost wakeups. Notifications follow successful
+commits. Idle waits hold neither SQLite nor a repeating database timer. Linux
+socket hangup detection blocks in the kernel and uses a cancellation pipe for
+cleanup, preserving the protocol's required write half-close. Framing remains
+bounded; receive operation/client deadlines use wait plus five seconds.

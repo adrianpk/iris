@@ -1,6 +1,7 @@
 # Iris Documentation
 
-Product documentation will follow the project specification.
+See the [message delivery reference](reference/delivery.md) for send, receive,
+acknowledgment, cursors and bounded waiting.
 
 - `tutorials/`: guided learning paths.
 - `how-to/`: task procedures.
