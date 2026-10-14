@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 10, reviewing; acceptance and documentation.
+Active slice: none; all ten slice implementations are integrated.
 
-Active tasks: T10.4 controller-owned integrated gate and closure; canonical PR `#10` awaits integration.
+Active tasks: T10.4 controller-owned integrated gate and final closure.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 9 of 10 slices delivered; 43 of 44 tasks completed.
+Progress: 10 of 10 slices delivered; 43 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -57,10 +57,10 @@ Slice 1 was integrated through PR `#1` at
 | Slice 7 | history and export | delivered | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | `#7` | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | delivered | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | `#8` | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | delivered | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | `#9` | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
-| Slice 10 | acceptance and documentation | reviewing | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | `#10` | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
+| Slice 10 | acceptance and documentation | delivered | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | `#10` | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
-The first nine slices have delivered reports. Remaining report paths identify
-future artifacts; create each during its owning slice.
+All ten slices have delivered reports and canonical PRs merged into `dev`.
+The final integrated gate remains distinct from their focused PR checks.
 
 ## Slice 1 Tasks
 
@@ -153,7 +153,7 @@ future artifacts; create each during its owning slice.
 | --- | --- | --- | --- | --- |
 | T10.1 | completed | `docs(guide): explain Iris project conversations` | `790b6f6007ca` | Published invitation/history snippets execute unchanged against the real binary with race checks; source installation and bounded worker forms match owning fixtures. Live fresh-context acceptance follows in T10.3. |
 | T10.2 | completed | `docs(reference): document Iris contracts and future capabilities` | `c668448ca53c` | Contract checker passed forty documents, eighteen typed operation names, storage schema 4 and SQL constraints. Published configuration equals executable defaults; migration/model and reference tests passed. Planned capabilities and separate-worker limitations documented. |
-| T10.3 | completed | `test(acceptance): verify the complete Iris v1 workflow` | `9b9d85c479f5` | Ten-group map validates 28 actual cases/selectors. Changed guide/lifecycle/reference race checks passed. Real Codex lost-result recovery, own-thread resumption and a new conversation with fresh threads/consumers/proof passed in 64.153 seconds; no idle echo. |
+| T10.3 | completed | `test(acceptance): verify the complete Iris v1 workflow` | `9b9d85c479f5` | Ten-group map validates 28 actual cases/selectors. Changed guide/lifecycle/reference race checks passed. Real Codex lost-result recovery, own-thread resumption and a new conversation with fresh threads/consumers/proof passed in 58.854 seconds; no idle echo. |
 | T10.4 | in-progress | `chore(delivery): finalize Iris v1 validation` | `47a9163f33c7` | Exact-candidate verification automation and evidence procedure prepared; strict lint/tests retained with contract, acceptance-map and installation checks added. Integrated candidate hash/full gate and final closure remain controller-owned and pending. |
 
 ## Validation evidence
@@ -173,8 +173,8 @@ future artifacts; create each during its owning slice.
 | History and export gate | passed | All seven ordered controller checks passed on final PR head `cb35ff0ce59feb94db6d453626d328eeb875b7e3`, including actual binaries, complete exports, jq and integration race checks. Canonical PR `#7` merged at that head; report/tracker entries are closed. |
 | Bridge recovery gate | passed | Ten ordered controller checks passed on final PR head `de6aec26826b250356a584f413c249aacf3de52e`, including real recovery/restart, two bounded fuzz campaigns, integration race checks and combined-tag lint. Canonical PR `#8` merged at that head; report/tracker entries are closed. |
 | User-systemd acceptance | passed | All nine ordered controller checks passed on final PR head `562059bc7f3605f784d5e038a24f0425ec1675b2`, including actual isolated units, installation, process race checks and combined-tag lint. Canonical PR `#9` merged at that head; report/tracker entries are closed. |
-
-| Acceptance/documentation PR checks | passed | Ten ordered controller checks passed on clean candidate `47a9163f33c751ae40c01c82134d329276c951fb`, including changed process race checks, real fresh-context Codex and combined-tag lint. PR-reference follow-up requires exact-HEAD regeneration. |
+| Acceptance/documentation PR checks | passed | Ten ordered controller checks passed on final PR head `879bde689b196fe4c8ee74d2afdc1424354075a3`, including changed process race checks, real fresh-context Codex and combined-tag lint. Canonical PR `#10` merged at that head; report/tracker entries are closed. |
+| Full-gate prerequisites | prepared | Required tools, private writable runtime/Unix socket and runtime unit-link paths, reachable user manager and authenticated Codex 0.161.0 verified. Process/systemd/live fixtures allocate and clean their own isolated roots and units when the controller runs their checks. No fixture service remains running. |
 | Integrated delivery gate | pending | The controller must record the exact integrated candidate and unchanged full-gate result after PR integration. No full-gate result is claimed here. |
 
 ## Completion gates
@@ -191,10 +191,10 @@ future artifacts; create each during its owning slice.
 - [x] Slice 7 delivered; bounded discovery, complete exports, and stats pass.
 - [x] Slice 8 delivered; bridge crash recovery, uncertainty, budgets, and security pass.
 - [x] Slice 9 delivered; installation and real isolated user-systemd operation pass.
-- [ ] Slice 10 delivered; User Guide, references, future capabilities, and complete acceptance pass.
-- [ ] All ten canonical reports delivered and slice PRs merged into `dev`.
+- [x] Slice 10 delivered; User Guide, references, future capabilities, and focused acceptance pass.
+- [x] All ten canonical reports delivered and slice PRs merged into `dev`.
 - [ ] Full gate green for the recorded immutable integrated candidate.
-- [ ] Achieved Codex session mode and concrete product limitations documented.
+- [x] Achieved Codex session mode and concrete product limitations documented.
 
 ## Update rules
 

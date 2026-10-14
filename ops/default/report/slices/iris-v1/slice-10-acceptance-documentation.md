@@ -1,6 +1,6 @@
 # Slice 10: Acceptance and Documentation
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -33,8 +33,8 @@ old history and idle counts.
 
 Verification retains strict lint and ordinary tests and adds document/public
 contracts, acceptance-map checks and source installation/removal. The exact
-candidate procedure records a clean full hash and ordered results. Full-gate
-execution and delivery closure remain pending controller integration.
+candidate procedure records a clean full hash and ordered results. All slice PRs are integrated; full-gate
+execution and delivery closure remain pending controller evidence.
 
 ## Implementation Notes
 
@@ -57,8 +57,8 @@ the versioned success envelope.
 
 ## Validation
 
-All ten ordered PR checks passed through the controller on clean implementation
-candidate `47a9163f33c751ae40c01c82134d329276c951fb` before canonical PR #10 opened:
+All ten ordered PR checks passed through the controller on final canonical PR
+head `879bde689b196fe4c8ee74d2afdc1424354075a3`, which merged into `dev` unchanged:
 
 - `make check`
 - `make lint`
@@ -71,16 +71,16 @@ candidate `47a9163f33c751ae40c01c82134d329276c951fb` before canonical PR #10 ope
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge,systemd ./...`
 - `git diff --check`
 
-The real bridge fixture passed in 64.153 seconds with Codex CLI 0.161.0. It
+The real bridge fixture passed in 58.854 seconds with Codex CLI 0.161.0. It
 recovered a completed result without another invocation, resumed both original
 threads/consumers for pending work, and completed another conversation with two
 new owned thread/consumer IDs and a new random project-local proof. Prior history
 remained retained; the new transcript contained only its own exchange. Turn
 counts remained one per fresh worker with no idle echo. The one-second sample
-observed 0 CPU ticks and 36,472 KiB RSS for the daemon and two Iris workers,
+observed 0 CPU ticks and 36,412 KiB RSS for the daemon and two Iris workers,
 excluding provider subprocesses. These are bounded observations.
 
-Changed guide/lifecycle/reference race checks passed in 3.709 seconds. Published
+Changed guide/lifecycle/reference race checks passed in 3.721 seconds. Published
 invitation/history shell blocks execute unchanged against the actual binary.
 Expired history exports before pruning; deleted lookup fails; fresh export has
 only its new context. The guide's initial plain-JSON envelope assertion was
@@ -98,9 +98,12 @@ checks, acceptance mapping and installation checks. The integrated full gate has
 not run in this phase. T10.4's integrated candidate and full-gate recording remain
 pending the controller's gate and closure phases.
 
-The PR-reference follow-up requires regeneration on its exact clean head with
-this same ordered command list. The canonical PR head and controller ledger
-identify final PR validation evidence.
+The final controller ledger binds this exact head and ordered command list.
+Acta merge event `01M4XNPYKED01SCTBARZZRB34S` confirms Rebase + Fast-forward
+integration. Full-gate prerequisites were checked without starting fixture
+services: required tools, private writable runtime/Unix socket and unit-link
+paths, a reachable user manager and authenticated Codex 0.161.0 are available.
+Fixtures create and clean isolated state when their checks run.
 
 ## Risks and Follow-ups
 
