@@ -1,6 +1,6 @@
 # Slice 7: History and Export
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -70,8 +70,8 @@ Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -r
 exports beyond 100 messages, retained restart discovery, default/admin scope,
 clean machine output and unchanged activity/consumer state.
 
-All seven ordered checks passed through Looper on clean implementation candidate
-`bb351bbc02454d7bb52acd5a07aa69bbeec6ab21` before canonical PR #7 opened:
+All seven ordered checks passed through Looper on final PR head
+`cb35ff0ce59feb94db6d453626d328eeb875b7e3`:
 
 - `make check`
 - `make lint`
@@ -81,9 +81,9 @@ All seven ordered checks passed through Looper on clean implementation candidate
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
 - `git diff --check`
 
-The PR-reference follow-up requires regeneration on its exact clean head.
-The canonical PR head and controller ledger identify final evidence using this
-same ordered command list.
+The integration-tag race check passed in 50.340 seconds. The controller merged
+canonical PR #7 into `dev` at that same validated head using Rebase + Fast-forward.
+The controller ledger retains the exact ordered evidence.
 
 ## Risks and Follow-ups
 
