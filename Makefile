@@ -1,4 +1,6 @@
 GO := go
+GOTOOLCHAIN ?= go1.26.3
+export GOTOOLCHAIN
 DEV_ROOT ?= _workspace
 GO_BUILD_CACHE := $(CURDIR)/$(DEV_ROOT)/go-build-cache
 GOLANGCI_LINT_CACHE := $(CURDIR)/$(DEV_ROOT)/golangci-lint-cache
