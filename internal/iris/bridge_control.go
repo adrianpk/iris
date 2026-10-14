@@ -12,10 +12,15 @@ type bridgeCheckpoint struct {
 	ThreadID         string `json:"thread_id,omitempty"`
 	PendingRequestID string `json:"pending_request_id,omitempty"`
 	PendingMethod    string `json:"pending_method,omitempty"`
+	InputMessageID   string `json:"input_message_id,omitempty"`
+	ErrorCode        string `json:"error_code,omitempty"`
 }
 
 func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (bridgeBinding, error) {
-	var value bridgeRecord
+	var (
+		value   bridgeRecord
+		outcome error
+	)
 
 	err := s.write(ctx, func(tx *sql.Tx) error {
 		var err error
@@ -23,6 +28,19 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 		value, err = s.ownedBridge(ctx, tx, params.bridgeOwner)
 		if err != nil {
 			return err
+		}
+
+		if params.Action != "failure" && params.Action != "stop" {
+			active, err := s.bridgeActive(ctx, tx, value)
+			if err != nil {
+				return err
+			}
+
+			if !active || value.StopRequestedAt != nil {
+				outcome = problem("conversation_inactive", "bridge work is stopping")
+
+				return nil
+			}
 		}
 
 		if err := s.updateBridgeCheckpoint(ctx, tx, value, params); err != nil {
@@ -33,12 +51,19 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 
 		return err
 	})
+	if err != nil {
+		return bridgeBinding{}, err
+	}
 
-	return value.bridgeBinding, err
+	return value.bridgeBinding, outcome
 }
 
 func (s *store) handleBridge(ctx context.Context, req request) response {
 	switch req.Operation {
+	case "bridge.receive":
+		return typedOperation(ctx, req, s.receiveBridge)
+	case "bridge.complete":
+		return typedOperation(ctx, req, s.completeBridge)
 	case "bridge.claim":
 		return typedOperation(ctx, req, s.claimBridge)
 	case "bridge.renew":
@@ -75,6 +100,10 @@ func typedOperation[T, R any](ctx context.Context, req request, execute func(con
 
 func (s *store) updateBridgeCheckpoint(ctx context.Context, tx *sql.Tx, value bridgeRecord, params bridgeCheckpoint) error {
 	switch params.Action {
+	case "invoke":
+		return s.invokeBridge(ctx, tx, value, params.InputMessageID)
+	case "failure":
+		return s.failBridge(ctx, tx, value, params.ErrorCode)
 	case "stop":
 		return s.releaseBridge(ctx, tx, value)
 	case "thread":
@@ -82,17 +111,7 @@ func (s *store) updateBridgeCheckpoint(ctx context.Context, tx *sql.Tx, value br
 	case "approval", "running":
 		return s.checkpointApproval(ctx, tx, value, params)
 	case "turn":
-		if value.State != "invoking" || !validText(params.TurnID, 128) {
-			return problem("worker_uncertain", "turn does not match an invoking binding")
-		}
-
-		if value.TurnID != nil && *value.TurnID != params.TurnID {
-			return problem("worker_uncertain", "binding already has a different turn")
-		}
-
-		_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET turn_id=?,updated_at=? WHERE id=?", params.TurnID, s.now().UnixMilli(), value.ID)
-
-		return err
+		return s.bindBridgeTurn(ctx, tx, value, params.TurnID)
 	}
 
 	return problem("invalid_request", "invalid bridge checkpoint action")
@@ -118,6 +137,20 @@ func (s *store) bindBridgeThread(ctx context.Context, tx *sql.Tx, value bridgeRe
 	}
 
 	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET thread_id=?,updated_at=? WHERE id=?", thread, s.now().UnixMilli(), value.ID)
+
+	return err
+}
+
+func (s *store) bindBridgeTurn(ctx context.Context, tx *sql.Tx, value bridgeRecord, turn string) error {
+	if value.State != "invoking" || !validText(turn, 128) {
+		return problem("worker_uncertain", "turn does not match an invoking binding")
+	}
+
+	if value.TurnID != nil && *value.TurnID != turn {
+		return problem("worker_uncertain", "binding already has a different turn")
+	}
+
+	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET turn_id=?,updated_at=? WHERE id=?", turn, s.now().UnixMilli(), value.ID)
 
 	return err
 }

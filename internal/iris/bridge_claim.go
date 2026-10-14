@@ -114,6 +114,16 @@ func (s *store) renewBridge(ctx context.Context, owner bridgeOwner) (bridgeBindi
 			return err
 		}
 
+		active, err := s.bridgeActive(ctx, tx, value)
+		if err != nil {
+			return err
+		}
+
+		value, err = s.requestBridgeStop(ctx, tx, value, !active)
+		if err != nil {
+			return err
+		}
+
 		if _, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET lease_until=?,updated_at=? WHERE id=?", s.now().Add(bridgeLease).UnixMilli(), s.now().UnixMilli(), value.ID); err != nil {
 			return err
 		}

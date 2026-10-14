@@ -19,6 +19,13 @@ binding. `bridge status` reports public progress and `bridge stop` requests
 owned shutdown. A renewable lease and private token prevent concurrent or
 stale owners from updating progress. Each binding has its own durable consumer.
 
+Inputs checkpoint before invocation. Completed replies and acknowledgment share
+one transaction with a stable response key; duplicate completion cannot publish
+a second reply. Informational inputs bypass the model. Idle workers block on
+service notifications, and finite turn/lifetime/reported-usage budgets stop new
+invocations. Closure prevents publication; uncertain execution is never silently
+replayed. Active timeout cancellation requires owned turn interruption proof.
+
 ## Implementation Notes
 
 The daemon owns SQLite writes. Workers use typed local RPCs and the registered
@@ -46,6 +53,8 @@ before ownership is acquired.
 
 ## Files of Interest
 
+- `internal/iris/bridge_complete.go`: owned atomic result and acknowledgment.
+- `internal/iris/bridge_exchange.go`: bounded conversation-only worker loop.
 - `internal/iris/bridge_claim.go`: exclusive claim and stop/status persistence.
 - `internal/iris/bridge_store.go`: scoped bindings and lease authorization.
 - `internal/iris/codex_thread.go` and `codex_turn.go`: explicit thread/turn protocol.
@@ -62,6 +71,5 @@ before ownership is acquired.
 
 ## Risks and Follow-ups
 
-Atomic completion and the real exchange are
-remaining tasks in this slice. Initial ownership management does not establish
-live model acceptance.
+The real exchange remains T5.5 acceptance. More extensive crash reconciliation
+and execution recovery belong to the recorded recovery slice.

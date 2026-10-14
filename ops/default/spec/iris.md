@@ -767,7 +767,7 @@ The exact operation names and required parameter concepts are:
 | `dump --format text/json <id>` | `dump.open` (scope, conversation), `dump.page` (lease, cursor), `dump.close` (lease); complete client spool |
 | `prune --dry-run`, `prune --confirm <token>` | `prune.preview` (scope, eligibility filters), `prune.confirm` (token) |
 | `stats` | `stats` (project or explicit all-project scope) |
-| `bridge start/status/stop` | `bridge.claim`, `bridge.status`, `bridge.stop`; owner-only `bridge.renew`, `bridge.checkpoint`, `bridge.complete` for the running adapter |
+| `bridge start/status/stop` | `bridge.claim`, `bridge.status`, `bridge.stop`; owner-only `bridge.receive`, `bridge.renew`, `bridge.checkpoint`, `bridge.complete` for the running adapter |
 
 All service field names use snake_case, including `project_id`,
 `conversation_id`, `consumer_id`, `message_id`, `request_key`, `wait_seconds`,

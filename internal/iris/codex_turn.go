@@ -31,8 +31,10 @@ func answerSchema() map[string]any {
 	return map[string]any{"type": "object", "properties": map[string]any{"action": map[string]any{"type": "string", "enum": []string{"reply", "ack"}}, "body": map[string]any{"type": "string"}}, "required": []string{"action", "body"}, "additionalProperties": false}
 }
 
-func (client *codexClient) runTurn(ctx context.Context, binding bridgeBinding, input string, observe func(context.Context, bridgeCheckpoint) error) (codexResult, error) {
+func (client *codexClient) runTurn(ctx context.Context, binding bridgeBinding, input string, observe func(context.Context, bridgeCheckpoint) error) (result codexResult, runErr error) {
 	progress := codexProgress{client: client, threadID: *binding.ThreadID, observe: observe}
+	defer func() { runErr = progress.interrupted(ctx, runErr) }()
+
 	params := map[string]any{"threadId": progress.threadID, "cwd": binding.ProjectPath, "approvalPolicy": codexApprovalPolicy(binding.Options), "approvalsReviewer": "user", "sandboxPolicy": codexSandbox(binding), "input": []any{map[string]any{"type": "text", "text": input}}, "outputSchema": answerSchema()}
 
 	raw, err := client.call(ctx, "turn/start", params, progress.handle)
