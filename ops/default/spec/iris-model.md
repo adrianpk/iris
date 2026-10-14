@@ -1,7 +1,7 @@
 # Iris Data Model
 
-Status: settled implementation contract; promoted with its specification in T1.4.
-Specification: [Iris specification](iris-draft.md).
+Status: accepted implementation baseline; promoted with its specification in T1.4.
+Specification: [Iris specification](iris.md).
 
 ## Ownership and representation
 

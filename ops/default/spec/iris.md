@@ -1,13 +1,13 @@
 # Iris Functional and Technical Specification for Codex
 
-**Status:** Draft; initial specification for implementation.
+**Status:** Accepted implementation baseline; Slice 1 contracts settled.
 **Product:** Iris.
 **Family:** Acta, Lore, and Iris.
 **Initial platform:** Linux, a local per-user service, CLI, and user systemd.
 **Audience:** The Codex agent responsible for designing, implementing, testing,
 and documenting Iris.
 **Source:** User-supplied `IRIS_SPEC.md`, translated into English.
-**Model companion:** [Iris data model](iris-draft-model.md).
+**Model companion:** [Iris data model](iris-model.md).
 
 ## 1. Primary instruction
 
@@ -306,7 +306,7 @@ require intervention for every message.
 The Slice 1 probe verified `codex-cli 0.161.0` with stdio app-server, fresh
 project-associated threads, real turn results, own-thread resumption after
 server restart, denied command approval, and turn interruption. See the
-[Slice 1 report](../../report/slices/iris-v1/slice-1-audit-contracts.md).
+[Slice 1 report](../report/slices/iris-v1/slice-1-audit-contracts.md).
 The official [app-server contract](https://learn.chatgpt.com/docs/app-server)
 and the installed default generated schema define the transport surface.
 
@@ -336,14 +336,14 @@ in the sibling tools. Versioned service operations are mapped in section 17.3.
 | --- | --- |
 | `iris call --to <alias> --topic <text> [--message ...]` | Create an invitation and conversation. |
 | `iris join <code>` | Join as the current project and read the initial request. |
-| `iris send <id> [--message/--file/stdin]` | Send a message. |
-| `iris receive <id> [--wait]` | Read available messages or wait using a cursor. |
-| `iris ack <id> --message-id <id>` | Confirm consumer processing of a message. |
+| `iris send [--message/--file/stdin] <id>` | Send a message. |
+| `iris receive [--wait <seconds>] <id>` | Read available messages or wait using a cursor. |
+| `iris ack --message-id <id> <conversation-id>` | Confirm consumer processing of a message. |
 | `iris conversations [--active/--all]` | List conversations visible to the project, or to the user with an explicit option. |
 | `iris show <id>` | Inspect state, participants, and messages. |
 | `iris search [--text/--project/--since/--until]` | Find conversations and messages with structured filters. |
 | `iris close <id>` | Close a conversation. |
-| `iris dump <id> [--format text/json]` | Export a complete transcript. |
+| `iris dump [--format text/json] <id>` | Export a complete transcript. |
 | `iris prune [--dry-run]` | Inspect and remove expired data according to policy. |
 | `iris projects` and subcommands | Inspect and manage aliases and identities. |
 | `iris bridge start/status/stop ...` | Manage the Codex adapter on demand. |
@@ -579,7 +579,7 @@ with Acta and Lore.
 ## 17. Settled v1 implementation contracts
 
 This section resolves the initial design alternatives for implementation. The
-[model companion](iris-draft-model.md) defines the matching schema, indexes,
+[model companion](iris-model.md) defines the matching schema, indexes,
 transactions, and query mappings. These contracts are selected for v1; later
 slices must provide their runtime evidence before claiming the behavior works.
 
@@ -641,8 +641,8 @@ an explicit rename. Iris never creates or rewrites it.
 Persist a random 128-bit project ID independently of path or alias. An alias
 is unique in central storage. Registration with an occupied alias fails
 unless it is the unregistered destination placeholder being resolved by the
-same canonical registration. Renaming requires `projects rename <id>
---name <alias>`; moving requires `projects relocate <id> --path <directory>`.
+same canonical registration. Renaming requires `projects rename
+--name <alias> <id>`; moving requires `projects relocate --path <directory> <id>`.
 Neither operation merges project IDs or changes historical participant labels.
 A path already assigned to another ID produces `project_conflict`.
 
@@ -715,7 +715,7 @@ never `acked_sequence`. An explicit cursor encodes version, conversation,
 project, consumer, and after-sequence; validate all scope fields and reject
 future/out-of-range positions. Cursors grant no authority.
 
-`ack <conversation> --message-id <id> --consumer <id>` acknowledges only the
+`ack --message-id <id> --consumer <id> <conversation>` acknowledges only the
 next unacknowledged addressed message that has been delivered to that
 consumer. It cannot skip an earlier addressed message or another consumer's
 work; duplicate acknowledgments are idempotent. Ignore gaps consisting only
@@ -757,11 +757,11 @@ The exact operation names and required parameter concepts are:
 | `call` | `call` (initiator, recipient selector, topic, initial body, request key) |
 | `join <code>` | `join` (project, code) |
 | `send <id>` | `send` (project, conversation, body, kind, recipients, reply/correlation/key) |
-| `receive <id> --consumer <id> --wait <seconds>` | `receive` (project, conversation, consumer, optional cursor, limit, wait seconds) |
-| `ack <id> --message-id <id> --consumer <id>` | `ack` (project, conversation, consumer, message ID) |
+| `receive --consumer <id> --wait <seconds> <conversation>` | `receive` (project, conversation, consumer, optional cursor, limit, wait seconds) |
+| `ack --message-id <id> --consumer <id> <conversation>` | `ack` (project, conversation, consumer, message ID) |
 | `conversations`, `show`, `search` | `conversations`, `show`, `search` (explicit project or human all-project scope; ID/pair/ordinal/date/text filters and page where applicable) |
 | `close <id>` | `close` (project, conversation) |
-| `dump <id> --format text/json` | `dump.open` (scope, conversation), `dump.page` (lease, cursor), `dump.close` (lease); complete client spool |
+| `dump --format text/json <id>` | `dump.open` (scope, conversation), `dump.page` (lease, cursor), `dump.close` (lease); complete client spool |
 | `prune --dry-run`, `prune --confirm <token>` | `prune.preview` (scope, eligibility filters), `prune.confirm` (token) |
 | `stats` | `stats` (project or explicit all-project scope) |
 | `bridge start/status/stop` | `bridge.claim`, `bridge.status`, `bridge.stop`; owner-only `bridge.renew`, `bridge.checkpoint`, `bridge.complete` for the running adapter |

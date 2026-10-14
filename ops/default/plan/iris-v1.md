@@ -15,15 +15,15 @@ workflows. Demonstrate real Codex communication in Slice 5, before completing
 history management and operational hardening, so agent integration cannot
 become an unverified final addition.
 
-Spec: [Iris specification](../spec/drafts/iris-draft.md)
+Spec: [Iris specification](../spec/iris.md)
 
-Model: [Iris data model](../spec/drafts/iris-draft-model.md)
+Model: [Iris data model](../spec/iris-model.md)
 
 Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: Slice 1, in-progress; audit and contracts.
+Active slice: Slice 1, reviewing; audit and contracts.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.
@@ -375,6 +375,45 @@ distinct from later bookkeeping commits.
 | Section 14.9: bridge | 1, 5, 8, 10 | Installed-interface proof, real autonomous round trip, idle checks, and crash recovery. |
 | Section 14.10: security | 2, 4, 5, 8, 9 | Invalid/oversized input, authority/approval boundaries, and local permission checks. |
 | Sections 12 and 15: future scope/docs | 10 | User Guide and explicit Planned capabilities; extensible participants without speculative runtime features. |
+
+## Acceptance fixtures and pass conditions
+
+Every fixture uses two newly created test project roots, a fresh data/config
+root, and a short private runtime/socket directory. Set child-process
+`XDG_DATA_HOME`, `XDG_CONFIG_HOME`, and `XDG_RUNTIME_DIR` to fixture-owned
+locations. Never point acceptance at the user's ordinary Iris data, source
+projects, Acta/Lore storage, or another controller's processes. Track all
+owned process IDs, listeners, app-server threads, temporary exports, and unit
+names; stop only those resources after their checks finish. Record failures
+and cleanup outcomes. No credential or transcript is written into a report.
+
+| Group | Fixture and decisive pass condition | Owning validation |
+| --- | --- | --- |
+| 1. Identity | Temporary directories, symlink and nested cwd, duplicate basename, optional alias, and explicit move; stable ID survives rename/relocation and ambiguity never selects another project. | Slice 3 focused Go and process integration |
+| 2. Handshake | Registered and provisional destinations; correct, wrong, repeated, concurrent, and clock-expired joins; exactly one activation returns the original initial message. | Slice 3 focused Go and process integration |
+| 3. Numbering | Concurrent calls in both directions, two isolated conversations and a pruned predecessor; one monotonic unordered-pair sequence with rollback and no ordinal reuse. | Slices 3/6 focused race and process checks |
+| 4. Messages | Real socket/database, keyed creation/send retries, ordered pages, two consumers, process restart before/after acknowledgment, and injected completion failure; no lost durable message or skipped acknowledgment. | Slices 4/8; `make test-integration` |
+| 5. Isolation | Concurrent conversations and unrelated project; project queries reject cross-membership and each new conversation uses a fresh owned Codex thread with no earlier transcript. | Slices 3/4/5/8 focused and live bridge checks |
+| 6. Lifecycle | Injected service clock across invitation/inactivity/retention boundaries; reads and export do not renew lifetime; preview mutation or export lease prevents deletion, and confirmed eligible prune retains allocation tombstones. | Slices 6/7 deterministic storage/process checks |
+| 7. Output | Paged history with Unicode, long content and control characters; parse successful JSON with `jq`, preserve order/labels, export all snapshot messages, and fail without a successful partial dump. | Slices 4/7/10; document and process checks |
+| 8. Operation | Real daemon/socket and an isolated `iris-acceptance-<random>` user-unit pair; verify descriptor activation, permissions, restart and orderly stop without changing ordinary installed units. | Slices 2/9; `make test-systemd` |
+| 9. Bridge | Two real project workers exchange question, response and acknowledgment with no manual relay; count `turn/start` calls during idle wait; interrupt/restart only owned adapters at recovery checkpoints. | Slices 1/5/8/10; `make test-bridge` |
+| 10. Security | Malformed/oversized frames, wrong project, denied approval, untrusted peer text, private file/socket modes and stale owner tokens; failures cannot grant authority or publish under another worker's ownership. | Slices 2/4/5/8/9 focused parser/race/process checks |
+
+T2.4 adds `make test-integration`; T5.5 adds `make test-bridge`; T9.4 adds
+`make test-systemd`. They are required future interfaces, not current passing
+targets. Live provider tests require authenticated access and bounded turns.
+The systemd fixture requires a working user manager and private, uniquely
+named test units; unavailable access is an explicit blocker. The installed
+Codex probe in Slice 1 is feasibility evidence only. It does not replace the
+actual two-party exchange or zero-idle-call measurement owned by Slice 5.
+
+Slice 1 final validation uses `make docs-check`, then
+`python3 scripts/check-contracts.py`, then `git diff --check`, recorded through
+Looper for the exact clean PR HEAD. The contract checker validates relative
+links, ten slice identities, 44 task identities, the accepted spec/model
+pair, and meaningful SQLite constraint/rollback/prune invariants. It is not
+a substitute for implementation tests with the selected Go driver.
 
 ## Completion boundary
 

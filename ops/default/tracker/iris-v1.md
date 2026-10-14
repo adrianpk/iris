@@ -8,20 +8,20 @@ Delivery set: `iris-v1`
 
 Plan: [Iris v1 plan](../plan/iris-v1.md)
 
-Spec: [Iris specification](../spec/drafts/iris-draft.md)
+Spec: [Iris specification](../spec/iris.md)
 
-Model: [Iris data model](../spec/drafts/iris-draft-model.md)
+Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 1, in-progress; audit and contracts.
+Active slice: Slice 1, reviewing; audit and contracts.
 
-Active tasks: T1.4.
+Active tasks: none; Slice 1 awaits its required PR validation and controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 0 of 10 slices delivered; 3 of 44 tasks completed.
+Progress: 0 of 10 slices delivered; 4 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -35,7 +35,7 @@ Progress: 0 of 10 slices delivered; 3 of 44 tasks completed.
 | Plan approved for implementation | satisfied | User authorized Looper execution on 2026-10-14, including the controller's configured slice integrations into `dev`. |
 | Approved plan/tracker committed on `dev` | satisfied | Canonical `dev` is `5b548d2851eb60e2a06140b17793157efe893fab`. |
 | Published canonical `dev` base | satisfied | Live origin refs match the planning baseline and initial `main`; Forgejo was inspected before branching. |
-| Detailed spec/model baseline | pending | T1.3 and T1.4 settle decisions and promote the pair before Slice 2. |
+| Detailed spec/model baseline | satisfied | Accepted `spec/iris.md` and `spec/iris-model.md` settle section 17 behavior and physical storage together. |
 | SQLite dependency selected and confirmed | satisfied | T1.3 selects modernc.org/sqlite v1.60.1; its module requires Go 1.26.0. Addition and driver tests belong to T2.2. |
 | Real Codex integration feasibility | satisfied | T1.2 verified separate owned workers using real turns, own-thread resumption, denial, and interruption. The Iris exchange remains T5.5 acceptance. |
 | Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
@@ -47,7 +47,7 @@ Slice 1 executes in its dedicated worktree. The primary checkout remains on
 
 | Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
 | --- | --- | --- | --- | --- | --- | --- |
-| Slice 1 | audit and contracts | in-progress | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | pending | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
+| Slice 1 | audit and contracts | reviewing | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | pending | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
 | Slice 2 | service and storage | pending | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
@@ -58,8 +58,8 @@ Slice 1 executes in its dedicated worktree. The primary checkout remains on
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
-Report paths identify future artifacts. Create each report during its slice;
-none is claimed to exist or to contain delivered evidence now.
+Slice 1 has its canonical report. Remaining report paths identify future
+artifacts; create each during its owning slice.
 
 ## Slice 1 Tasks
 
@@ -67,8 +67,8 @@ none is claimed to exist or to contain delivered evidence now.
 | --- | --- | --- | --- | --- |
 | T1.1 | completed | `docs(architecture): record Iris family patterns` | `9dc6a7a7c8c0` | Eight-point source audit recorded in the canonical report; final documentation checks pending. |
 | T1.2 | completed | `docs(bridge): verify Codex integration contract` | `27ac95322321` | Six live probe assertions passed on Codex 0.161.0: cwd/turn, fresh thread, own-thread recovery, interrupt, denied approval, and absent write. Existing-session attachment unverified. |
-| T1.3 | completed | `docs(spec): finalize Iris runtime and data contracts` | pending | Selected and confirmed modernc.org/sqlite v1.60.1 metadata; settled schema/query mapping, identity, delivery, lifecycle, bounds, and recovery contracts; final checker pending. |
-| T1.4 | pending | `docs(plan): establish Iris acceptance baseline` | pending | Settled/promoted spec/model pair, updated links, acceptance ownership, and documentation checks. |
+| T1.3 | completed | `docs(spec): finalize Iris runtime and data contracts` | `2bd054774713` | Selected and confirmed modernc.org/sqlite v1.60.1 metadata; settled schema/query mapping, identity, delivery, lifecycle, bounds, and recovery contracts; final checker pending. |
+| T1.4 | completed | `docs(plan): establish Iris acceptance baseline` | pending | Specification/model promoted together; ten acceptance fixtures and command ownership defined; final exact-HEAD document/schema validation required before readiness. |
 
 ## Slice 2 Tasks
 
@@ -162,7 +162,9 @@ none is claimed to exist or to contain delivered evidence now.
 | Acta/Lore planning inspection | recorded | Source structure, config, protocol, systemd assets, test patterns, and documentation inspected at revisions recorded in the plan. T1.1 still owns the complete deliverable. |
 | Codex CLI/schema inspection | passed | CLI reports 0.161.0; default generated schema contains required thread/turn and approval contracts. No model was invoked. |
 | Plan/tracker documentation and structural checks | passed | `make docs-check`; agreement of ten slice identities and 44 task/commit identities; all ten acceptance groups; relative links, branch syntax, whitespace, and context privacy checks. |
-| Runtime unit/process/systemd/live bridge checks | not run | No application implementation exists yet. Future acceptance commands are defined in the plan, not claimed as available or passing now. |
+| Slice 1 live Codex probe | passed | Six bounded assertions verified separate owned workers, cwd, real results, resumption, denied approval, and interruption. This is feasibility evidence, not the future Iris exchange. |
+| Slice 1 schema check | passed | Fourteen documented SQLite tables created in memory with foreign keys enabled; driver/runtime acceptance remains T2.2. |
+| Runtime unit/process/systemd/live Iris bridge checks | not run | No Iris application implementation exists yet. Future acceptance commands are defined in the plan, not claimed as available or passing now. |
 
 ## Completion gates
 

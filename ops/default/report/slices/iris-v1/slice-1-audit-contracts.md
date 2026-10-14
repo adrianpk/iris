@@ -1,6 +1,6 @@
 # Slice 1: Audit and Contracts
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -14,8 +14,10 @@ implementation. Verify the installed Codex integration with bounded execution.
 
 ## Delivered Behavior
 
-The family audit below records observed source behavior and deliberate Iris
-decisions. Runtime and bridge implementation belong to subsequent slices.
+Established an observed family audit, a live Codex feasibility result, accepted
+runtime/data contracts, and ten concrete acceptance fixture groups. Promoted
+the specification and model together with matching links and validation
+ownership. Runtime and bridge implementation belong to subsequent slices.
 
 ## Implementation Notes
 
@@ -92,17 +94,36 @@ migrations with immutable checksums.
 
 ## Files of Interest
 
+- [Specification](../../../spec/iris.md): settled behavior and section 17 contracts.
+- [Model](../../../spec/iris-model.md): field/storage/query map and physical schema.
+- `scripts/check-contracts.py`: relative links, delivery identities and real SQLite constraint checks.
 - This report: canonical family audit and Slice 1 evidence.
 - [Plan](../../../plan/iris-v1.md): exact slice identities and acceptance owners.
 - [Tracker](../../../tracker/iris-v1.md): task state and commit references.
 
 ## Validation
 
-T1.1 source inspection completed at the two immutable revisions above. Final
-documentation and cross-reference checks will be recorded before PR readiness.
+T1.1 source inspection completed at the two immutable revisions above. The
+T1.2 bounded live probe passed all six assertions. T1.3 created the fourteen
+documented tables with foreign keys enabled; that is schema validation, not
+acceptance of an implemented Go store.
+
+Required final exact-HEAD checks, recorded through Looper before readiness:
+
+- `make docs-check`
+- `python3 scripts/check-contracts.py`
+- `git diff --check`
+
+The focused contract checker covers relative links, ten slice identities,
+44 task identities, schema creation, eleven constraint violations, transaction
+rollback and retention of identity/allocation/code/call-request tombstones
+through a real SQLite cascade. No Iris runtime, systemd, two-party exchange,
+or full delivery-set gate has run in this preparatory slice.
 
 ## Risks and Follow-ups
 
-Acceptance fixtures, promotion, and final document/schema validation remain
-in T1.4. Existing interactive-session attachment is unverified; separate owned
-workers are the verified mode.
+Existing interactive-session attachment is unverified; separate owned workers
+are the verified mode. The actual Go-driver/storage, two-party exchange,
+zero-idle-call, recovery, and isolated systemd checks have explicit owners in
+the approved plan. The documented schema checker uses Python's SQLite for
+contract checks; T2.2 must verify the selected Go driver and migrations.
