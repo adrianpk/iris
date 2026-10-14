@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 2, reviewing; service and storage.
+Active slice: Slice 3, in-progress; projects and handshake.
 
-Active tasks: none; Slice 2 PR `#2` awaits controller integration after final exact-HEAD validation.
+Active tasks: T3.1 through T3.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 1 of 10 slices delivered; 8 of 44 tasks completed.
+Progress: 2 of 10 slices delivered; 8 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -49,8 +49,8 @@ Slice 1 was integrated through PR `#1` at
 | Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
 | --- | --- | --- | --- | --- | --- | --- |
 | Slice 1 | audit and contracts | delivered | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | `#1` | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
-| Slice 2 | service and storage | reviewing | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
-| Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
+| Slice 2 | service and storage | delivered | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
+| Slice 3 | projects and handshake | in-progress | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | pending | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
@@ -59,8 +59,8 @@ Slice 1 was integrated through PR `#1` at
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
-Slice 1 has its canonical report. Remaining report paths identify future
-artifacts; create each during its owning slice.
+The first two slices have delivered reports. Remaining report paths identify
+future artifacts; create each during its owning slice.
 
 ## Slice 1 Tasks
 
@@ -165,7 +165,7 @@ artifacts; create each during its owning slice.
 | Plan/tracker documentation and structural checks | passed | `make docs-check`; agreement of ten slice identities and 44 task/commit identities; all ten acceptance groups; relative links, branch syntax, whitespace, and context privacy checks. |
 | Live Codex probe for Slice 1 | passed | Six bounded assertions verified separate owned workers, cwd, real results, resumption, denied approval, and interruption. This is feasibility evidence, not the future Iris exchange. |
 | Contract gate for Slice 1 | passed | Looper validated the final PR head `06041b58bf5dd44c42202c5463ab202da511308a` with `make docs-check`, `python3 scripts/check-contracts.py`, then `git diff --check`: fourteen tables, eleven rejected invalid cases, rollback and allocation retention. The canonical PR merged at that same head. |
-| Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for `8ceba294286f8011a4d882079770a6f51249cbcc`; the PR-reference follow-up regenerates them for the final clean HEAD. |
+| Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for final PR head `a42a4152540a53de5811802d0d67b7602663fc58`; the canonical PR merged at that same head. |
 | User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
 
 ## Completion gates
@@ -174,7 +174,7 @@ artifacts; create each during its owning slice.
 - [x] Approved artifacts committed and canonical startup prerequisites verified.
 - [x] Canonical `dev` base published for slice PR delivery.
 - [x] Slice 1 delivered; detailed spec/model settled and SQLite dependency confirmed.
-- [ ] Slice 2 delivered; real CLI/daemon/SQLite integration passes.
+- [x] Slice 2 delivered; real CLI/daemon/SQLite integration passes.
 - [ ] Slice 3 delivered; identity, numbering, invitation, join, and close pass.
 - [ ] Slice 4 delivered; ordered durable messaging, wait, cursor, ack, and isolation pass.
 - [ ] Slice 5 delivered; real Codex exchange and zero-idle-call evidence recorded.

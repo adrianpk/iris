@@ -1,6 +1,6 @@
 # Slice 2: Service and Storage
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -84,7 +84,7 @@ recovery, persisted state, second-owner refusal and schema-checksum failure.
 Integration-tag lint passed with the configured checks unchanged.
 
 The following checks passed through Looper for
-`8ceba294286f8011a4d882079770a6f51249cbcc`:
+`a42a4152540a53de5811802d0d67b7602663fc58`:
 
 - `make check` — passed.
 - `make lint` — passed.
@@ -95,8 +95,8 @@ The following checks passed through Looper for
 - `python3 scripts/check-contracts.py` — passed.
 - `git diff --check` — passed.
 
-The PR-reference follow-up regenerates the same ordered commands for its
-final clean HEAD before handoff; controller evidence owns that exact identity.
+The canonical PR merged through Rebase + Fast-forward at that validated head.
+The controller recorded integration and its Acta merge event.
 
 This is the slice gate. The full delivery-set gate is controller-owned after
 all configured slices are integrated.
