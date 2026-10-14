@@ -164,7 +164,7 @@ func (flow *liveExchange) awaitExchange(t *testing.T) {
 		flow.assertWorkersRunning(t)
 
 		alpha, beta := flow.status(t, 0), flow.status(t, 1)
-		if liveExchangeCompleted(alpha,beta,flow.conversation.InitialMessage.ID) {
+		if liveExchangeCompleted(alpha, beta, flow.conversation.InitialMessage.ID) {
 			return
 		}
 
@@ -296,6 +296,6 @@ func waitLiveInterval(t *testing.T, duration time.Duration) {
 	}
 }
 
-func liveExchangeCompleted(alpha,beta bridgeBinding,initialID string) bool {
- return alpha.State=="acked" && alpha.TurnsUsed==1 && beta.State=="acked" && beta.TurnsUsed==1 && beta.InputMessageID!=nil && *beta.InputMessageID!=initialID
+func liveExchangeCompleted(alpha, beta bridgeBinding, initialID string) bool {
+	return alpha.State == "acked" && alpha.TurnsUsed == 1 && beta.State == "acked" && beta.TurnsUsed == 1 && beta.InputMessageID != nil && *beta.InputMessageID != initialID
 }
