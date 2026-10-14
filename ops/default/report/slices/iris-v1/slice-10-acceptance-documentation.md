@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `test/slice-10-iris-acceptance-documentation`
-PR: pending
+PR: [#10](https://forge.adrianpk.com/adrianpk/iris/pulls/10)
 
 ## Purpose
 
@@ -57,32 +57,50 @@ the versioned success envelope.
 
 ## Validation
 
-Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessUserGuide$' -count=1`.
-The published commands create/join, inspect, export both formats, close and
-preview without deletion. IDs, ordinal, terminal state and ordered messages
-are checked through the actual binary. An initial guide assertion expected an
-envelope for plain `--format json`; the real execution caught it and the
-published jq assertion now checks the semantic transcript object.
+All ten ordered PR checks passed through the controller on clean implementation
+candidate `47a9163f33c751ae40c01c82134d329276c951fb` before canonical PR #10 opened:
 
-Passed: `python3 scripts/check-contracts.py`: forty documents, matching ten-slice
-and 44-task identities, eighteen typed operation names, storage schema 4,
-fourteen SQL tables and eleven rejected invalid cases.
+- `make check`
+- `make lint`
+- `make docs-check`
+- `python3 scripts/check-contracts.py`
+- `python3 scripts/check-acceptance.py`
+- `python3 scripts/test-install.py`
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessUserGuide$|^TestProcessLifecycleRecovery$|^TestReferenceConfiguration$' -count=1`
+- `make test-bridge`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge,systemd ./...`
+- `git diff --check`
 
-Passed: `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^TestReferenceConfiguration$|^TestMigrationMatchesContract$' -count=1`.
-The full published configuration equals actual defaults; the embedded migrations
-match the accepted SQL model. Combined-tag lint also passed.
+The real bridge fixture passed in 64.153 seconds with Codex CLI 0.161.0. It
+recovered a completed result without another invocation, resumed both original
+threads/consumers for pending work, and completed another conversation with two
+new owned thread/consumer IDs and a new random project-local proof. Prior history
+remained retained; the new transcript contained only its own exchange. Turn
+counts remained one per fresh worker with no idle echo. The one-second sample
+observed 0 CPU ticks and 36,472 KiB RSS for the daemon and two Iris workers,
+excluding provider subprocesses. These are bounded observations.
 
-Passed: `python3 scripts/check-acceptance.py`: ten consecutive groups and 28
-existing cases assigned to their actual gates and selectors.
+Changed guide/lifecycle/reference race checks passed in 3.709 seconds. Published
+invitation/history shell blocks execute unchanged against the actual binary.
+Expired history exports before pruning; deleted lookup fails; fresh export has
+only its new context. The guide's initial plain-JSON envelope assertion was
+corrected after executable validation exposed the format mismatch.
 
-Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessUserGuide$|^TestProcessLifecycleRecovery$|^TestReferenceConfiguration$' -count=1`.
-Real guide commands, expired history exports, confirmed prune, deleted lookup,
-fresh transcript context and documented configuration passed. The changed live
-bridge fixture requires ordered clean-head execution before PR readiness.
+Contract checks passed for 42 documents, ten matching slices, 44 tasks, eighteen
+typed operation names, storage schema 4, fourteen SQL tables and eleven rejected
+invalid cases. The acceptance checker mapped ten groups to 28 existing cases and
+their actual gate selectors. Three isolated installation cases and combined-tag
+lint passed. Published configuration equals executable defaults and embedded
+migrations match the accepted SQL model.
 
-Passed: `make -n verify` confirms that strict lint, ordinary tests, contract
-checks, acceptance-map checks and installation tests are all wired. This is
-command-wiring evidence, not execution of the complete delivery gate.
+`make -n verify` confirmed the wiring of strict lint, ordinary tests, contract
+checks, acceptance mapping and installation checks. The integrated full gate has
+not run in this phase. T10.4's integrated candidate and full-gate recording remain
+pending the controller's gate and closure phases.
+
+The PR-reference follow-up requires regeneration on its exact clean head with
+this same ordered command list. The canonical PR head and controller ledger
+identify final PR validation evidence.
 
 ## Risks and Follow-ups
 
