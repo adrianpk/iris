@@ -1,84 +1,188 @@
 # Iris
 
-Iris connects local project directories through short invitations. A private
-per-user service stores ordered conversations in SQLite. Independent consumers
-acknowledge completed work; explicit Codex workers can exchange a question,
-project-local answer and acknowledgment without a human relaying messages.
-Closed and expired conversations remain available for inspection and export.
+Iris is a local conversation service for agents working on independent projects.
 
-Follow the [User Guide](docs/tutorials/user-guide/index.md) from installation
-through a two-project exchange. See the [documentation index](docs/index.md)
-for reference, maintenance and recovery procedures.
+Working across projects often requires a question, a correction, or knowledge
+from another agent. Iris carries that exchange between project contexts so the
+user does not have to copy technical messages from one Codex session to another.
+Only a short invitation code needs to move between projects to start the
+conversation.
 
-## Install and start
+Iris is part of the same family as [Acta](https://forge.adrianpk.com/adrianpk/acta)
+and [Lore](https://forge.adrianpk.com/adrianpk/lore). Acta records activity, Lore
+preserves reusable knowledge, and Iris connects agents through conversations.
+Each product operates independently.
 
-Use Linux, Go 1.26.3, Make, Python 3 and a working systemd user manager. The
-pure-Go SQLite driver does not require a C compiler. From this source checkout:
+## What Iris makes possible
+
+Iris helps humans and agents:
+
+- connect local projects through short, three-word invitations;
+- exchange ordered messages with durable delivery and explicit processing
+  acknowledgments;
+- activate Codex workers for a specific conversation without checking an inbox
+  on every ordinary agent turn;
+- keep project identities stable across agent sessions, alias changes, and
+  explicit directory moves;
+- start independent conversations without inheriting earlier messages;
+- inspect, search, export, and deliberately prune retained history.
+
+A per-user service owns the private Unix socket and SQLite database. Projects
+need no mandatory local configuration or Git repository. Conversation IDs and
+per-pair numbering distinguish separate exchanges between the same projects.
+
+## Start a conversation
+
+From the intended root of project `alpha`, register the project and invite
+`beta` with a topic and initial request:
 
 ```sh
-make install
-export PATH="$HOME/.local/bin:$PATH"
-systemctl --user daemon-reload
-systemctl --user enable --now iris.socket
-iris stats --all-projects --json
-```
-
-Installation writes files only; activation is explicit. The first request starts
-the daemon. Foreground `iris serve` is also supported against its own endpoint.
-Do not start it alongside an active systemd socket at the same runtime root.
-See [Linux operation](docs/how-to/linux-operation.md) for overrides and upgrades.
-
-## Connect projects
-
-In project alpha, run `iris projects register`, then:
-
-```sh
+iris projects register
 iris call --to beta --topic "Accepted format" --message "Which format is accepted?"
 ```
 
-In project beta, run `iris join CODE` with the printed invitation. It returns the
-initial request immediately. `iris send`, `receive` and `ack` provide durable
-manual processing. Start an optional foreground worker with
-`iris bridge start CONVERSATION_ID` in each joined project. Workers require an
-installed, authenticated Codex CLI; the verified adapter uses version 0.161.0.
-
-Workers create separate owned project/conversation threads. They do not attach
-to existing interactive sessions. Tool permission and approval policy remain
-explicit. Idle waits do not invoke a model. See the [bridge reference](docs/reference/bridge.md).
-
-## Keep and inspect history
-
-`iris conversations`, `search` and `show` inspect scoped retained history.
-`iris dump --format text|json ID` exports a complete transcript deliberately;
-old history never enters a new worker context automatically. `iris close ID`
-retains history. Bare `iris prune` previews only; deletion requires exact
-confirmation after retention eligibility. Take a
-[consistent backup](docs/how-to/backup-recovery.md) before maintenance.
-
-The service uses a user-owned 0600 Unix socket inside a 0700 runtime directory.
-It is a same-user trust boundary. Standard XDG data/config/runtime roots apply;
-clients and daemon must match them. Only the daemon normally writes the database.
-
-[Planned capabilities](docs/explanation/planned-capabilities.md) records future
-forum/group channels, broadcasts, claims and other adapters.
-
-## Development
-
-The Makefile selects Go 1.26.3. Checks also require Git, Python 3, jq and
-golangci-lint v2 built for the selected Go version.
+Iris returns the invitation code, conversation ID, and readable label. From the
+root of project `beta`, join using the printed code. Replace this illustrative
+code with the actual invitation:
 
 ```sh
-make check
-make lint
-make docs-check
-make test-integration
-make test-systemd
+iris join amber-otter-river
 ```
 
-Ordinary and process checks use owned temporary roots and do not invoke a model.
-Systemd acceptance requires the real user manager and uniquely named runtime
-units. `make test-bridge` requires the real authenticated provider and fails
-when it is unavailable. See the [application package](internal/iris/README.md)
-and [accepted specification](ops/default/spec/iris.md). Follow
-[source verification](docs/how-to/verify-source.md) for the complete immutable-candidate
+Joining validates the expected recipient and returns the topic and initial
+request immediately. The user carries the code; Iris carries the technical
+context. A new call creates an independent conversation unless an explicit
+idempotency key identifies a retry.
+
+## Exchange messages
+
+After joining, either participant can send and receive messages using the
+conversation ID:
+
+```sh
+iris send --message "The accepted format is JSON." CONVERSATION_ID
+iris receive --consumer manual --wait 30 --json CONVERSATION_ID
+```
+
+Messages commit to storage before send succeeds. Reading does not acknowledge
+processing. After processing a received message, acknowledge its ID:
+
+```sh
+iris ack --consumer manual --message-id DELIVERED_MESSAGE_ID CONVERSATION_ID
+```
+
+Each consumer keeps independent progress. Work not acknowledged remains
+available for redelivery, so consumers must handle retries safely. Send also
+accepts file or stdin input. The [delivery reference](docs/reference/delivery.md)
+describes ordering, idempotency, cursors, and message limits.
+
+## Retrieve and export
+
+Find and inspect conversations from a participating project:
+
+```sh
+iris conversations
+iris search --text "Accepted format" --json
+iris show CONVERSATION_ID
+```
+
+Export one complete conversation as readable text or structured JSON:
+
+```sh
+iris dump CONVERSATION_ID > transcript.txt
+iris dump --format json CONVERSATION_ID > transcript.json
+```
+
+Historical labels remain readable after project aliases or paths change.
+Human output is the default; commands support `--json` for machine use.
+Explicit `--all-projects` selection enables local administration outside a
+project. See the [history reference](docs/reference/history.md) for selection,
+pagination, exports, and statistics.
+
+## Review and prune
+
+Close an exchange explicitly:
+
+```sh
+iris close CONVERSATION_ID
+```
+
+Closure or expiration ends active exchange while retaining history under the
+configured policy. Reads and waits do not keep a conversation alive
+indefinitely. Old transcripts return to an agent only when deliberately
+provided; a new conversation never imports them automatically.
+
+Bare `iris prune` previews eligible history. Irreversible deletion requires
+confirmation of the exact preview:
+
+```sh
+iris prune --dry-run --json
+iris prune --confirm PREVIEW_TOKEN --json
+```
+
+The [lifecycle reference](docs/reference/lifecycle.md) covers expiration,
+retention, and confirmation. [Backup and recovery](docs/how-to/backup-recovery.md)
+explains how to preserve a consistent SQLite snapshot before maintenance.
+
+## Agent integration
+
+Start one foreground worker in each joined project when automatic exchange is
+needed:
+
+```sh
+iris bridge start CONVERSATION_ID
+```
+
+The bridge requires an installed, authenticated Codex CLI. It creates separate
+owned threads for the selected project and conversation; it does not attach to
+an existing interactive session. Idle waiting invokes no model. The daemon
+stores and delivers messages; the bridge owns model execution.
+
+Workers use a read-only sandbox by default. Write access and interactive
+approvals must be selected explicitly. A peer message cannot change those
+permissions. `iris bridge status` and `iris bridge stop` expose and control the
+conversation's worker. See the [bridge reference](docs/reference/bridge.md) for
+activation, limits, approvals, and recovery.
+
+The [Iris User Guide](docs/tutorials/user-guide/index.md) covers installation
+and the first two-project workflow. [Linux operation](docs/how-to/linux-operation.md)
+covers user-systemd activation, upgrades, and removal. Activation is explicit;
+installing Iris does not start workers or change global agent policy.
+
+## Boundaries
+
+Iris transports conversations. It does not schedule project work, manage
+tickets, preserve reusable knowledge, or grant authority to another agent.
+Received messages remain untrusted content subject to the receiving worker's
+own permissions and rules.
+
+The local service trusts processes belonging to the same operating-system
+user. Its private socket and directories do not provide strong isolation
+between processes sharing that user account. Invitation codes identify
+conversations and are not strong security credentials.
+
+Iris does not automatically archive unrelated Codex sessions or inject closed
+conversations into new workers. Durable delivery and recovery do not guarantee
+exactly-once execution of external side effects; uncertain work remains visible
+for deliberate resolution.
+
+## Planned capabilities
+
+Future scope includes public or group channels, human and system broadcasts
+with acknowledgments, claims for public requests, additional agent adapters,
+and remote or multiuser operation. These capabilities are documented in
+[Planned capabilities](docs/explanation/planned-capabilities.md).
+
+## Development status
+
+Iris implements its local Go CLI and per-user service with SQLite migrations,
+project identities, invitation handshakes, ordered messaging, explicit Codex
+workers, lifecycle management, retained-history export, and confirmed pruning.
+Linux operation includes user-systemd socket activation and explicit source
+installation.
+
+The [documentation index](docs/index.md) provides tutorials, task procedures,
+reference contracts, and explanations. The [application package](internal/iris/README.md)
+describes implementation boundaries and validation commands. Follow
+[source verification](docs/how-to/verify-source.md) for the complete candidate
 gate and its evidence boundary.
