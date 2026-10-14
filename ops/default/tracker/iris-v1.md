@@ -16,7 +16,7 @@ Base branch: `dev`
 
 Active slice: Slice 2, reviewing; service and storage.
 
-Active tasks: none; Slice 2 awaits required PR validation and controller integration.
+Active tasks: none; Slice 2 PR `#2` awaits controller integration after final exact-HEAD validation.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
@@ -49,7 +49,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
 | --- | --- | --- | --- | --- | --- | --- |
 | Slice 1 | audit and contracts | delivered | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | `#1` | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
-| Slice 2 | service and storage | reviewing | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
+| Slice 2 | service and storage | reviewing | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
@@ -78,7 +78,7 @@ artifacts; create each during its owning slice.
 | T2.1 | completed | `feat(core): establish Iris executable and configuration` | `d37086957a3f` | Focused path/config/help/error/cancellation tests passed; Go 1.26.3 lint passed. |
 | T2.2 | completed | `feat(store): establish Iris SQLite persistence` | `8f9d64b71c9c` | Driver tests passed for fresh/reopened data, atomic upgrade rollback/retry, checksum/newer-schema rejection, foreign keys/pragmas/private files, concurrent transactions, and online backup; race checks passed. |
 | T2.3 | completed | `feat(service): expose Iris local protocol` | `231c20bc091c` | Real Unix round trips passed for version/JSON/size/scope errors, private socket and owner lock, stale recovery, retryable connection limits, cancellation/disconnect/shutdown, and CLI JSON/errors; focused race checks passed. |
-| T2.4 | completed | `test(service): verify Iris daemon and database recovery` | pending | `make test-integration` passed: actual binary, two isolated project roots, persisted state across graceful/crash restart, exclusive ownership, invalid-checksum startup rejection, and owned cleanup; integration-tag lint passed. |
+| T2.4 | completed | `test(service): verify Iris daemon and database recovery` | `8ceba294286f` | `make test-integration` passed: actual binary, two isolated project roots, persisted state across graceful/crash restart, exclusive ownership, invalid-checksum startup rejection, and owned cleanup; integration-tag lint passed. |
 
 ## Slice 3 Tasks
 
@@ -165,7 +165,7 @@ artifacts; create each during its owning slice.
 | Plan/tracker documentation and structural checks | passed | `make docs-check`; agreement of ten slice identities and 44 task/commit identities; all ten acceptance groups; relative links, branch syntax, whitespace, and context privacy checks. |
 | Live Codex probe for Slice 1 | passed | Six bounded assertions verified separate owned workers, cwd, real results, resumption, denied approval, and interruption. This is feasibility evidence, not the future Iris exchange. |
 | Contract gate for Slice 1 | passed | Looper validated the final PR head `06041b58bf5dd44c42202c5463ab202da511308a` with `make docs-check`, `python3 scripts/check-contracts.py`, then `git diff --check`: fourteen tables, eleven rejected invalid cases, rollback and allocation retention. The canonical PR merged at that same head. |
-| Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. Final PR checks are recorded by the controller for its exact clean HEAD. |
+| Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for `8ceba294286f8011a4d882079770a6f51249cbcc`; the PR-reference follow-up regenerates them for the final clean HEAD. |
 | User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
 
 ## Completion gates

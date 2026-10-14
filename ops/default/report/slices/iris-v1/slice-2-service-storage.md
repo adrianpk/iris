@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-2-iris-service-storage`
-PR: pending
+PR: `#2`
 
 ## Purpose
 
@@ -83,16 +83,20 @@ backup, socket/protocol/ownership/cancellation cases, and focused race tests.
 recovery, persisted state, second-owner refusal and schema-checksum failure.
 Integration-tag lint passed with the configured checks unchanged.
 
-Required final exact-HEAD checks are recorded through Looper before readiness:
+The following checks passed through Looper for
+`8ceba294286f8011a4d882079770a6f51249cbcc`:
 
-- `make check`
-- `make lint`
-- `make docs-check`
-- `make test-integration`
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris`
-- `GOTOOLCHAIN=go1.26.3 golangci-lint run --build-tags=integration ./...`
-- `python3 scripts/check-contracts.py`
-- `git diff --check`
+- `make check` — passed.
+- `make lint` — passed.
+- `make docs-check` — passed.
+- `make test-integration` — passed.
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris` — passed.
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --build-tags=integration ./...` — passed.
+- `python3 scripts/check-contracts.py` — passed.
+- `git diff --check` — passed.
+
+The PR-reference follow-up regenerates the same ordered commands for its
+final clean HEAD before handoff; controller evidence owns that exact identity.
 
 This is the slice gate. The full delivery-set gate is controller-owned after
 all configured slices are integrated.
