@@ -49,6 +49,8 @@ func (s *store) dispatch(ctx context.Context, req request) response {
 	}
 
 	switch req.Operation {
+	case "receive", "ack":
+		return s.handleDelivery(ctx, req)
 	case "send":
 		return s.handleSend(ctx, req)
 	case "call", "join", "close":

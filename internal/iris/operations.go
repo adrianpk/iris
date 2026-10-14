@@ -130,3 +130,25 @@ func (s *store) handleSend(ctx context.Context, req request) response {
 
 	return operationResponse(ctx, value, err)
 }
+
+func (s *store) handleDelivery(ctx context.Context, req request) response {
+	if req.Operation == "receive" {
+		var params receiveParams
+		if err := decodeJSON(req.Params, &params); err != nil {
+			return failure("invalid_request", "invalid receive parameters", false)
+		}
+
+		value, err := s.receive(ctx, params)
+
+		return operationResponse(ctx, value, err)
+	}
+
+	var params ackParams
+	if err := decodeJSON(req.Params, &params); err != nil {
+		return failure("invalid_request", "invalid ack parameters", false)
+	}
+
+	value, err := s.acknowledge(ctx, params)
+
+	return operationResponse(ctx, value, err)
+}
