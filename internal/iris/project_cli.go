@@ -2,7 +2,6 @@ package iris
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -15,12 +14,7 @@ func (app *App) request(ctx context.Context, operation string, params any) (resp
 		return response{}, problem("invalid_request", "invalid Iris configuration")
 	}
 
-	data, err := json.Marshal(params)
-	if err != nil {
-		return response{}, err
-	}
-
-	return callService(ctx, cfg, request{Protocol: protocolVersion, Operation: operation, Params: data})
+	return requestService(ctx, cfg, operation, params)
 }
 
 func (app *App) selectReference(selector string) (projectSelection, error) {

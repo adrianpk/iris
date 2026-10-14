@@ -44,6 +44,10 @@ func (s *store) handle(ctx context.Context, req request) response {
 }
 
 func (s *store) dispatch(ctx context.Context, req request) response {
+	if strings.HasPrefix(req.Operation, "bridge.") {
+		return s.handleBridge(ctx, req)
+	}
+
 	if strings.HasPrefix(req.Operation, "projects.") {
 		return s.handleProjects(ctx, req)
 	}

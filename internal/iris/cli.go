@@ -13,6 +13,7 @@ const rootHelp = `Usage: iris <command> [options]
 
 Commands:
   serve                       Run the private local service
+  bridge                      Start, inspect or stop a conversation worker
   send <id>                   Persist an ordered message or status
   receive <id>                Read or wait for addressed messages
   ack <id>                    Acknowledge processing for one consumer

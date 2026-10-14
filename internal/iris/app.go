@@ -48,6 +48,10 @@ func (app *App) run(ctx context.Context, args []string) error {
 		return err
 	}
 
+	if args[0] == "bridge" {
+		return app.runBridge(ctx, args[1:])
+	}
+
 	return app.runCommand(ctx, args)
 }
 

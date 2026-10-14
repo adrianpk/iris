@@ -95,7 +95,7 @@ func TestServiceRoundTrip(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !stats.Ready || stats.StorageSchemaVersion != 1 || stats.Projects != 0 {
+	if !stats.Ready || stats.StorageSchemaVersion != storageSchemaVersion || stats.Projects != 0 {
 		t.Fatalf("statistics=%+v", stats)
 	}
 }

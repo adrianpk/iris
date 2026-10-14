@@ -10,15 +10,15 @@ import (
 func TestMigrationUpgradeRollback(t *testing.T) {
 	s, _ := testStore(t)
 
-	migrations := append(initialMigrations(), migration{2, "CREATE TABLE upgrade_probe (id INTEGER PRIMARY KEY)"})
+	migrations := append(initialMigrations(), migration{3, "CREATE TABLE upgrade_probe (id INTEGER PRIMARY KEY)"})
 
-	broken := append(append([]migration(nil), migrations...), migration{3, "CREATE TABLE temporary_probe (id INTEGER); INVALID SQL"})
+	broken := append(append([]migration(nil), migrations...), migration{4, "CREATE TABLE temporary_probe (id INTEGER); INVALID SQL"})
 	if err := s.migrate(t.Context(), broken); err == nil {
 		t.Fatal("invalid upgrade passed")
 	}
 
 	var version int
-	if err := s.db.QueryRowContext(t.Context(), "SELECT max(version) FROM schema_migrations").Scan(&version); err != nil || version != 1 {
+	if err := s.db.QueryRowContext(t.Context(), "SELECT max(version) FROM schema_migrations").Scan(&version); err != nil || version != storageSchemaVersion {
 		t.Fatalf("version=%d error=%v", version, err)
 	}
 
@@ -35,7 +35,7 @@ func TestMigrationUpgradeRollback(t *testing.T) {
 		t.Fatal("repeat migration:", err)
 	}
 
-	if err := s.db.QueryRowContext(t.Context(), "SELECT max(version) FROM schema_migrations").Scan(&version); err != nil || version != 2 {
+	if err := s.db.QueryRowContext(t.Context(), "SELECT max(version) FROM schema_migrations").Scan(&version); err != nil || version != storageSchemaVersion+1 {
 		t.Fatalf("version=%d error=%v", version, err)
 	}
 }
@@ -48,7 +48,7 @@ func TestMigrationCompatibility(t *testing.T) {
 		migrations []migration
 	}{
 		{"checksum", "UPDATE schema_migrations SET checksum='changed'", initialMigrations()},
-		{"future", "INSERT INTO schema_migrations VALUES (2,'future',0)", initialMigrations()},
+		{"future", "INSERT INTO schema_migrations VALUES (3,'future',0)", initialMigrations()},
 		{"gap", "", []migration{{version: 2, sql: initialSchema}}},
 	}
 	for _, tc := range cases {
@@ -80,7 +80,7 @@ func TestMigrationMatchesContract(t *testing.T) {
 	}
 
 	schema, _, found = strings.Cut(schema, "```")
-	if !found || schema != initialSchema {
+	if !found || schema != initialSchema+bridgeProgressSchema {
 		t.Fatal("embedded migration differs from accepted schema")
 	}
 }

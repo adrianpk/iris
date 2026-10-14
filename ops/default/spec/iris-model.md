@@ -209,6 +209,10 @@ CREATE INDEX invitation_expiry ON invitations(expires_at, conversation_id);
 CREATE INDEX recipient_inbox ON message_recipients(project_id, conversation_id, message_id);
 CREATE INDEX bridge_recovery ON bridge_bindings(state, lease_until);
 CREATE INDEX preview_expiry ON prune_previews(expires_at);
+ALTER TABLE bridge_bindings ADD COLUMN turns_used INTEGER NOT NULL DEFAULT 0 CHECK (turns_used >= 0);
+ALTER TABLE bridge_bindings ADD COLUMN started_at INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE bridge_bindings ADD COLUMN pending_request_id TEXT;
+ALTER TABLE bridge_bindings ADD COLUMN pending_method TEXT;
 ```
 
 ## Transaction and query ownership
@@ -259,3 +263,7 @@ SQLite database. This is contract validation, not Go-driver or runtime
 acceptance. T2.2 owns the actual driver, migration failure/reopen and storage
 checks; T3 owns identity and joins; T4 owns delivery/ack concurrency; T6/T7 own
 retention and complete exports; T8 owns worker recovery and uncertainty.
+
+Bridge progress migration 2 preserves the applied initial schema and adds durable
+turn count, activation time and connected approval identity. `limits_json` stores
+the explicitly selected model, sandbox, approval mode and execution bounds.

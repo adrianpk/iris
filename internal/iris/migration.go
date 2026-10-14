@@ -15,6 +15,11 @@ var errSchemaMismatch = errors.New("schema mismatch")
 //go:embed migrations/001_initial.sql
 var initialSchema string
 
+//go:embed migrations/002_bridge_progress.sql
+var bridgeProgressSchema string
+
+const storageSchemaVersion = 2
+
 type migration struct {
 	version int
 	sql     string
@@ -26,7 +31,7 @@ type migrationRecord struct {
 }
 
 func initialMigrations() []migration {
-	return []migration{{version: 1, sql: initialSchema}}
+	return []migration{{version: 1, sql: initialSchema}, {version: 2, sql: bridgeProgressSchema}}
 }
 
 func migrationChecksum(text string) string {

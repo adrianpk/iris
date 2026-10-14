@@ -74,7 +74,7 @@ func assertProcessCount(t *testing.T, fixture processFixture, want int64) {
 		t.Fatal(err)
 	}
 
-	if !result.Ready || result.StorageSchemaVersion != 1 || result.Projects != want {
+	if !result.Ready || result.StorageSchemaVersion != storageSchemaVersion || result.Projects != want {
 		t.Fatalf("statistics=%+v", result)
 	}
 }

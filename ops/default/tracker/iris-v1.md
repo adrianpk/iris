@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 5, in-progress; Codex exchange.
 
-Active tasks: T5.1 through T5.5.
+Active tasks: T5.2 through T5.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 4 of 10 slices delivered; 18 of 44 tasks completed.
+Progress: 4 of 10 slices delivered; 19 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -104,7 +104,7 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T5.1 | pending | `feat(bridge): manage conversation-scoped Iris workers` | pending | Explicit start/status/stop, exclusive binding, correct cwd, and owned-process cleanup. |
+| T5.1 | completed | `feat(bridge): manage conversation-scoped Iris workers` | this commit | Lease, concurrent ownership, stop/restart, public status isolation and migration race checks passed; foreground worker cleanup releases only its own binding. |
 | T5.2 | pending | `feat(bridge): run Iris exchanges through Codex` | pending | Verified adapter, sequential turns, final-result handling, and conversation-only context. |
 | T5.3 | pending | `feat(bridge): preserve Codex authority boundaries` | pending | Sandbox/approval decisions preserved; no silent auto-approval or false success ack. |
 | T5.4 | pending | `feat(bridge): complete bounded Iris exchanges` | pending | Response-before-ack, idempotent completion, time/turn bounds, and no acknowledgment echo loop. |
