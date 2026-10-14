@@ -1,6 +1,6 @@
 # Slice 6: Lifecycle and Retention
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -87,7 +87,7 @@ Actual-binary fixtures also prove readiness reconciliation before stateful
 requests, retained metadata/messages while the daemon is stopped, policy reload,
 prune/restart, and fresh conversation context. Clock rollback cannot reopen
 terminal state or cause ordinal reuse. All seven ordered PR checks passed through Looper on clean candidate
-`a11af121a744bbae19385574bfdf536f8343fd5a`:
+`f802b42de7d94253aa3545ae382f9d6c74dc312b`:
 
 - `make check`
 - `make lint`
@@ -97,9 +97,9 @@ terminal state or cause ordinal reuse. All seven ordered PR checks passed throug
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
 - `git diff --check`
 
-The complete integration-tag race check passed in 34.831 seconds. Final evidence
-must be regenerated after this PR-reference follow-up and match the canonical
-PR head and this exact ordered command list.
+The complete integration-tag race check passed in 42.316 seconds. The controller
+integrated canonical PR #6 into `dev` at that same validated head using Rebase
++ Fast-forward. Its exact ordered evidence is retained in the controller ledger.
 
 ## Risks and Follow-ups
 

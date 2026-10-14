@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 6, reviewing; lifecycle and retention.
+Active slice: Slice 7, in-progress; history and export.
 
-Active tasks: none; canonical PR `#6` awaits controller integration.
+Active tasks: T7.1 through T7.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 5 of 10 slices delivered; 27 of 44 tasks completed.
+Progress: 6 of 10 slices delivered; 31 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -53,13 +53,13 @@ Slice 1 was integrated through PR `#1` at
 | Slice 3 | projects and handshake | delivered | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | `#3` | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | delivered | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | `#4` | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | delivered | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | `#5` | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
-| Slice 6 | lifecycle and retention | reviewing | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | `#6` | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
-| Slice 7 | history and export | pending | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
+| Slice 6 | lifecycle and retention | delivered | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | `#6` | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
+| Slice 7 | history and export | in-progress | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | pending | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
-The first five slices have delivered reports. Remaining report paths identify
+The first six slices have delivered reports. Remaining report paths identify
 future artifacts; create each during its owning slice.
 
 ## Slice 1 Tasks
@@ -169,7 +169,7 @@ future artifacts; create each during its owning slice.
 | Project handshake gate | passed | All eight ordered PR checks passed through Looper on final PR head `87e469db951c618513335c3d98644a58a81c54fc`. Canonical PR `#3` merged into `dev` at that same head; its report and tracker entries are closed. |
 | Durable delivery gate | passed | Eight ordered controller checks passed on final PR head `2d3a02e33e450563ee7758df44ea765cb3f8200e`, including all integration-tag race checks and actual-process recovery. Canonical PR `#4` merged at the same head; report/tracker entries are closed. |
 | Codex exchange gate | passed | Eight ordered Looper checks passed on final PR head `c0bb1ff0c0221a3c3d12e962529fbf42f333c563`, including the real two-project exchange, durable acknowledgment, idle counts and integration race checks. Canonical PR `#5` merged at that head; report/tracker entries are closed. |
-| Lifecycle and retention gate | passed | All seven ordered Looper checks passed on clean candidate `a11af121a744bbae19385574bfdf536f8343fd5a`, including actual daemon/CLI expiration, retention/pruning, fresh context and all integration-tag race checks. PR-reference follow-up requires exact-HEAD regeneration. |
+| Lifecycle and retention gate | passed | All seven ordered Looper checks passed on final PR head `f802b42de7d94253aa3545ae382f9d6c74dc312b`, including actual daemon/CLI expiration, retention/pruning, fresh context and all integration-tag race checks. Canonical PR `#6` merged at that head; report/tracker entries are closed. |
 | User-systemd acceptance | not run | This target remains assigned to its owning slice. |
 
 ## Completion gates
@@ -182,7 +182,7 @@ future artifacts; create each during its owning slice.
 - [x] Slice 3 delivered; identity, numbering, invitation, join, and close pass.
 - [x] Slice 4 delivered; ordered durable messaging, wait, cursor, ack, and isolation pass.
 - [x] Slice 5 delivered; real Codex exchange and zero-idle-call evidence recorded.
-- [ ] Slice 6 delivered; service expiration, retention, and confirmed pruning pass.
+- [x] Slice 6 delivered; service expiration, retention, and confirmed pruning pass.
 - [ ] Slice 7 delivered; bounded discovery, complete exports, and stats pass.
 - [ ] Slice 8 delivered; bridge crash recovery, uncertainty, budgets, and security pass.
 - [ ] Slice 9 delivered; installation and real isolated user-systemd operation pass.
