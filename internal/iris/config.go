@@ -20,9 +20,10 @@ type config struct {
 }
 
 type settings struct {
-	SchemaVersion         int `json:"schema_version"`
-	MaxConnections        int `json:"max_connections"`
-	RequestTimeoutSeconds int `json:"request_timeout_seconds"`
+	Lifecycle             lifecyclePolicy `json:"lifecycle"`
+	SchemaVersion         int             `json:"schema_version"`
+	MaxConnections        int             `json:"max_connections"`
+	RequestTimeoutSeconds int             `json:"request_timeout_seconds"`
 }
 
 type environment struct {
@@ -88,7 +89,7 @@ func configFromEnvironment(env environment) (config, error) {
 		dataRoot: dataRoot, database: filepath.Join(dataRoot, "iris.db"),
 		runtimeRoot: runtimeRoot, socket: filepath.Join(runtimeRoot, "iris.sock"),
 		configPath: filepath.Join(env.configHome, "iris", "config.json"),
-		settings:   settings{SchemaVersion: 1, MaxConnections: 128, RequestTimeoutSeconds: 10},
+		settings:   defaultSettings(),
 	}, nil
 }
 
@@ -133,5 +134,5 @@ func (s settings) validate() error {
 		return fmt.Errorf("request_timeout_seconds must be between 1 and 60")
 	}
 
-	return nil
+	return s.Lifecycle.validate()
 }

@@ -3,12 +3,10 @@ package iris
 import "time"
 
 const (
-	defaultInvitationLifetime = 2 * time.Hour
-	defaultInactivityLifetime = 24 * time.Hour
-	maxActiveConversations    = 64
-	maxMessageBodyBytes       = 256 << 10
-	maxConversationMessages   = 10000
-	maxConversationBodyBytes  = 64 << 20
+	maxActiveConversations   = 64
+	maxMessageBodyBytes      = 256 << 10
+	maxConversationMessages  = 10000
+	maxConversationBodyBytes = 64 << 20
 )
 
 type participant struct {

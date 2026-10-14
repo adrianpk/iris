@@ -115,7 +115,7 @@ func (s *store) claimBridge(ctx context.Context, params bridgeClaimParams) (brid
 }
 
 func (s *store) claimBridgeTx(ctx context.Context, tx *sql.Tx, params bridgeClaimParams, selected project) (bridgeOutcome, error) {
-	state, err := loadLifecycle(ctx, tx, params.ConversationID)
+	state, err := s.loadLifecycle(ctx, tx, params.ConversationID)
 	if err != nil {
 		return bridgeOutcome{}, err
 	}

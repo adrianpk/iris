@@ -17,10 +17,10 @@ type lifecycleState struct {
 	bodyBytes    int64
 }
 
-func loadLifecycle(ctx context.Context, tx *sql.Tx, id string) (lifecycleState, error) {
+func (s *store) loadLifecycle(ctx context.Context, tx *sql.Tx, id string) (lifecycleState, error) {
 	value := lifecycleState{id: id}
 
-	err := tx.QueryRowContext(ctx, `SELECT c.state,c.created_at,c.last_activity_at,c.next_sequence,c.message_count,c.body_bytes,coalesce(i.expires_at,c.created_at+?) FROM conversations c LEFT JOIN invitations i ON i.conversation_id=c.id WHERE c.id=?`, defaultInvitationLifetime.Milliseconds(), id).
+	err := tx.QueryRowContext(ctx, `SELECT c.state,c.created_at,c.last_activity_at,c.next_sequence,c.message_count,c.body_bytes,coalesce(i.expires_at,c.created_at+?) FROM conversations c LEFT JOIN invitations i ON i.conversation_id=c.id WHERE c.id=?`, s.policy.invitationLifetime().Milliseconds(), id).
 		Scan(&value.state, &value.created, &value.activity, &value.nextSequence, &value.messageCount, &value.bodyBytes, &value.expires)
 	if errors.Is(err, sql.ErrNoRows) {
 		return value, problem("not_found", "conversation is not retained")
@@ -32,7 +32,7 @@ func loadLifecycle(ctx context.Context, tx *sql.Tx, id string) (lifecycleState, 
 func (s *store) expireIfDue(ctx context.Context, tx *sql.Tx, value *lifecycleState) error {
 	due := value.state == "pending" && s.now().UnixMilli() >= value.expires
 
-	due = due || (value.state == "active" && s.now().UnixMilli() >= value.activity+defaultInactivityLifetime.Milliseconds())
+	due = due || (value.state == "active" && s.now().UnixMilli() >= value.activity+s.policy.inactivityLifetime().Milliseconds())
 	if !due {
 		return nil
 	}

@@ -42,7 +42,7 @@ func (s *store) closeConversationTx(ctx context.Context, tx *sql.Tx, plan select
 		return handshakeOutcome{}, err
 	}
 
-	state, err := loadLifecycle(ctx, tx, id)
+	state, err := s.loadLifecycle(ctx, tx, id)
 	if err != nil {
 		return handshakeOutcome{}, err
 	}

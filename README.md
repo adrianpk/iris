@@ -192,13 +192,22 @@ defaulting to `~/.config/iris/config.json`:
 {
   "schema_version": 1,
   "max_connections": 128,
-  "request_timeout_seconds": 10
+  "request_timeout_seconds": 10,
+  "lifecycle": {
+    "invitation_seconds": 7200,
+    "inactivity_seconds": 86400,
+    "retention_seconds": 2592000
+  }
 }
 ```
 
 Connection limits range from 1 through 128; ordinary request timeouts range
 from 1 through 60 seconds. Omitted settings retain their defaults. Unknown
 fields, unsupported versions, malformed JSON, and relative XDG paths fail.
+Lifecycle durations are 1 through 315360000 seconds. Partial policy objects
+retain defaults for omitted fields. Restart the daemon to apply configuration.
+Invitation deadlines are fixed when issued; changed invitation policy applies
+to new calls. Inactivity and retention use the daemon's current policy.
 
 Human output is the default. `--json` emits one versioned success envelope to
 stdout. Failures leave stdout empty and write a readable error or JSON error

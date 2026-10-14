@@ -616,7 +616,12 @@ to `~/.config/iris/config.json`; and
 runtime directory. Directories are 0700; database, WAL, backup, and temporary
 export files are private to the user, with umask 0077. A version-1 JSON config
 contains only documented policy fields; reject unknown fields and invalid
-ranges. CLI `--help` works without a socket or XDG runtime setup.
+ranges. `lifecycle` contains `invitation_seconds`, `inactivity_seconds` and
+`retention_seconds`, each from 1 through 315360000. Omitted fields retain
+defaults. The daemon loads policy at startup. Existing invitation deadlines
+remain fixed; changed invitation policy applies to new calls. Inactivity and
+retention use current daemon policy. CLI `--help` works without a socket or
+XDG runtime setup.
 
 ### 17.2 Identity, aliases, and invitation resolution
 

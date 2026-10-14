@@ -43,7 +43,7 @@ func (s *store) acknowledge(ctx context.Context, params ackParams) (consumerPosi
 			return err
 		}
 
-		state, err := loadLifecycle(ctx, tx, params.ConversationID)
+		state, err := s.loadLifecycle(ctx, tx, params.ConversationID)
 		if err != nil {
 			return err
 		}

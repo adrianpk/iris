@@ -7,7 +7,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"time"
 )
 
 var errSchemaMismatch = errors.New("schema mismatch")
@@ -54,7 +53,7 @@ func (s *store) migrate(ctx context.Context, migrations []migration) error {
 				return fmt.Errorf("apply migration %d: %w", next.version, err)
 			}
 
-			if _, err := tx.ExecContext(ctx, "INSERT INTO schema_migrations VALUES (?,?,?)", next.version, migrationChecksum(next.sql), time.Now().UTC().UnixMilli()); err != nil {
+			if _, err := tx.ExecContext(ctx, "INSERT INTO schema_migrations VALUES (?,?,?)", next.version, migrationChecksum(next.sql), s.now().UTC().UnixMilli()); err != nil {
 				return fmt.Errorf("record migration %d: %w", next.version, err)
 			}
 		}

@@ -66,7 +66,7 @@ func (s *store) joinTx(ctx context.Context, tx *sql.Tx, plan selectionPlan, code
 		return handshakeOutcome{}, err
 	}
 
-	state, err := loadLifecycle(ctx, tx, invite.conversationID)
+	state, err := s.loadLifecycle(ctx, tx, invite.conversationID)
 	if err != nil {
 		return handshakeOutcome{}, err
 	}

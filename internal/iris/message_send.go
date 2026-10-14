@@ -89,7 +89,7 @@ func (s *store) send(ctx context.Context, params sendParams) (message, error) {
 }
 
 func (s *store) sendTx(ctx context.Context, tx *sql.Tx, params sendParams, sender project) (sendOutcome, error) {
-	state, err := loadLifecycle(ctx, tx, params.ConversationID)
+	state, err := s.loadLifecycle(ctx, tx, params.ConversationID)
 	if err != nil {
 		return sendOutcome{}, err
 	}

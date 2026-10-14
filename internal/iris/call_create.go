@@ -30,14 +30,13 @@ func (s *store) callRecipient(ctx context.Context, tx *sql.Tx, selector string) 
 }
 
 func (s *store) checkConversationSlots(ctx context.Context, tx *sql.Tx, ids ...string) error {
-	cutoff := s.now().Add(-defaultInactivityLifetime).UnixMilli()
-	pending := s.now().Add(-defaultInvitationLifetime).UnixMilli()
+	cutoff := s.now().Add(-s.policy.inactivityLifetime()).UnixMilli()
 
 	for _, id := range ids {
 		var count int
 
-		err := tx.QueryRowContext(ctx, `SELECT count(*) FROM conversations c JOIN participants p ON p.conversation_id=c.id
-            WHERE p.project_id=? AND ((c.state='pending' AND c.created_at>?) OR (c.state='active' AND c.last_activity_at>?))`, id, pending, cutoff).Scan(&count)
+		err := tx.QueryRowContext(ctx, `SELECT count(*) FROM conversations c JOIN participants p ON p.conversation_id=c.id JOIN invitations i ON i.conversation_id=c.id
+            WHERE p.project_id=? AND ((c.state='pending' AND i.expires_at>?) OR (c.state='active' AND c.last_activity_at>?))`, id, s.now().UnixMilli(), cutoff).Scan(&count)
 		if err != nil {
 			return err
 		}
@@ -104,7 +103,7 @@ func (s *store) createInvitation(ctx context.Context, tx *sql.Tx, value callCrea
 			continue
 		}
 
-		expires := value.now + defaultInvitationLifetime.Milliseconds()
+		expires := value.now + s.policy.invitationLifetime().Milliseconds()
 		_, err = tx.ExecContext(ctx, "INSERT INTO invitations VALUES (?,?,?,?,?,NULL)", value.id, code, digest, value.recipient.ID, expires)
 
 		return err

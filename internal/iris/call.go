@@ -83,7 +83,7 @@ func (s *store) call(ctx context.Context, params callParams) (conversation, erro
 			return err
 		}
 
-		state, err := loadLifecycle(ctx, tx, id)
+		state, err := s.loadLifecycle(ctx, tx, id)
 		if err != nil {
 			return err
 		}

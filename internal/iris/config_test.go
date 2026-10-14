@@ -53,7 +53,7 @@ func TestConfigurationFile(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := config{configPath: filepath.Join(t.TempDir(), "config.json"), settings: settings{1, 128, 10}}
+			cfg := config{configPath: filepath.Join(t.TempDir(), "config.json"), settings: defaultSettings()}
 			if err := os.WriteFile(cfg.configPath, []byte(tc.data), 0o600); err != nil {
 				t.Fatal(err)
 			}

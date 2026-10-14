@@ -47,7 +47,7 @@ func (s *store) receiveTx(ctx context.Context, tx *sql.Tx, params receiveParams,
 		return receiveOutcome{}, err
 	}
 
-	state, err := loadLifecycle(ctx, tx, params.ConversationID)
+	state, err := s.loadLifecycle(ctx, tx, params.ConversationID)
 	if err != nil {
 		return receiveOutcome{}, err
 	}

@@ -17,6 +17,7 @@ type store struct {
 	now      func() time.Time
 	makeCode func() (string, error)
 	events   waitHub
+	policy   lifecyclePolicy
 }
 
 func openStore(ctx context.Context, cfg config) (*store, error) {
@@ -41,7 +42,7 @@ func openStore(ctx context.Context, cfg config) (*store, error) {
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
 
-	s := &store{db: db, now: time.Now, makeCode: newInvitationCode}
+	s := &store{db: db, now: time.Now, makeCode: newInvitationCode, policy: cfg.settings.Lifecycle}
 
 	if err := s.migrate(ctx, initialMigrations()); err != nil {
 		return nil, errors.Join(err, db.Close())

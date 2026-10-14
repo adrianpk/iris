@@ -7,7 +7,7 @@ import (
 )
 
 func (s *store) bridgeActive(ctx context.Context, tx *sql.Tx, value bridgeRecord) (bool, error) {
-	state, err := loadLifecycle(ctx, tx, value.ConversationID)
+	state, err := s.loadLifecycle(ctx, tx, value.ConversationID)
 	if err != nil {
 		return false, err
 	}

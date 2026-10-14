@@ -242,7 +242,9 @@ with proof that its tools did nothing.
 
 Pending invitation expiry is creation plus two hours; active inactivity expiry
 is last significant activity plus 24 hours; retained history is terminal time
-plus 30 days. These are configurable defaults. Calls, successful joins, and
+plus 30 days. These are configurable defaults. Invitation `expires_at` snapshots the policy
+at creation; current daemon policy governs inactivity and retention. Calls,
+successful joins, and
 new participant message/status inserts change significant activity; reads,
 acks, waits, duplicates, export and worker heartbeat do not. Export does not
 extend retention. Evaluate expiry using the injected daemon clock.
