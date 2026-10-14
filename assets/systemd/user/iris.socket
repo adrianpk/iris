@@ -1,0 +1,14 @@
+[Unit]
+Description=Iris private local conversation socket
+
+[Socket]
+ListenStream=%t/iris/iris.sock
+Accept=no
+FileDescriptorName=iris
+SocketMode=0600
+DirectoryMode=0700
+RemoveOnStop=yes
+Service=iris.service
+
+[Install]
+WantedBy=sockets.target

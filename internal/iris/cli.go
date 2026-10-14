@@ -70,7 +70,7 @@ func serveConfigured(ctx context.Context, cfg config) (resultErr error) {
 		return storageFailure(err)
 	}
 
-	listener, err := listenUnix(cfg.socket)
+	listener, err := listenService(cfg.socket)
 	if err != nil {
 		return unavailable(err)
 	}

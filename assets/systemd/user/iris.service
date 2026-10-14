@@ -1,0 +1,20 @@
+[Unit]
+Description=Iris local conversation service
+Requires=iris.socket
+After=iris.socket
+
+[Service]
+Type=exec
+ExecStart="%h/.local/bin/iris" serve
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+KillMode=control-group
+TimeoutStopSec=10s
+Restart=on-failure
+RestartSec=1s

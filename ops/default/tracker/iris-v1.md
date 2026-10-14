@@ -142,7 +142,7 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T9.1 | pending | `feat(systemd): activate the Iris user service` | pending | Units, private socket, inherited descriptors, and appropriate daemon/bridge restrictions. |
+| T9.1 | in-progress | `feat(systemd): activate the Iris user service` | pending | Units, private socket, inherited descriptors, and appropriate daemon/bridge restrictions. |
 | T9.2 | pending | `build(linux): install and remove Iris user components` | pending | Temporary install/upgrade/removal; explicit activation and data preservation. |
 | T9.3 | pending | `docs(operation): document Iris backup and recovery` | pending | SQLite-consistent backup/restore/reopen and documented diagnostics/shutdown. |
 | T9.4 | pending | `test(systemd): verify Iris user service operation` | pending | `make test-systemd` added; real isolated user-manager activation/restart/permissions/shutdown. |
