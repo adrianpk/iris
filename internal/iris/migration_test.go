@@ -10,9 +10,9 @@ import (
 func TestMigrationUpgradeRollback(t *testing.T) {
 	s, _ := testStore(t)
 
-	migrations := append(initialMigrations(), migration{3, "CREATE TABLE upgrade_probe (id INTEGER PRIMARY KEY)"})
+	migrations := append(initialMigrations(), migration{storageSchemaVersion + 1, "CREATE TABLE upgrade_probe (id INTEGER PRIMARY KEY)"})
 
-	broken := append(append([]migration(nil), migrations...), migration{4, "CREATE TABLE temporary_probe (id INTEGER); INVALID SQL"})
+	broken := append(append([]migration(nil), migrations...), migration{storageSchemaVersion + 2, "CREATE TABLE temporary_probe (id INTEGER); INVALID SQL"})
 	if err := s.migrate(t.Context(), broken); err == nil {
 		t.Fatal("invalid upgrade passed")
 	}
@@ -48,7 +48,7 @@ func TestMigrationCompatibility(t *testing.T) {
 		migrations []migration
 	}{
 		{"checksum", "UPDATE schema_migrations SET checksum='changed'", initialMigrations()},
-		{"future", "INSERT INTO schema_migrations VALUES (3,'future',0)", initialMigrations()},
+		{"future", "INSERT INTO schema_migrations VALUES (99,'future',0)", initialMigrations()},
 		{"gap", "", []migration{{version: 2, sql: initialSchema}}},
 	}
 	for _, tc := range cases {
@@ -80,7 +80,7 @@ func TestMigrationMatchesContract(t *testing.T) {
 	}
 
 	schema, _, found = strings.Cut(schema, "```")
-	if !found || schema != initialSchema+bridgeProgressSchema {
+	if !found || schema != initialSchema+bridgeProgressSchema+bridgeResultSchema {
 		t.Fatal("embedded migration differs from accepted schema")
 	}
 }

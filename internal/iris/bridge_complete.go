@@ -73,6 +73,10 @@ func (s *store) completeBridgeTx(ctx context.Context, tx *sql.Tx, value bridgeRe
 		return nil, checkBridgeRetry(ctx, tx, value, params)
 	}
 
+	if err := validateRecordedCompletion(value, params); err != nil {
+		return nil, err
+	}
+
 	input, err := nextBridgeInput(ctx, tx, value, params.InputMessageID)
 	if err != nil {
 		return nil, err
@@ -96,7 +100,7 @@ func (s *store) completeBridgeTx(ctx context.Context, tx *sql.Tx, value bridgeRe
 		return nil, err
 	}
 
-	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',input_message_id=?,result_message_id=?,turn_id=NULLIF(?,''),usage_tokens=COALESCE(?,usage_tokens),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.TurnID, params.UsageTokens, s.now().UnixMilli(), value.ID)
+	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',pending_result_json=NULL,input_message_id=?,result_message_id=?,turn_id=NULLIF(?,''),usage_tokens=COALESCE(?,usage_tokens),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.TurnID, params.UsageTokens, s.now().UnixMilli(), value.ID)
 
 	return nil, err
 }
@@ -106,7 +110,7 @@ func validateBridgeCompletion(value bridgeRecord, params bridgeCompletion, input
 		return validateInformationalCompletion(value, params)
 	}
 
-	if value.State != "invoking" || value.TurnID == nil || *value.TurnID != params.TurnID || value.InputMessageID == nil || *value.InputMessageID != input.ID {
+	if (value.State != "invoking" && value.State != "result_recorded") || value.TurnID == nil || *value.TurnID != params.TurnID || value.InputMessageID == nil || *value.InputMessageID != input.ID {
 		return problem("worker_uncertain", "completion does not match the owned invocation")
 	}
 
@@ -178,4 +182,12 @@ func sameBridgeTurn(value bridgeRecord, turn string) bool {
 	}
 
 	return *value.TurnID == turn
+}
+
+func validateRecordedCompletion(value bridgeRecord, params bridgeCompletion) error {
+	if value.State == "result_recorded" {
+		return matchRecordedResult(value, params)
+	}
+
+	return nil
 }

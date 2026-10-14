@@ -6,14 +6,16 @@ import (
 	"encoding/json"
 )
 
-func (s *store) checkBridgeClaim(ctx context.Context, tx *sql.Tx, existing bridgeRecord) error {
+func (s *store) checkBridgeClaim(ctx context.Context, tx *sql.Tx, existing bridgeRecord, recovering bool) error {
 	if existing.ownerToken != nil && existing.LeaseUntil != nil && s.now().Before(*existing.LeaseUntil) {
 		return &serviceError{Code: "server_busy", Message: "bridge already has a live owner", Retryable: true}
 	}
 
 	switch existing.State {
 	case "invoking", "approval_required", "uncertain":
-		return problem("worker_uncertain", "prior invocation requires explicit recovery")
+		if !recovering {
+			return problem("worker_uncertain", "prior invocation requires explicit recovery")
+		}
 	case "failed", "capacity", "interrupted":
 		return problem("worker_failed", "prior failed execution requires explicit recovery")
 	}

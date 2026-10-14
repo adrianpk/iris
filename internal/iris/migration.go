@@ -17,7 +17,10 @@ var initialSchema string
 //go:embed migrations/002_bridge_progress.sql
 var bridgeProgressSchema string
 
-const storageSchemaVersion = 2
+//go:embed migrations/003_bridge_result.sql
+var bridgeResultSchema string
+
+const storageSchemaVersion = 3
 
 type migration struct {
 	version int
@@ -30,7 +33,7 @@ type migrationRecord struct {
 }
 
 func initialMigrations() []migration {
-	return []migration{{version: 1, sql: initialSchema}, {version: 2, sql: bridgeProgressSchema}}
+	return []migration{{version: 1, sql: initialSchema}, {version: 2, sql: bridgeProgressSchema}, {version: 3, sql: bridgeResultSchema}}
 }
 
 func migrationChecksum(text string) string {

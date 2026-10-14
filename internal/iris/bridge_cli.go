@@ -30,9 +30,13 @@ func addBridgeFlags(flags *flag.FlagSet) *bridgeCLIOptions {
 
 func (app *App) runBridge(ctx context.Context, args []string) error {
 	if len(args) == 0 || args[0] == "--help" || args[0] == "-h" {
-		_, err := io.WriteString(app.stdout, "Usage: iris bridge start|status|stop [options] <conversation-id>\nStart runs a separate foreground worker; status and stop use the selected project.\n")
+		_, err := io.WriteString(app.stdout, "Usage: iris bridge start|recover|status|stop [options] <conversation-id>\nStart runs a separate foreground worker; status and stop use the selected project.\n")
 
 		return err
+	}
+
+	if args[0] == "recover" {
+		return app.runBridgeRecover(ctx, args[1:])
 	}
 
 	if args[0] == "start" {
@@ -129,4 +133,42 @@ func (app *App) printBridge(value bridgeBinding, jsonOutput bool) error {
 	_, err := fmt.Fprintf(app.stdout, "Bridge %s: %s; project %s; conversation %s; turns %d/%d\n", value.ID, value.State, value.ProjectID, value.ConversationID, value.TurnsUsed, value.Options.MaxTurns)
 
 	return err
+}
+
+func (app *App) runBridgeRecover(ctx context.Context, args []string) error {
+	flags := flag.NewFlagSet("bridge recover", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+
+	project := flags.String("project", "", "explicit project selector")
+
+	jsonOutput := flags.Bool("json", false, "emit JSON on termination")
+	if err := flags.Parse(args); err != nil {
+		return app.flagError(err, "Usage: iris bridge recover [--project <selector>] [--json] <conversation-id>\nInspect only the recorded owned turn; completed results can resume without another invocation.\n")
+	}
+
+	if flags.NArg() != 1 {
+		return &usageError{message: "bridge recover requires one conversation ID"}
+	}
+
+	selection, err := app.selectReference(*project)
+	if err != nil {
+		return err
+	}
+
+	cfg, err := app.config()
+	if err != nil {
+		return problem("invalid_request", "invalid Iris configuration")
+	}
+
+	claim, err := serviceValue[bridgeClaim](ctx, cfg, "bridge.recover", conversationParams{projectSelection: selection, ConversationID: flags.Arg(0)})
+	if err != nil {
+		return err
+	}
+
+	value, err := app.runBridgeOwner(ctx, cfg, claim)
+	if err != nil {
+		return err
+	}
+
+	return app.printBridge(value, *jsonOutput)
 }

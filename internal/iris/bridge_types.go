@@ -73,17 +73,20 @@ type bridgeBinding struct {
 
 type bridgeRecord struct {
 	bridgeBinding
-	ownerToken *string
+	ownerToken    *string
+	pendingResult *recordedBridgeResult
 }
 type bridgeClaimParams struct {
 	conversationParams
 	Options bridgeOptions `json:"options"`
+	Recover bool          `json:"recover,omitempty"`
 }
 type bridgeClaim struct {
-	SchemaVersion int           `json:"schema_version"`
-	Binding       bridgeBinding `json:"binding"`
-	OwnerToken    string        `json:"owner_token"`
-	Conversation  conversation  `json:"conversation"`
+	SchemaVersion int                   `json:"schema_version"`
+	Binding       bridgeBinding         `json:"binding"`
+	OwnerToken    string                `json:"owner_token"`
+	Conversation  conversation          `json:"conversation"`
+	PendingResult *recordedBridgeResult `json:"pending_result"`
 }
 type bridgeOwner struct {
 	BindingID  string `json:"binding_id"`

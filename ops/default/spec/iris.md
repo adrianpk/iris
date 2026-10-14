@@ -840,7 +840,10 @@ is acknowledged without a model call. A `status` message is informational
 and is also acknowledged without a model turn, preventing status echo loops.
 
 Migration 2 adds durable turn count, activation time and connected approval
-request identity while preserving migration 1.
+request identity while preserving migration 1. Migration 3 adds a versioned
+completed-result checkpoint before atomic reply/ack publication. `bridge recover`
+claims only a prior binding and inspects its recorded owned thread/turn without
+a new invocation. A saved result can publish without contacting the provider.
 
 The durable binding stores its thread/turn, input/result checkpoint, limits,
 usage, status, and error. The running process and its live handles are

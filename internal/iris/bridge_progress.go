@@ -81,6 +81,12 @@ func nextBridgeInput(ctx context.Context, tx *sql.Tx, value bridgeRecord, input 
 }
 
 func (s *store) failBridge(ctx context.Context, tx *sql.Tx, value bridgeRecord, code string) error {
+	if value.State == "result_recorded" || (value.State == "acked" && code == "worker_uncertain") {
+		_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET owner_token=NULL,lease_until=NULL WHERE id=?", value.ID)
+
+		return err
+	}
+
 	state, ok := bridgeFailureState(code)
 	if !ok {
 		return problem("invalid_request", "unsupported bridge failure code")

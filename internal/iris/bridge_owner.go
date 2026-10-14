@@ -7,12 +7,13 @@ import (
 )
 
 type bridgeWorker struct {
-	app     *App
-	config  config
-	claim   bridgeClaim
-	owner   bridgeOwner
-	binding bridgeBinding
-	client  *codexClient
+	app         *App
+	config      config
+	claim       bridgeClaim
+	owner       bridgeOwner
+	binding     bridgeBinding
+	client      *codexClient
+	threadReady bool
 }
 
 func (app *App) runBridgeOwner(ctx context.Context, cfg config, claim bridgeClaim) (bridgeBinding, error) {
@@ -27,7 +28,7 @@ func (app *App) runBridgeOwner(ctx context.Context, cfg config, claim bridgeClai
 	worker := bridgeWorker{app: app, config: cfg, claim: claim, binding: claim.Binding, owner: bridgeOwner{BindingID: claim.Binding.ID, OwnerToken: claim.OwnerToken}}
 	lease := keepBridgeLease(owned, cfg, worker.owner, cancel)
 
-	err := worker.run(owned)
+	err := worker.resume(owned)
 	if worker.client != nil {
 		err = errors.Join(err, worker.client.close())
 	}
@@ -156,4 +157,12 @@ func bridgeShouldStop(value bridgeDelivery) bool {
 	}
 
 	return value.Active || len(value.Page.Messages) == 0 || value.Page.Messages[0].Kind == "message"
+}
+
+func (worker *bridgeWorker) resume(ctx context.Context) error {
+	if err := worker.recover(ctx); err != nil {
+		return err
+	}
+
+	return worker.run(ctx)
 }

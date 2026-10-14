@@ -14,10 +14,11 @@ func readBridge(ctx context.Context, reader projectReader, where string, args ..
 		options          string
 		lease, stopped   sql.NullInt64
 		started, updated int64
+		pending          *string
 	)
 
-	err := reader.QueryRowContext(ctx, `SELECT b.id,b.conversation_id,b.project_id,p.canonical_path,b.consumer_id,b.thread_id,b.turn_id,b.input_message_id,b.result_message_id,b.state,b.limits_json,b.usage_tokens,b.owner_token,b.lease_until,b.updated_at,b.error_code,b.stop_requested_at,b.turns_used,b.started_at,b.pending_request_id,b.pending_method
- FROM bridge_bindings b JOIN projects p ON p.id=b.project_id WHERE `+where, args...).Scan(&value.ID, &value.ConversationID, &value.ProjectID, &value.ProjectPath, &value.ConsumerID, &value.ThreadID, &value.TurnID, &value.InputMessageID, &value.ResultMessageID, &value.State, &options, &value.UsageTokens, &value.ownerToken, &lease, &updated, &value.ErrorCode, &stopped, &value.TurnsUsed, &started, &value.PendingRequestID, &value.PendingMethod)
+	err := reader.QueryRowContext(ctx, `SELECT b.id,b.conversation_id,b.project_id,p.canonical_path,b.consumer_id,b.thread_id,b.turn_id,b.input_message_id,b.result_message_id,b.state,b.limits_json,b.usage_tokens,b.owner_token,b.lease_until,b.updated_at,b.error_code,b.stop_requested_at,b.turns_used,b.started_at,b.pending_request_id,b.pending_method,b.pending_result_json
+ FROM bridge_bindings b JOIN projects p ON p.id=b.project_id WHERE `+where, args...).Scan(&value.ID, &value.ConversationID, &value.ProjectID, &value.ProjectPath, &value.ConsumerID, &value.ThreadID, &value.TurnID, &value.InputMessageID, &value.ResultMessageID, &value.State, &options, &value.UsageTokens, &value.ownerToken, &lease, &updated, &value.ErrorCode, &stopped, &value.TurnsUsed, &started, &value.PendingRequestID, &value.PendingMethod, &pending)
 	if errors.Is(err, sql.ErrNoRows) {
 		return value, problem("not_found", "bridge binding does not exist")
 	}
@@ -28,6 +29,19 @@ func readBridge(ctx context.Context, reader projectReader, where string, args ..
 
 	if err := decodeJSON([]byte(options), &value.Options); err != nil {
 		return value, err
+	}
+
+	if pending != nil {
+		var result recordedBridgeResult
+		if err := decodeJSON([]byte(*pending), &result); err != nil {
+			return value, err
+		}
+
+		if result.SchemaVersion != 1 {
+			return value, errSchemaMismatch
+		}
+
+		value.pendingResult = &result
 	}
 
 	value.StartedAt, value.UpdatedAt = milliseconds(started), milliseconds(updated)
@@ -101,7 +115,7 @@ func (s *store) claimBridge(ctx context.Context, params bridgeClaimParams) (brid
 		}
 
 		if outcome.problem == nil {
-			result = bridgeClaim{SchemaVersion: 1, Binding: outcome.record.bridgeBinding, OwnerToken: *outcome.record.ownerToken}
+			result = bridgeClaim{SchemaVersion: 1, Binding: outcome.record.bridgeBinding, OwnerToken: *outcome.record.ownerToken, PendingResult: outcome.record.pendingResult}
 			result.Conversation, err = readConversation(ctx, tx, params.ConversationID)
 		}
 
@@ -141,12 +155,24 @@ func (s *store) claimBridgeTx(ctx context.Context, tx *sql.Tx, params bridgeClai
 		return bridgeOutcome{}, err
 	}
 
-	if err := s.checkBridgeClaim(ctx, tx, existing); err != nil {
+	return s.nextBridgeOwner(ctx, tx, params, selected, existing)
+}
+
+func (s *store) nextBridgeOwner(ctx context.Context, tx *sql.Tx, params bridgeClaimParams, selected project, existing bridgeRecord) (bridgeOutcome, error) {
+	if err := s.checkBridgeClaim(ctx, tx, existing, params.Recover); err != nil {
 		return bridgeOutcome{}, err
 	}
 
 	if existing.ID == "" {
+		if params.Recover {
+			return bridgeOutcome{}, problem("not_found", "no prior bridge binding to recover")
+		}
+
 		return s.insertBridge(ctx, tx, params, selected)
+	}
+
+	if params.Recover {
+		params.Options = existing.Options
 	}
 
 	return s.reclaimBridge(ctx, tx, params.Options, existing.ID)
@@ -163,7 +189,7 @@ func (s *store) reclaimBridge(ctx context.Context, tx *sql.Tx, options bridgeOpt
 		return bridgeOutcome{}, err
 	}
 
-	_, err = tx.ExecContext(ctx, `UPDATE bridge_bindings SET owner_token=?,lease_until=?,state='waiting',limits_json=?,updated_at=?,stop_requested_at=NULL,error_code=NULL,pending_request_id=NULL,pending_method=NULL WHERE id=?`, token, s.now().Add(bridgeLease).UnixMilli(), string(encoded), s.now().UnixMilli(), id)
+	_, err = tx.ExecContext(ctx, `UPDATE bridge_bindings SET owner_token=?,lease_until=?,state=CASE WHEN pending_result_json IS NOT NULL THEN 'result_recorded' WHEN state IN ('waiting','acked','stopped') THEN 'waiting' ELSE state END,limits_json=?,updated_at=?,stop_requested_at=NULL,error_code=NULL WHERE id=?`, token, s.now().Add(bridgeLease).UnixMilli(), string(encoded), s.now().UnixMilli(), id)
 	if err != nil {
 		return bridgeOutcome{}, err
 	}

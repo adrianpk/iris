@@ -23,3 +23,5 @@ All notable changes to Iris are documented here.
   their messages, and export complete text or JSON transcripts for deliberate
   reuse. Inspection leaves inbox and processing state unchanged; select all
   projects explicitly for local administration.
+- Recover a saved bridge result after restart without invoking the model again,
+  and inspect only its recorded owned turn when completion needs verification.

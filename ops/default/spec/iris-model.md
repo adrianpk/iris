@@ -213,6 +213,7 @@ ALTER TABLE bridge_bindings ADD COLUMN turns_used INTEGER NOT NULL DEFAULT 0 CHE
 ALTER TABLE bridge_bindings ADD COLUMN started_at INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE bridge_bindings ADD COLUMN pending_request_id TEXT;
 ALTER TABLE bridge_bindings ADD COLUMN pending_method TEXT;
+ALTER TABLE bridge_bindings ADD COLUMN pending_result_json TEXT CHECK (pending_result_json IS NULL OR json_valid(pending_result_json));
 ```
 
 ## Transaction and query ownership
@@ -269,3 +270,7 @@ retention and complete exports; T8 owns worker recovery and uncertainty.
 Bridge progress migration 2 preserves the applied initial schema and adds durable
 turn count, activation time and connected approval identity. `limits_json` stores
 the explicitly selected model, sandbox, approval mode and execution bounds.
+
+Bridge result migration 3 adds bounded versioned final-result JSON before
+publication. `result_recorded` can be reclaimed and completed without a model.
+Reply, acknowledgment and result-checkpoint clearance still commit together.

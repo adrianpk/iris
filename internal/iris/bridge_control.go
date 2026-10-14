@@ -62,6 +62,10 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 
 func (s *store) handleBridge(ctx context.Context, req request) response {
 	switch req.Operation {
+	case "bridge.recover":
+		return typedOperation(ctx, req, s.recoverBridgeClaim)
+	case "bridge.record":
+		return typedOperation(ctx, req, s.recordBridgeResult)
 	case "bridge.receive":
 		return typedOperation(ctx, req, s.receiveBridge)
 	case "bridge.complete":
