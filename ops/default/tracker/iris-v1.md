@@ -1,0 +1,200 @@
+# Iris v1 Implementation Tracker
+
+Status: approved
+
+Approved: maintainer, 2026-10-14; execute this delivery set with Looper.
+
+Delivery set: `iris-v1`
+
+Plan: [Iris v1 plan](../plan/iris-v1.md)
+
+Spec: [Iris specification](../spec/drafts/iris-draft.md)
+
+Model: [Iris data model](../spec/drafts/iris-draft-model.md)
+
+Base branch: `dev`
+
+Active slice: Slice 1, planned; not started.
+
+Active tasks: none
+
+Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
+Startup requires committed/published planning artifacts and successful preflight.
+
+Progress: 0 of 10 slices delivered; 0 of 44 tasks completed.
+
+## Entry conditions
+
+| Condition | State | Evidence or next action |
+| --- | --- | --- |
+| Workspace and supplied spec/model available | satisfied | Initial scaffold and draft pair are present. |
+| Exact initial commit on `main` | satisfied | `ea16e3a` has subject `Initial commit`. |
+| Development branch and commit policy | satisfied | Current branch is `dev`; subsequent commits use Conventional Commits. |
+| Canonical remote configured | satisfied | `origin` is configured; the remote was empty when inspected. |
+| Plan and tracker drafted | satisfied | This tracker and its linked plan define ten slices and 44 tasks. |
+| Plan approved for implementation | satisfied | User authorized Looper execution on 2026-10-14, including the controller's configured slice integrations into `dev`. |
+| Approved plan/tracker committed on `dev` | startup check | Verify these approved artifacts are committed before `looper init`. |
+| Published canonical `dev` base | startup check | Publish initial `main` and approved `dev`, then verify the forge base before execution. |
+| Detailed spec/model baseline | pending | T1.3 and T1.4 settle decisions and promote the pair before Slice 2. |
+| SQLite dependency selected and confirmed | pending | T1.3; no database dependency has been added. |
+| Real Codex integration feasibility | pending | Installed 0.161.0 schema was inspected; real invocation and session behavior belong to T1.2. |
+| Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
+
+These are entry conditions, not failed implementation tasks. No slice branch,
+worker, service installation, or provider-backed test has been started.
+
+## Slice status
+
+| Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
+| --- | --- | --- | --- | --- | --- | --- |
+| Slice 1 | audit and contracts | pending | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | pending | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
+| Slice 2 | service and storage | pending | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
+| Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
+| Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
+| Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
+| Slice 6 | lifecycle and retention | pending | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
+| Slice 7 | history and export | pending | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
+| Slice 8 | bridge recovery | pending | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
+| Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
+| Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
+
+Report paths identify future artifacts. Create each report during its slice;
+none is claimed to exist or to contain delivered evidence now.
+
+## Slice 1 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T1.1 | pending | `docs(architecture): record Iris family patterns` | pending | Eight-point source comparison and adopted/different decisions; documentation checks. |
+| T1.2 | pending | `docs(bridge): verify Codex integration contract` | pending | Bounded real Codex probe: cwd, turns, own-thread resume, approval, cancellation, and session limitations. |
+| T1.3 | pending | `docs(spec): finalize Iris runtime and data contracts` | pending | SQLite choice/confirmation; comparable model/store/query contracts; bounded protocol and recovery semantics. |
+| T1.4 | pending | `docs(plan): establish Iris acceptance baseline` | pending | Settled/promoted spec/model pair, updated links, acceptance ownership, and documentation checks. |
+
+## Slice 2 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T2.1 | pending | `feat(core): establish Iris executable and configuration` | pending | Config/path/help/error/shutdown tests. |
+| T2.2 | pending | `feat(store): establish Iris SQLite persistence` | pending | Fresh/upgrade migrations, rollback, foreign keys, transactions, indexes, and reopen. |
+| T2.3 | pending | `feat(service): expose Iris local protocol` | pending | Actual Unix socket, private permissions, bounds, version errors, and cancellation. |
+| T2.4 | pending | `test(service): verify Iris daemon and database recovery` | pending | `make test-integration` added; real binary/daemon restart and persisted-state checks. |
+
+## Slice 3 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T3.1 | pending | `feat(projects): register Iris project identities` | pending | Canonical/nested/symlink paths, optional override, explicit project, and no generated repository state. |
+| T3.2 | pending | `feat(projects): manage Iris aliases and project moves` | pending | Collision rejection, rename history, and explicit reassociation. |
+| T3.3 | pending | `feat(conversations): create Iris invitations` | pending | Concurrent unordered-pair ordinals, unique live codes, expected recipient, and initial persistence. |
+| T3.4 | pending | `feat(conversations): join and close Iris conversations` | pending | Correct/wrong/expired/concurrent join, first message, terminal-state rejection, and no reopen. |
+| T3.5 | pending | `test(conversations): verify Iris project handshakes` | pending | Real two-project handshake; human output and valid JSON/`jq`; no implicit acknowledgment. |
+
+## Slice 4 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T4.1 | pending | `feat(messages): persist ordered Iris messages` | pending | Stable order, idempotent retry, conflict handling, and durable send confirmation. |
+| T4.2 | pending | `feat(delivery): track Iris consumer processing` | pending | Independent cursors, explicit ack, restart, and durable result/completion. |
+| T4.3 | pending | `feat(delivery): wait for Iris messages efficiently` | pending | Wait/commit race, notification, timeout, disconnect, and terminal-state wakeup. |
+| T4.4 | pending | `feat(cli): send and receive Iris message content` | pending | Text/file/stdin and limits across CLI/socket/store; clean JSON stdout. |
+| T4.5 | pending | `test(delivery): verify Iris message recovery and isolation` | pending | Real processes, concurrency, restart/retry, and project/conversation isolation. |
+
+## Slice 5 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T5.1 | pending | `feat(bridge): manage conversation-scoped Iris workers` | pending | Explicit start/status/stop, exclusive binding, correct cwd, and owned-process cleanup. |
+| T5.2 | pending | `feat(bridge): run Iris exchanges through Codex` | pending | Verified adapter, sequential turns, final-result handling, and conversation-only context. |
+| T5.3 | pending | `feat(bridge): preserve Codex authority boundaries` | pending | Sandbox/approval decisions preserved; no silent auto-approval or false success ack. |
+| T5.4 | pending | `feat(bridge): complete bounded Iris exchanges` | pending | Response-before-ack, idempotent completion, time/turn bounds, and no acknowledgment echo loop. |
+| T5.5 | pending | `test(bridge): demonstrate autonomous Iris communication` | pending | `make test-bridge` added; real question/response/ack without human relay; zero idle model invocations. |
+
+## Slice 6 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T6.1 | pending | `feat(lifecycle): define Iris expiration policy` | pending | Controlled clock, configured defaults, significant activity, and read/wait non-renewal. |
+| T6.2 | pending | `feat(lifecycle): expire inactive Iris conversations` | pending | Autonomous expiration, restart reconciliation, inbox exclusion, bridge notification, and races. |
+| T6.3 | pending | `feat(retention): prune confirmed Iris history` | pending | Read-only preview, exact/stale confirmation, eligibility, and preserved pair ordinals. |
+| T6.4 | pending | `test(lifecycle): verify Iris retention and conversation isolation` | pending | Retained closed/expired history; prune/restart and fresh conversation ID/context. |
+
+## Slice 7 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T7.1 | pending | `feat(history): inspect Iris conversations` | pending | Project-visible listings/show; explicit user administration outside repositories. |
+| T7.2 | pending | `feat(search): find Iris conversation history` | pending | Text/project/pair/date/ordinal/ID filters; deterministic bounded results and indexes. |
+| T7.3 | pending | `feat(export): dump readable Iris transcripts` | pending | Complete ordered text/JSON metadata/messages beyond a response page, without inbox effects. |
+| T7.4 | pending | `feat(cli): summarize Iris storage and conversations` | pending | Stats agree with fixtures; JSON/`jq`, stderr separation, and documented human examples. |
+
+## Slice 8 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T8.1 | pending | `feat(bridge): recover Iris worker progress` | pending | Crashes around invocation/result/ack, durable checkpoints, and exclusive resumed ownership. |
+| T8.2 | pending | `feat(bridge): report uncertain Iris worker outcomes` | pending | Explicit failed/interrupted/capacity/uncertain states; bounded retry and no unsafe side-effect replay. |
+| T8.3 | pending | `feat(bridge): enforce Iris execution limits` | pending | Time/turn/available-usage limits, terminal cancellation, and owned-resource cleanup. |
+| T8.4 | pending | `test(security): verify Iris input and authority boundaries` | pending | Malformed/oversized input, injection/isolation/permissions, focused fuzz/race checks. |
+| T8.5 | pending | `test(bridge): verify Iris recovery and idle behavior` | pending | Real adapter restart/resumption, zero idle model calls, resource measurements, and honest recovery limitations. |
+
+## Slice 9 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T9.1 | pending | `feat(systemd): activate the Iris user service` | pending | Units, private socket, inherited descriptors, and appropriate daemon/bridge restrictions. |
+| T9.2 | pending | `build(linux): install and remove Iris user components` | pending | Temporary install/upgrade/removal; explicit activation and data preservation. |
+| T9.3 | pending | `docs(operation): document Iris backup and recovery` | pending | SQLite-consistent backup/restore/reopen and documented diagnostics/shutdown. |
+| T9.4 | pending | `test(systemd): verify Iris user service operation` | pending | `make test-systemd` added; real isolated user-manager activation/restart/permissions/shutdown. |
+
+## Slice 10 Tasks
+
+| Task | Status | Expected Commit | Commit | Validation |
+| --- | --- | --- | --- | --- |
+| T10.1 | pending | `docs(guide): explain Iris project conversations` | pending | Reproduce installation/handshake/bridge workflow using the User Guide and temporary projects. |
+| T10.2 | pending | `docs(reference): document Iris contracts and future capabilities` | pending | Runtime/schema/CLI consistency, links/package docs, and preserved forum/broadcast future scope. |
+| T10.3 | pending | `test(acceptance): verify the complete Iris v1 workflow` | pending | All ten required test groups; real processes/systemd/Codex, retention/export/prune, and fresh-context isolation. |
+| T10.4 | pending | `chore(delivery): finalize Iris v1 validation` | pending | Immutable candidate SHA, full gate, canonical reports, and concrete limits; release publication remains separate. |
+
+## Validation evidence
+
+| Evidence | State | Meaning |
+| --- | --- | --- |
+| Acta/Lore planning inspection | recorded | Source structure, config, protocol, systemd assets, test patterns, and documentation inspected at revisions recorded in the plan. T1.1 still owns the complete deliverable. |
+| Codex CLI/schema inspection | passed | CLI reports 0.161.0; default generated schema contains required thread/turn and approval contracts. No model was invoked. |
+| Plan/tracker documentation and structural checks | passed | `make docs-check`; agreement of ten slice identities and 44 task/commit identities; all ten acceptance groups; relative links, branch syntax, whitespace, and context privacy checks. |
+| Runtime unit/process/systemd/live bridge checks | not run | No application implementation exists yet. Future acceptance commands are defined in the plan, not claimed as available or passing now. |
+
+## Completion gates
+
+- [x] Delivery set explicitly approved for execution through Looper.
+- [ ] Approved artifacts committed and canonical startup prerequisites verified.
+- [ ] Canonical `dev` base published for slice PR delivery.
+- [ ] Slice 1 delivered; detailed spec/model settled and SQLite dependency confirmed.
+- [ ] Slice 2 delivered; real CLI/daemon/SQLite integration passes.
+- [ ] Slice 3 delivered; identity, numbering, invitation, join, and close pass.
+- [ ] Slice 4 delivered; ordered durable messaging, wait, cursor, ack, and isolation pass.
+- [ ] Slice 5 delivered; real Codex exchange and zero-idle-call evidence recorded.
+- [ ] Slice 6 delivered; service expiration, retention, and confirmed pruning pass.
+- [ ] Slice 7 delivered; bounded discovery, complete exports, and stats pass.
+- [ ] Slice 8 delivered; bridge crash recovery, uncertainty, budgets, and security pass.
+- [ ] Slice 9 delivered; installation and real isolated user-systemd operation pass.
+- [ ] Slice 10 delivered; User Guide, references, future capabilities, and complete acceptance pass.
+- [ ] All ten canonical reports delivered and slice PRs merged into `dev`.
+- [ ] Full gate green for the recorded immutable integrated candidate.
+- [ ] Achieved Codex session mode and concrete product limitations documented.
+
+## Update rules
+
+Set only the authorized next slice active. Before starting it, verify the prior
+merge, exact branch, recorded prerequisites, and plan/tracker agreement. Record
+task commit IDs and exact successful or failed checks as work occurs.
+
+Use pending, in-progress, reviewing, delivered, or blocked slice states as
+appropriate. A task is complete only with its actual implementation and
+required evidence; planning inspection does not complete future runtime work.
+
+Do not close Slice 5 with a fake or manually relayed exchange. Do not close the
+delivery set with missing live Codex or user-systemd acceptance. Record the
+limitation and revise the authorized plan when an external prerequisite is
+unavailable. Bind final evidence to the actual tested SHA, without implying a
+later bookkeeping commit was tested.
