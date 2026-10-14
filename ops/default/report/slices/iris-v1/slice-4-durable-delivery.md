@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-4-iris-durable-delivery`
-PR: pending
+PR: [#4](https://forge.adrianpk.com/adrianpk/iris/pulls/4)
 
 ## Purpose
 
@@ -108,7 +108,8 @@ can commit while a receiver waits. Required repository commands are unchanged.
 
 PR readiness requires regenerating this exact ordered command list on the
 clean PR head after reference commits. The controller evidence store binds
-that final SHA. These are focused slice checks, not the delivery-set full gate.
+that final SHA. The PR report link uses introduction commit
+`ea515bdcd08cb8df921f4401f20786e7b338f727`. These are focused slice checks, not the delivery-set full gate.
 
 ## Risks and Follow-ups
 

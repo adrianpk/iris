@@ -14,9 +14,9 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 4, reviewing; durable delivery.
+Active slice: Slice 4, reviewing in PR #4; durable delivery.
 
-Active tasks: none; preparing the Slice 4 PR.
+Active tasks: none; Slice 4 implementation complete, awaiting controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
@@ -51,7 +51,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 1 | audit and contracts | delivered | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | `#1` | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
 | Slice 2 | service and storage | delivered | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | delivered | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | `#3` | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
-| Slice 4 | durable delivery | reviewing | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
+| Slice 4 | durable delivery | reviewing | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | `#4` | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | pending | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
 | Slice 7 | history and export | pending | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
@@ -94,10 +94,10 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T4.1 | completed | `feat(messages): persist ordered Iris messages` | `ea515bd` | Iris concurrent send, canonical retry, participant/reply isolation and injected rollback checks passed with the race detector; lint passed. |
-| T4.2 | completed | `feat(delivery): track Iris consumer processing` | `9de12aa` | Iris independent consumer replay, scoped cursor, ordered acknowledgment, reopen, bounded page/consumer and atomic result-plus-ack race checks passed; lint passed. |
-| T4.3 | completed | `feat(delivery): wait for Iris messages efficiently` | `ea44d65` | Iris long-poll commit/subscription race, terminal wakeup, timeout, cancellation, Unix half-close/full-disconnect and waiter capacity race checks passed; lint passed. |
-| T4.4 | completed | `feat(cli): send and receive Iris message content` | `218c736` | Iris CLI text/file/stdin, UTF-8/body bounds, invalid metadata, clean JSON errors, human receive and explicit acknowledgment checks passed through real Unix IPC; lint passed. |
+| T4.1 | completed | `feat(messages): persist ordered Iris messages` | `ea515bdcd08c` | Iris concurrent send, canonical retry, participant/reply isolation and injected rollback checks passed with the race detector; lint passed. |
+| T4.2 | completed | `feat(delivery): track Iris consumer processing` | `9de12aa0d1a9` | Iris independent consumer replay, scoped cursor, ordered acknowledgment, reopen, bounded page/consumer and atomic result-plus-ack race checks passed; lint passed. |
+| T4.3 | completed | `feat(delivery): wait for Iris messages efficiently` | `ea44d65ac4b9` | Iris long-poll commit/subscription race, terminal wakeup, timeout, cancellation, Unix half-close/full-disconnect and waiter capacity race checks passed; lint passed. |
+| T4.4 | completed | `feat(cli): send and receive Iris message content` | `218c736533dd` | Iris CLI text/file/stdin, UTF-8/body bounds, invalid metadata, clean JSON errors, human receive and explicit acknowledgment checks passed through real Unix IPC; lint passed. |
 | T4.5 | completed | `test(delivery): verify Iris message recovery and isolation` | `936a275e4a84` | Iris actual clients passed concurrent sequencing, lost-confirmation retry after crash, independent consumer recovery, requested wait deadlines, terminal wakeup and project/conversation isolation; race and integration-tag lint passed. |
 
 ## Slice 5 Tasks
@@ -167,6 +167,7 @@ future artifacts; create each during its owning slice.
 | Contract gate for Slice 1 | passed | Looper validated the final PR head `06041b58bf5dd44c42202c5463ab202da511308a` with `make docs-check`, `python3 scripts/check-contracts.py`, then `git diff --check`: fourteen tables, eleven rejected invalid cases, rollback and allocation retention. The canonical PR merged at that same head. |
 | Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for final PR head `a42a4152540a53de5811802d0d67b7602663fc58`; the canonical PR merged at that same head. |
 | Project handshake gate | passed | All eight ordered PR checks passed through Looper on final PR head `87e469db951c618513335c3d98644a58a81c54fc`. Canonical PR `#3` merged into `dev` at that same head; its report and tracker entries are closed. |
+| Durable delivery gate | passed | Eight ordered controller checks passed on implementation head `936a275e4a841b39994c463a60f7511793cbd2a0`, including all integration-tag race checks and actual-process recovery. Canonical PR `#4` records the immutable report introduction; readiness requires exact-head evidence regeneration after references. |
 | User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
 
 ## Completion gates
