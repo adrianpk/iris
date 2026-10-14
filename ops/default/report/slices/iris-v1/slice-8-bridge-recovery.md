@@ -65,9 +65,21 @@ Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestBridge.*L
 Restart policy, null usage/floor enforcement, expired-budget result recovery,
 owner capacity, real blocked-stdin cancellation and owned process reaping pass.
 
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestSecurity|^TestBridgeDeclined|^TestCodexApproval' -count=1`.
+Literal injection data, bound prompts, forged generations, unrelated-project
+recovery, actual malformed/oversized IPC and private storage/socket modes pass.
+
+Passed bounded fuzz commands:
+
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^$' -fuzz '^FuzzIrisFrame$' -fuzztime=3s -parallel=2`
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^$' -fuzz '^FuzzCodexRecovery$' -fuzztime=3s -parallel=2`
+
+The request and recovery campaigns executed 30,971 and 20,918 inputs without
+failure. These bounded campaigns supplement deterministic boundary/race checks.
+
 ## Risks and Follow-ups
 
-Security and real adapter
+Real adapter
 recovery/idle measurements remain in this slice's recorded tasks.
 The installed 0.161.0 schema supports `thread/read` with `includeTurns`;
 recovery fails explicitly if bounded complete history is unavailable.

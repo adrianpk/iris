@@ -141,6 +141,7 @@ func TestBridgeBudgetBeforeModel(t *testing.T) {
 	claim, input := invokingBridge(t, f)
 	params := completionReference(claim, input)
 	usage := int64(100000)
+
 	params.UsageTokens = &usage
 	if _, err := f.store.completeBridge(t.Context(), params); err != nil {
 		t.Fatal(err)

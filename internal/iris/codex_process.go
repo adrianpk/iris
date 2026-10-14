@@ -98,9 +98,7 @@ func scanCodexFrames(ctx context.Context, output io.Reader, frames chan<- codexR
 	scanner.Buffer(make([]byte, 4096), maxResponseBytes)
 
 	for scanner.Scan() {
-		var value codexFrame
-
-		err := json.Unmarshal(scanner.Bytes(), &value)
+		value, err := parseCodexFrame(scanner.Bytes())
 		select {
 		case frames <- codexRead{frame: value, err: err}:
 		case <-ctx.Done():

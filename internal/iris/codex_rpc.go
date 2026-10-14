@@ -3,21 +3,16 @@ package iris
 import (
 	"context"
 	"encoding/json"
+	"errors"
 )
 
 type codexHandler func(context.Context, codexFrame) error
 
 func (client *codexClient) write(value any) error {
-	encoded, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	if len(encoded) > maxResponseBytes {
+	err := writeFrame(client.input, value, maxResponseBytes)
+	if errors.Is(err, errFrameLimit) {
 		return problem("limit_exceeded", "Codex request exceeds the frame limit")
 	}
-
-	_, err = client.input.Write(append(encoded, '\n'))
 
 	return err
 }

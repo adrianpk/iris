@@ -3,6 +3,7 @@ package iris
 import (
 	"context"
 	"encoding/json"
+	"unicode/utf8"
 )
 
 type codexStoredTurn struct {
@@ -93,7 +94,7 @@ func recordedCodexTurn(raw json.RawMessage, binding bridgeBinding) (codexStoredT
 			Turns []codexStoredTurn `json:"turns"`
 		} `json:"thread"`
 	}
-	if err := json.Unmarshal(raw, &value); err != nil {
+	if err := json.Unmarshal(raw, &value); err != nil || !utf8.Valid(raw) {
 		return codexStoredTurn{}, problem("worker_uncertain", "invalid stored thread response")
 	}
 
