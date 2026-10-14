@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strings"
+	"time"
 )
 
 type historyCLIOptions struct {
@@ -13,6 +15,9 @@ type historyCLIOptions struct {
 	project string
 	json    bool
 	active  bool
+	pair    string
+	since   string
+	until   string
 	all     bool
 }
 
@@ -31,11 +36,17 @@ func historyFlags(command string) (*flag.FlagSet, *historyCLIOptions) {
 	flags.IntVar(&options.params.Limit, "limit", 50, "page size, 1-100")
 	flags.StringVar(&options.params.Cursor, "cursor", "", "continue the same selection")
 
+	historySearchFlags(flags, options)
+
 	return flags, options
 }
 
 func (app *App) historyReference(options historyCLIOptions) (historyParams, error) {
 	params := options.params
+	if err := options.searchReference(&params); err != nil {
+		return params, err
+	}
+
 	if options.active && (options.all || params.State != "") {
 		return params, &usageError{message: "active, all and state cannot be combined"}
 	}
@@ -69,13 +80,11 @@ func (app *App) runHistory(ctx context.Context, command string, args []string) e
 	}
 
 	if command == "show" {
-		if flags.NArg() != 1 || options.params.ConversationID != "" {
-			return &usageError{message: "show requires one conversation ID"}
+		if err := options.showOperand(flags); err != nil {
+			return err
 		}
-
-		options.params.ConversationID = flags.Arg(0)
 	} else if flags.NArg() != 0 {
-		return &usageError{message: "conversations accepts no positional arguments"}
+		return &usageError{message: "history listing accepts no positional arguments"}
 	}
 
 	params, err := app.historyReference(*options)
@@ -106,7 +115,7 @@ func (app *App) printHistory(command string, data json.RawMessage) error {
 	}
 
 	for _, item := range value.Conversations {
-		if err := printHistoryConversation(app.stdout, item); err != nil {
+		if err := app.printHistoryMatches(item); err != nil {
 			return err
 		}
 	}
@@ -144,6 +153,72 @@ func (app *App) printHistoryShow(data json.RawMessage) error {
 
 	if value.Truncated {
 		_, err := fmt.Fprintln(app.stdout, "Transcript truncated; use iris dump for complete history.")
+
+		return err
+	}
+
+	return nil
+}
+
+func historySearchFlags(flags *flag.FlagSet, options *historyCLIOptions) {
+	flags.StringVar(&options.pair, "pair", "", "two project selectors separated by a comma")
+	flags.Int64Var(&options.params.Ordinal, "ordinal", 0, "ordinal within the selected pair")
+	flags.StringVar(&options.params.Text, "text", "", "literal case-sensitive substring, at most 512 UTF-8 bytes")
+	flags.StringVar(&options.since, "since", "", "earliest creation time, RFC3339")
+	flags.StringVar(&options.until, "until", "", "latest creation time, RFC3339")
+}
+
+func (options historyCLIOptions) searchReference(params *historyParams) error {
+	if options.pair != "" {
+		params.Pair = strings.Split(options.pair, ",")
+	}
+
+	for _, bound := range []struct {
+		text   string
+		target **time.Time
+	}{{options.since, &params.Since}, {options.until, &params.Until}} {
+		if bound.text == "" {
+			continue
+		}
+
+		value, err := time.Parse(time.RFC3339Nano, bound.text)
+		if err != nil {
+			return &usageError{message: "dates require RFC3339 timestamps"}
+		}
+
+		*bound.target = &value
+	}
+
+	return nil
+}
+
+func (options *historyCLIOptions) showOperand(flags *flag.FlagSet) error {
+	if flags.NArg() == 1 && options.params.ConversationID == "" {
+		options.params.ConversationID = flags.Arg(0)
+
+		return nil
+	}
+
+	if flags.NArg() == 0 && options.params.Ordinal > 0 && options.pair != "" {
+		return nil
+	}
+
+	return &usageError{message: "show requires one conversation ID or an explicit pair and ordinal"}
+}
+
+func (app *App) printHistoryMatches(item historyConversation) error {
+	if err := printHistoryConversation(app.stdout, item); err != nil {
+		return err
+	}
+
+	for _, match := range item.Matches {
+		if _, err := fmt.Fprintf(app.stdout, "  %s sequence=%d %q\n", match.MessageID, match.Sequence, match.Excerpt); err != nil {
+			return err
+		}
+	}
+
+	if item.MatchesTruncated {
+		_, err := fmt.Fprintln(app.stdout, "  More matching messages; use show or dump.")
 
 		return err
 	}

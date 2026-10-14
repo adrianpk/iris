@@ -9,26 +9,33 @@ import (
 
 type historyParams struct {
 	projectSelection
-	AllProjects    bool   `json:"all_projects"`
-	ConversationID string `json:"conversation_id,omitempty"`
-	State          string `json:"state,omitempty"`
-	Limit          int    `json:"limit,omitempty"`
-	Cursor         string `json:"cursor,omitempty"`
+	AllProjects    bool       `json:"all_projects"`
+	ConversationID string     `json:"conversation_id,omitempty"`
+	State          string     `json:"state,omitempty"`
+	Limit          int        `json:"limit,omitempty"`
+	Cursor         string     `json:"cursor,omitempty"`
+	Pair           []string   `json:"pair,omitempty"`
+	Ordinal        int64      `json:"ordinal,omitempty"`
+	Text           string     `json:"text,omitempty"`
+	Since          *time.Time `json:"since,omitempty"`
+	Until          *time.Time `json:"until,omitempty"`
 }
 
 type historyConversation struct {
-	SchemaVersion  int           `json:"schema_version"`
-	ID             string        `json:"conversation_id"`
-	Ordinal        int64         `json:"ordinal"`
-	Label          string        `json:"label"`
-	Topic          string        `json:"topic"`
-	State          string        `json:"state"`
-	CreatedAt      time.Time     `json:"created_at"`
-	LastActivityAt time.Time     `json:"last_activity_at"`
-	TerminalAt     *time.Time    `json:"terminal_at"`
-	Participants   []participant `json:"participants"`
-	MessageCount   int64         `json:"message_count"`
-	BodyBytes      int64         `json:"body_bytes"`
+	SchemaVersion    int            `json:"schema_version"`
+	ID               string         `json:"conversation_id"`
+	Ordinal          int64          `json:"ordinal"`
+	Label            string         `json:"label"`
+	Topic            string         `json:"topic"`
+	State            string         `json:"state"`
+	CreatedAt        time.Time      `json:"created_at"`
+	LastActivityAt   time.Time      `json:"last_activity_at"`
+	TerminalAt       *time.Time     `json:"terminal_at"`
+	Participants     []participant  `json:"participants"`
+	MessageCount     int64          `json:"message_count"`
+	BodyBytes        int64          `json:"body_bytes"`
+	Matches          []historyMatch `json:"matching_messages,omitempty"`
+	MatchesTruncated bool           `json:"matches_truncated,omitempty"`
 }
 
 type historyPage struct {
@@ -41,6 +48,7 @@ type historyPage struct {
 type historyPlan struct {
 	params    historyParams
 	selection *selectionPlan
+	pair      []string
 	projectID string
 }
 
@@ -74,13 +82,17 @@ func (s *store) planHistory(ctx context.Context, params historyParams) (historyP
 
 func (s *store) resolveHistory(ctx context.Context, tx *sql.Tx, plan historyPlan) (historyPlan, error) {
 	if plan.selection == nil {
-		return plan, nil
+		return resolveHistoryPair(ctx, tx, plan)
 	}
 
 	selected, err := s.selectProjectTx(ctx, tx, *plan.selection)
 	plan.projectID = selected.ID
 
-	return plan, err
+	if err != nil {
+		return plan, err
+	}
+
+	return resolveHistoryPair(ctx, tx, plan)
 }
 
 func readHistoryConversation(ctx context.Context, tx *sql.Tx, id string) (historyConversation, error) {
@@ -117,6 +129,10 @@ func readHistoryConversation(ctx context.Context, tx *sql.Tx, id string) (histor
 }
 
 func validateHistorySelection(params historyParams) error {
+	if err := validateHistorySearch(params); err != nil {
+		return err
+	}
+
 	if params.ConversationID != "" && !validID(params.ConversationID) {
 		return problem("invalid_request", "invalid conversation ID")
 	}

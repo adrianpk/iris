@@ -18,6 +18,9 @@ Conversation listings default to registered project participation. Explicit
 all-project scope supports administration outside a project. State filters
 include pending, active, closed and expired history. Show reads immutable
 participant labels and ordered message pages without creating consumers.
+Search combines literal case-sensitive text, project pair, inclusive creation
+dates, ordinal, ID and state. Matching message IDs, sequences and bounded
+excerpts support explicit inspection. Pair/ordinal selection is unambiguous.
 
 ## Implementation Notes
 
@@ -44,4 +47,4 @@ requests pass. Slice-level validation remains pending during implementation.
 
 ## Risks and Follow-ups
 
-Search, exports and extended statistics remain in this slice's recorded tasks.
+Exports and extended statistics remain in this slice's recorded tasks.

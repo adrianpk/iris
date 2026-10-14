@@ -17,7 +17,7 @@ type historyShow struct {
 }
 
 func (s *store) showConversation(ctx context.Context, params historyParams) (historyShow, error) {
-	if params.ConversationID == "" {
+	if params.ConversationID == "" && (len(params.Pair) != 2 || params.Ordinal <= 0) {
 		return historyShow{}, problem("invalid_request", "show requires a conversation ID")
 	}
 

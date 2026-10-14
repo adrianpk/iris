@@ -57,7 +57,7 @@ func (s *store) dispatch(ctx context.Context, req request) response {
 	}
 
 	switch req.Operation {
-	case "conversations":
+	case "conversations", "search":
 		return typedOperation(ctx, req, s.listConversations)
 	case "show":
 		return typedOperation(ctx, req, s.showConversation)

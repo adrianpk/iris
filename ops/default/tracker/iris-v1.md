@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 7, in-progress; history and export.
 
-Active tasks: T7.2 through T7.4.
+Active tasks: T7.3 and T7.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 6 of 10 slices delivered; 32 of 44 tasks completed.
+Progress: 6 of 10 slices delivered; 33 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -123,8 +123,8 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T7.1 | completed | `feat(history): inspect Iris conversations` | pending | Participant/default/all-project scope, retained message pages, scoped cursors, unchanged consumers and real Unix CLI checks passed with the race detector. |
-| T7.2 | pending | `feat(search): find Iris conversation history` | pending | Text/project/pair/date/ordinal/ID filters; deterministic bounded results and indexes. |
+| T7.1 | completed | `feat(history): inspect Iris conversations` | `f2430a906c3e` | Participant/default/all-project scope, retained message pages, scoped cursors, unchanged consumers and real Unix CLI checks passed with the race detector. |
+| T7.2 | completed | `feat(search): find Iris conversation history` | pending | Combined literal text/pair/date/ordinal/ID filters, bounded matching excerpts, immutable aliases, equal-timestamp keysets and SQLite query-plan indexes passed with race checks. |
 | T7.3 | pending | `feat(export): dump readable Iris transcripts` | pending | Complete ordered text/JSON metadata/messages beyond a response page, without inbox effects. |
 | T7.4 | pending | `feat(cli): summarize Iris storage and conversations` | pending | Stats agree with fixtures; JSON/`jq`, stderr separation, and documented human examples. |
 

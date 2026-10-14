@@ -17,8 +17,8 @@ type historyCursor struct {
 }
 
 func (plan historyPlan) query() (string, []any) {
-	clauses := []string{"1=1"}
-	args := []any{}
+	clauses, args := plan.searchClauses()
+	clauses = append(clauses, "1=1")
 
 	if plan.projectID != "" {
 		clauses = append(clauses, "EXISTS (SELECT 1 FROM participants p WHERE p.conversation_id=c.id AND p.project_id=?)")
@@ -133,6 +133,13 @@ func fillHistoryPage(ctx context.Context, tx *sql.Tx, plan historyPlan, ids []st
 		value, err := readHistoryConversation(ctx, tx, id)
 		if err != nil {
 			return err
+		}
+
+		if plan.params.Text != "" {
+			value.Matches, value.MatchesTruncated, err = readHistoryMatches(ctx, tx, id, plan.params.Text)
+			if err != nil {
+				return err
+			}
 		}
 
 		result.Conversations = append(result.Conversations, value)

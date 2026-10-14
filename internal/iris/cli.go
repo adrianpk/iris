@@ -21,6 +21,7 @@ Commands:
   join <code>                 Accept an invitation and read the initial request
   close <id>                  Close a conversation without deleting history
   conversations               List visible retained conversations
+  search                      Find history by literal text, pair and dates
   show <id>                   Inspect metadata and bounded messages
   prune                       Preview or confirm retention-eligible deletion
   projects                    Register and inspect project identities
