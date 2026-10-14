@@ -130,3 +130,12 @@ and verifies activation, upgrade/restart, crash recovery, client disconnect,
 permissions and shutdown. Missing manager access fails the target. Cleanup
 stops/removes only owned units. The daemon adopts one validated inherited Unix
 stream and never unlinks the manager's endpoint. Bridge workers run separately.
+
+
+Public [CLI](../../docs/reference/cli.md), [runtime](../../docs/reference/runtime.md),
+[storage](../../docs/reference/storage.md) and [trust](../../docs/reference/trust.md)
+references describe the current contracts. Embedded migration checksums are
+immutable; the accepted model SQL must match their concatenation. Protocol
+version 1 and storage schema version 4 are distinct. No historical transcript
+is supplied to a new binding; only the current conversation context enters a
+worker prompt. Planned adapters and group behavior have no runtime implementation.

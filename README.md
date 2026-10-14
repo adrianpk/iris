@@ -59,6 +59,9 @@ The service uses a user-owned 0600 Unix socket inside a 0700 runtime directory.
 It is a same-user trust boundary. Standard XDG data/config/runtime roots apply;
 clients and daemon must match them. Only the daemon normally writes the database.
 
+[Planned capabilities](docs/explanation/planned-capabilities.md) records future
+forum/group channels, broadcasts, claims and other adapters.
+
 ## Development
 
 The Makefile selects Go 1.26.3. Checks also require Git, Python 3, jq and

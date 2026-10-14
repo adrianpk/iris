@@ -19,6 +19,11 @@ The User Guide leads from source installation through two-project invitation,
 explicit bounded Codex workers, retained history, export and closure. README
 and quadrant navigation lead to that path and supporting operational references.
 
+CLI, runtime, storage and trust references expose current forms, defaults,
+framing, migrations, bounds and recovery. Explanation separates persistence,
+processing and explicit worker context. Planned capabilities retain forum/group,
+broadcast, claims, other adapters and remote/multiuser work as future behavior.
+
 ## Implementation Notes
 
 An actual-binary test executes the published invitation/history shell blocks
@@ -46,6 +51,14 @@ preview without deletion. IDs, ordinal, terminal state and ordered messages
 are checked through the actual binary. An initial guide assertion expected an
 envelope for plain `--format json`; the real execution caught it and the
 published jq assertion now checks the semantic transcript object.
+
+Passed: `python3 scripts/check-contracts.py`: forty documents, matching ten-slice
+and 44-task identities, eighteen typed operation names, storage schema 4,
+fourteen SQL tables and eleven rejected invalid cases.
+
+Passed: `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run '^TestReferenceConfiguration$|^TestMigrationMatchesContract$' -count=1`.
+The full published configuration equals actual defaults; the embedded migrations
+match the accepted SQL model. Combined-tag lint also passed.
 
 ## Risks and Follow-ups
 

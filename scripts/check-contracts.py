@@ -59,6 +59,23 @@ def check_documents():
     print(f'Documents: {len(names)} files, ten matching slices, 44 matching tasks')
 
 
+def check_public_contracts():
+    reference = (ROOT / 'docs/reference/cli.md').read_text()
+    documented = set(re.findall(r'`((?:projects|bridge|dump|prune)\.[a-z]+)`', reference))
+    implemented = set()
+    for source in (ROOT / 'internal/iris').glob('*.go'):
+        if source.name.endswith('_test.go'):
+            continue
+        for cases in re.findall(r'case ([^:\n]+):', source.read_text()):
+            implemented.update(re.findall(r'"((?:projects|bridge|dump|prune)\.[a-z]+)"', cases))
+    assert documented == implemented, f'Operation reference drift: {documented ^ implemented}'
+    storage = (ROOT / 'docs/reference/storage.md').read_text()
+    source = (ROOT / 'internal/iris/migration.go').read_text()
+    version = re.search(r'storageSchemaVersion\s*=\s*(\d+)', source).group(1)
+    assert f'Storage schema version is {version};' in storage, 'Storage version reference drift'
+    print(f'Public reference: {len(implemented)} typed operation names; storage schema {version}')
+
+
 def check_schema():
     model = (ROOT / 'ops/default/spec/iris-model.md').read_text()
     blocks = re.findall(r'```sql\n(.*?)```', model, re.S)
@@ -150,3 +167,4 @@ def check_schema():
 if __name__ == '__main__':
     check_documents()
     check_schema()
+    check_public_contracts()
