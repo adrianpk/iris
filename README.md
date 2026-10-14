@@ -79,4 +79,6 @@ Ordinary and process checks use owned temporary roots and do not invoke a model.
 Systemd acceptance requires the real user manager and uniquely named runtime
 units. `make test-bridge` requires the real authenticated provider and fails
 when it is unavailable. See the [application package](internal/iris/README.md)
-and [accepted specification](ops/default/spec/iris.md).
+and [accepted specification](ops/default/spec/iris.md). Follow
+[source verification](docs/how-to/verify-source.md) for the complete immutable-candidate
+gate and its evidence boundary.

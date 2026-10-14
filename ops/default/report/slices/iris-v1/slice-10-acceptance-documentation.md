@@ -1,6 +1,6 @@
 # Slice 10: Acceptance and Documentation
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -30,6 +30,11 @@ confirmed pruning, then rejects deleted lookup and exports only fresh content.
 Live Codex acceptance now creates a second conversation after recovery/resumption
 and checks two new owned threads/consumers, a new random local proof, preserved
 old history and idle counts.
+
+Verification retains strict lint and ordinary tests and adds document/public
+contracts, acceptance-map checks and source installation/removal. The exact
+candidate procedure records a clean full hash and ordered results. Full-gate
+execution and delivery closure remain pending controller integration.
 
 ## Implementation Notes
 
@@ -74,6 +79,10 @@ Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -r
 Real guide commands, expired history exports, confirmed prune, deleted lookup,
 fresh transcript context and documented configuration passed. The changed live
 bridge fixture requires ordered clean-head execution before PR readiness.
+
+Passed: `make -n verify` confirms that strict lint, ordinary tests, contract
+checks, acceptance-map checks and installation tests are all wired. This is
+command-wiring evidence, not execution of the complete delivery gate.
 
 ## Risks and Follow-ups
 

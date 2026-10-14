@@ -23,7 +23,7 @@ Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: Slice 10, in-progress; acceptance and documentation. The first nine slices are integrated.
+Active slice: Slice 10, reviewing; acceptance and documentation. The first nine slices are integrated.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.
@@ -414,6 +414,10 @@ Looper for the exact clean PR HEAD. The contract checker validates relative
 links, ten slice identities, 44 task identities, the accepted spec/model
 pair, and meaningful SQLite constraint/rollback/prune invariants. It is not
 a substitute for implementation tests with the selected Go driver.
+
+The controller owns the final integrated-candidate freeze and full gate. Slice 10
+prepares the automation, report and focused PR evidence; T10.4 gate recording
+and delivery-set closure finish only after that exact gate passes.
 
 ## Completion boundary
 

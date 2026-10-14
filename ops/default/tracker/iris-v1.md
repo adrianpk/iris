@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 10, in-progress; acceptance and documentation.
+Active slice: Slice 10, reviewing; acceptance and documentation.
 
-Active tasks: T10.1 through T10.4.
+Active tasks: T10.3 clean-head live validation; T10.4 controller-owned integrated gate and closure.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 9 of 10 slices delivered; 40 of 44 tasks completed.
+Progress: 9 of 10 slices delivered; 42 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -38,7 +38,7 @@ Progress: 9 of 10 slices delivered; 40 of 44 tasks completed.
 | Detailed spec/model baseline | satisfied | Accepted `spec/iris.md` and `spec/iris-model.md` settle section 17 behavior and physical storage together. |
 | SQLite dependency selected and confirmed | satisfied | T2.2 added modernc.org/sqlite v1.60.1 and verified migration, transaction, concurrency, reopen and online-backup behavior with the real driver. |
 | Real Codex integration feasibility | satisfied | T1.2 verified separate owned workers using real turns, own-thread resumption, denial, and interruption. The Iris exchange remains T5.5 acceptance. |
-| Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
+| Full/live/systemd acceptance environment | satisfied focused | Prior slices verified real Codex and user-systemd with owned fixtures. The integrated full gate remains pending. |
 
 Slice 1 was integrated through PR `#1` at
 `06041b58bf5dd44c42202c5463ab202da511308a`. The primary checkout remains on
@@ -57,7 +57,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 7 | history and export | delivered | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | `#7` | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | delivered | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | `#8` | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | delivered | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | `#9` | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
-| Slice 10 | acceptance and documentation | in-progress | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
+| Slice 10 | acceptance and documentation | reviewing | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
 The first nine slices have delivered reports. Remaining report paths identify
 future artifacts; create each during its owning slice.
@@ -153,8 +153,8 @@ future artifacts; create each during its owning slice.
 | --- | --- | --- | --- | --- |
 | T10.1 | completed | `docs(guide): explain Iris project conversations` | `790b6f6007ca` | Published invitation/history snippets execute unchanged against the real binary with race checks; source installation and bounded worker forms match owning fixtures. Live fresh-context acceptance follows in T10.3. |
 | T10.2 | completed | `docs(reference): document Iris contracts and future capabilities` | `c668448ca53c` | Contract checker passed forty documents, eighteen typed operation names, storage schema 4 and SQL constraints. Published configuration equals executable defaults; migration/model and reference tests passed. Planned capabilities and separate-worker limitations documented. |
-| T10.3 | in-progress | `test(acceptance): verify the complete Iris v1 workflow` | pending | Ten-group coverage map checks 28 actual cases and owning selectors. Changed guide/lifecycle/reference race checks passed; real fresh-conversation bridge extension awaits ordered clean-head validation. |
-| T10.4 | pending | `chore(delivery): finalize Iris v1 validation` | pending | Immutable candidate SHA, full gate, canonical reports, and concrete limits; release publication remains separate. |
+| T10.3 | in-progress | `test(acceptance): verify the complete Iris v1 workflow` | `9b9d85c479f5` | Ten-group coverage map checks 28 actual cases and owning selectors. Changed guide/lifecycle/reference race checks passed; real fresh-conversation bridge extension awaits ordered clean-head validation. |
+| T10.4 | in-progress | `chore(delivery): finalize Iris v1 validation` | pending | Exact-candidate verification automation and evidence procedure prepared; strict lint/tests retained with contract, acceptance-map and installation checks added. Integrated candidate hash/full gate and final closure remain controller-owned and pending. |
 
 ## Validation evidence
 
@@ -173,6 +173,8 @@ future artifacts; create each during its owning slice.
 | History and export gate | passed | All seven ordered controller checks passed on final PR head `cb35ff0ce59feb94db6d453626d328eeb875b7e3`, including actual binaries, complete exports, jq and integration race checks. Canonical PR `#7` merged at that head; report/tracker entries are closed. |
 | Bridge recovery gate | passed | Ten ordered controller checks passed on final PR head `de6aec26826b250356a584f413c249aacf3de52e`, including real recovery/restart, two bounded fuzz campaigns, integration race checks and combined-tag lint. Canonical PR `#8` merged at that head; report/tracker entries are closed. |
 | User-systemd acceptance | passed | All nine ordered controller checks passed on final PR head `562059bc7f3605f784d5e038a24f0425ec1675b2`, including actual isolated units, installation, process race checks and combined-tag lint. Canonical PR `#9` merged at that head; report/tracker entries are closed. |
+
+| Integrated delivery gate | pending | The controller must record the exact integrated candidate and unchanged full-gate result after PR integration. No full-gate result is claimed here. |
 
 ## Completion gates
 

@@ -7,7 +7,7 @@ GO_BUILD_CACHE := $(CURDIR)/$(DEV_ROOT)/go-build-cache
 GOLANGCI_LINT_CACHE := $(CURDIR)/$(DEV_ROOT)/golangci-lint-cache
 COVERAGE_OUT ?= /tmp/iris-coverage.out
 
-.PHONY: build install uninstall fmt test test-integration test-bridge test-systemd test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
+.PHONY: build install uninstall fmt test test-integration test-bridge test-systemd test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes contracts-check acceptance-check test-install clean-dev
 
 build:
 	@CGO_ENABLED=0 $(GO) build -trimpath -buildvcs=false -ldflags=-buildid= -o $(DEV_ROOT)/bin/iris .
@@ -55,7 +55,16 @@ check-package-readmes:
 
 check: fmt check-go-style test
 
-verify: lint-strict test
+contracts-check:
+	@python3 scripts/check-contracts.py
+
+acceptance-check:
+	@python3 scripts/check-acceptance.py
+
+test-install:
+	@python3 scripts/test-install.py
+
+verify: lint-strict test contracts-check acceptance-check test-install
 
 docs-check:
 	@files="$$(git ls-files --cached --others --exclude-standard '*.md')"; test -n "$$files"; for document in $$files; do test -s "$$document"; done

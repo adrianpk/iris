@@ -138,3 +138,9 @@ than a general performance guarantee. It never skips missing authentication or c
 manually, or substitutes a fake model. Cleanup stops only fixture-owned workers
 and service. The separate unit suite uses protocol fixtures for failures and
 approval decisions; those fixtures do not establish live acceptance.
+
+
+The live fixture also closes that exchange and creates another conversation
+while retaining the first transcript. Both new workers obtain fresh thread and
+consumer IDs, process a new project-local proof once and generate no idle echo.
+See [acceptance coverage](acceptance.md) and the [User Guide](../tutorials/user-guide/index.md).

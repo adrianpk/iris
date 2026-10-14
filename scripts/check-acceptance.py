@@ -18,6 +18,14 @@ def main():
             (ROOT / "docs/reference/acceptance.md").read_text().splitlines()
             if re.match(r"^\| \d+\. ", line)]
     assert [int(row[0].split(".")[0]) for row in rows] == list(range(1, 11)), "Ten consecutive groups required"
+    makefile = (ROOT / "Makefile").read_text()
+    prerequisites = re.search(r"^verify: (.+)$", makefile, re.M).group(1).split()
+    assert {"lint-strict", "test", "contracts-check", "acceptance-check", "test-install"} <= set(prerequisites), "Incomplete verification dependencies"
+    selectors = {}
+    for tag in ("integration", "systemd", "bridge"):
+        body = re.search(rf"^test-{tag}:\n((?:\t.*\n)+)", makefile, re.M).group(1)
+        assert f"-tags={tag}" in body, f"Missing build tag in {tag} gate"
+        selectors[tag] = re.search(r"-run '([^']+)'", body).group(1)
     mapped = set()
     for row in rows:
         names = re.findall(r"`(Test\w+)`", row[2])
@@ -29,8 +37,7 @@ def main():
                     "systemd": "make test-systemd", "bridge": "make test-bridge"}[tag]
             assert f"`{gate}`" in row[3], f"Case outside its declared gate: {name}"
             if tag != "unit":
-                prefix = {"integration": "TestProcess", "systemd": "TestSystemd", "bridge": "TestBridgeLive"}[tag]
-                assert name.startswith(prefix), f"Case outside gate selector: {name}"
+                assert re.search(selectors[tag], name), f"Case outside actual gate selector: {name}"
             mapped.add(name)
     print(f"Acceptance map: ten groups; {len(mapped)} existing cases in their declared gates; runtime results recorded separately")
 

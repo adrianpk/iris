@@ -139,3 +139,11 @@ immutable; the accepted model SQL must match their concatenation. Protocol
 version 1 and storage schema version 4 are distinct. No historical transcript
 is supplied to a new binding; only the current conversation context enters a
 worker prompt. Planned adapters and group behavior have no runtime implementation.
+
+
+`make verify` includes strict lint, ordinary tests, contract/link checks,
+acceptance-map validation and isolated source installation/removal. The complete
+delivery gate separately runs process, systemd and live bridge targets against
+one clean integrated commit. Guide process tests execute published shell blocks;
+the live fixture verifies fresh conversation threads after prior retained work.
+See [source verification](../../docs/how-to/verify-source.md).
