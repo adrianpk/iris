@@ -65,7 +65,12 @@ func (progress *codexProgress) interrupted(ctx context.Context, err error) error
 		return err
 	}
 
-	return &serviceError{Code: "worker_interrupted", Message: "owned Codex turn was interrupted before processing completed", cause: err}
+	message := "owned Codex turn was interrupted before processing completed"
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		message = "owned Codex turn was interrupted at its execution deadline"
+	}
+
+	return &serviceError{Code: "worker_interrupted", Message: message, cause: err}
 }
 
 func (progress *codexProgress) matchesInterruption(frame codexFrame, event codexEvent) bool {

@@ -76,6 +76,7 @@ type bridgeRecord struct {
 	bridgeBinding
 	ownerToken    *string
 	pendingResult *recordedBridgeResult
+	usageFloor    int64
 }
 type bridgeClaimParams struct {
 	conversationParams

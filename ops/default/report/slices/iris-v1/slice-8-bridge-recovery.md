@@ -22,11 +22,17 @@ Failed, interrupted, capacity and uncertain outcomes remain distinct. Expired
 invoking leases report uncertainty with an operator recovery hint. Only safe
 setup retries, at most three times with 1/2/4-second delays; turn invocation
 never retries automatically. A declined authority request remains durable.
+Restart preserves policy and cumulative execution budgets. Missing telemetry
+stays null while a durable observed lower bound prevents budget bypass.
+Exhausted budgets reject pending work before provider startup. Saved results
+can still publish after lifetime exhaustion. Owned pipe writes, cancellation
+and process cleanup are bounded.
 
 ## Implementation Notes
 
 Migration 3 preserves earlier migration checksums and adds versioned result
-JSON. Claim and mutation tokens serialize through SQLite. Reply, acknowledgment
+JSON. Migration 4 separates observed usage enforcement from nullable telemetry.
+Claim and mutation tokens serialize through SQLite. Reply, acknowledgment
 and result-checkpoint clearance remain one transaction. Lost completion
 confirmation preserves the committed acknowledgment.
 
@@ -55,9 +61,13 @@ Failure-policy race checks cover startup retry bounds/cancellation,
 expired owner status, distinct blocked outcomes, definite RPC overload and
 restart after an authority decline.
 
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestBridge.*Limit|^TestBridgeUsageFloor|^TestBridgeSavedBudget|^TestBridgeOwnerCapacity|^TestCodexWrite|^TestCodexOwned|^TestMigration' -count=1`.
+Restart policy, null usage/floor enforcement, expired-budget result recovery,
+owner capacity, real blocked-stdin cancellation and owned process reaping pass.
+
 ## Risks and Follow-ups
 
-Execution limits, security and real adapter
+Security and real adapter
 recovery/idle measurements remain in this slice's recorded tasks.
 The installed 0.161.0 schema supports `thread/read` with `includeTurns`;
 recovery fails explicitly if bounded complete history is unavailable.

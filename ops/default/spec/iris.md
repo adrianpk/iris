@@ -844,6 +844,9 @@ request identity while preserving migration 1. Migration 3 adds a versioned
 completed-result checkpoint before atomic reply/ack publication. `bridge recover`
 claims only a prior binding and inspects its recorded owned thread/turn without
 a new invocation. A saved result can publish without contacting the provider.
+Migration 4 retains observed cumulative usage for budget enforcement separately
+from nullable current telemetry. Saved completed results remain publishable
+after the execution lifetime, while no new invocation can begin.
 
 The durable binding stores its thread/turn, input/result checkpoint, limits,
 usage, status, and error. The running process and its live handles are

@@ -17,12 +17,7 @@ type bridgeWorker struct {
 }
 
 func (app *App) runBridgeOwner(ctx context.Context, cfg config, claim bridgeClaim) (bridgeBinding, error) {
-	deadline := claim.Binding.StartedAt.Add(time.Duration(claim.Binding.Options.TotalSeconds) * time.Second)
-
-	lifetime, end := context.WithDeadline(ctx, deadline)
-	defer end()
-
-	owned, cancel := context.WithCancelCause(lifetime)
+	owned, cancel := context.WithCancelCause(ctx)
 	defer cancel(nil)
 
 	worker := bridgeWorker{app: app, config: cfg, claim: claim, binding: claim.Binding, owner: bridgeOwner{BindingID: claim.Binding.ID, OwnerToken: claim.OwnerToken}}
@@ -40,7 +35,7 @@ func (app *App) runBridgeOwner(ctx context.Context, cfg config, claim bridgeClai
 		err = errors.Join(err, leaseErr)
 	}
 
-	return worker.finish(ctx, err)
+	return worker.finish(ctx, normalizeBridgeRunError(err))
 }
 
 func keepBridgeLease(ctx context.Context, cfg config, owner bridgeOwner, cancel context.CancelCauseFunc) <-chan error {
@@ -160,9 +155,36 @@ func bridgeShouldStop(value bridgeDelivery) bool {
 }
 
 func (worker *bridgeWorker) resume(ctx context.Context) error {
-	if err := worker.recover(ctx); err != nil {
+	recovery, endRecovery := context.WithTimeout(ctx, 30*time.Second)
+	err := worker.recover(recovery)
+
+	endRecovery()
+
+	if err != nil {
 		return err
 	}
 
-	return worker.run(ctx)
+	deadline := worker.binding.StartedAt.Add(time.Duration(worker.binding.Options.TotalSeconds) * time.Second)
+
+	lifetime, end := context.WithDeadline(ctx, deadline)
+	defer end()
+
+	return worker.run(lifetime)
+}
+
+func normalizeBridgeRunError(err error) error {
+	var failure *serviceError
+	if errors.As(err, &failure) {
+		return err
+	}
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		return &serviceError{Code: "limit_exceeded", Message: "bridge execution lifetime exhausted", cause: err}
+	}
+
+	if errors.Is(err, context.Canceled) {
+		return &serviceError{Code: "cancelled", Message: "bridge execution cancelled", cause: err}
+	}
+
+	return err
 }

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"os"
 	"os/exec"
 	"syscall"
 	"time"
@@ -32,6 +33,7 @@ type codexRead struct {
 
 type codexClient struct {
 	input   io.WriteCloser
+	output  io.ReadCloser
 	frames  <-chan codexRead
 	done    <-chan struct{}
 	cmd     *exec.Cmd
@@ -44,7 +46,7 @@ func startCodex(ctx context.Context, path string) (*codexClient, error) {
 	processCtx, cancel := context.WithCancel(ctx)
 	cmd := exec.CommandContext(processCtx, "codex", "app-server", "--listen", "stdio://")
 	cmd.Dir, cmd.Stderr = path, io.Discard
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGTERM}
 	cmd.Cancel = func() error { return syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM) }
 	cmd.WaitDelay = 2 * time.Second
 
@@ -70,7 +72,7 @@ func startCodex(ctx context.Context, path string) (*codexClient, error) {
 
 	frames, done := readCodexFrames(processCtx, output, cmd)
 
-	return &codexClient{input: input, frames: frames, done: done, cmd: cmd, cancel: cancel}, nil
+	return &codexClient{input: input, output: output, frames: frames, done: done, cmd: cmd, cancel: cancel}, nil
 }
 
 // One queued frame applies backpressure instead of retaining an unbounded event history.
@@ -112,7 +114,11 @@ func (client *codexClient) close() error {
 		client.cancel()
 	}
 
-	inputErr := client.input.Close()
+	inputErr := closeCodexPipe(client.input)
+	if client.output != nil {
+		inputErr = errors.Join(inputErr, closeCodexPipe(client.output))
+	}
+
 	if client.cmd == nil {
 		return inputErr
 	}
@@ -131,6 +137,15 @@ func (client *codexClient) close() error {
 func signalCodex(cmd *exec.Cmd, signal syscall.Signal) error {
 	err := syscall.Kill(-cmd.Process.Pid, signal)
 	if err == syscall.ESRCH {
+		return nil
+	}
+
+	return err
+}
+
+func closeCodexPipe(pipe io.Closer) error {
+	err := pipe.Close()
+	if errors.Is(err, os.ErrClosed) {
 		return nil
 	}
 

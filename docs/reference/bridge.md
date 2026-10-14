@@ -70,12 +70,19 @@ the model, preventing acknowledgment and status echo loops.
 | `--max-tokens` | 100000 | Positive reported-token budget |
 
 Turn count, lifetime origin and available usage persist in the binding. Safe
-idle restarts keep those budgets. Missing usage is null with a limitation;
-it is never reported as zero. A reported usage limit blocks the next turn;
+idle restarts keep those budgets. Restart cannot replace the saved options;
+`bridge recover` reuses them. Missing usage is null with a limitation;
+it is never reported as zero. The last observed cumulative usage remains a
+private lower bound for budget enforcement when later telemetry is missing.
+A reported usage limit blocks the next turn before provider startup;
 a provider can exceed it during the current turn. Deadline/closure cancellation
 interrupts only the owned active turn, with a bounded confirmation and cleanup
 interval. No reply or work acknowledgment can publish after closure or loss
-of ownership. Reachable terminal system events can be acknowledged without a
+of ownership. App-server pipe writes obey cancellation/deadlines even when
+the child stops reading. Shutdown closes owned pipes, joins the reader and
+terminates only the owned process group, escalating after two seconds.
+The direct app-server also receives a parent-death signal. Unconfirmed
+external side effects remain uncertain after a crash. Reachable terminal system events can be acknowledged without a
 model; earlier unfinished ordinary work remains unacknowledged.
 
 Expired idle ownership can be reclaimed. Invoking, approval-pending, failed,

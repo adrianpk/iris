@@ -61,9 +61,9 @@ func (progress *codexProgress) approvalReply(ctx context.Context, frame codexFra
 			decision = "accept"
 		}
 
-		return progress.client.write(map[string]any{"id": frame.ID, "result": map[string]any{"decision": decision}})
+		return progress.client.writeContext(ctx, map[string]any{"id": frame.ID, "result": map[string]any{"decision": decision}})
 	case "item/permissions/requestApproval":
-		return progress.client.write(map[string]any{"id": frame.ID, "result": map[string]any{"permissions": map[string]any{}, "scope": "turn"}})
+		return progress.client.writeContext(ctx, map[string]any{"id": frame.ID, "result": map[string]any{"permissions": map[string]any{}, "scope": "turn"}})
 	}
 
 	return progress.client.rejectRequests(ctx, frame)

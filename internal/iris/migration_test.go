@@ -80,7 +80,7 @@ func TestMigrationMatchesContract(t *testing.T) {
 	}
 
 	schema, _, found = strings.Cut(schema, "```")
-	if !found || schema != initialSchema+bridgeProgressSchema+bridgeResultSchema {
+	if !found || schema != initialSchema+bridgeProgressSchema+bridgeResultSchema+bridgeUsageSchema {
 		t.Fatal("embedded migration differs from accepted schema")
 	}
 }

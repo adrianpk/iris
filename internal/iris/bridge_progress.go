@@ -55,7 +55,7 @@ func (s *store) bridgeBudget(value bridgeRecord) error {
 		return problem("limit_exceeded", "bridge turn or lifetime budget exhausted")
 	}
 
-	if value.UsageTokens != nil && *value.UsageTokens >= value.Options.MaxTokens {
+	if value.usageFloor >= value.Options.MaxTokens || (value.UsageTokens != nil && *value.UsageTokens >= value.Options.MaxTokens) {
 		return problem("limit_exceeded", "bridge reported-token budget exhausted")
 	}
 
@@ -81,24 +81,35 @@ func nextBridgeInput(ctx context.Context, tx *sql.Tx, value bridgeRecord, input 
 }
 
 func (s *store) failBridge(ctx context.Context, tx *sql.Tx, value bridgeRecord, code string) error {
-	if value.State == "result_recorded" || (value.State == "acked" && code == "worker_uncertain") {
-		_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET owner_token=NULL,lease_until=NULL WHERE id=?", value.ID)
-
+	state, reason, err := bridgeFailureTransition(value, code)
+	if err != nil {
 		return err
 	}
 
+	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state=?,error_code=NULLIF(?,''),owner_token=NULL,lease_until=NULL,updated_at=? WHERE id=?", state, reason, s.now().UnixMilli(), value.ID)
+
+	return err
+}
+
+func bridgeFailureTransition(value bridgeRecord, code string) (string, string, error) {
 	state, ok := bridgeFailureState(code)
 	if !ok {
-		return problem("invalid_request", "unsupported bridge failure code")
+		return "", "", problem("invalid_request", "unsupported bridge failure code")
+	}
+
+	if preserveBridgeResult(value, code) {
+		return value.State, "", nil
+	}
+
+	if code == "worker_interrupted" && (value.State == "waiting" || value.State == "acked") {
+		state = "stopped"
 	}
 
 	if state == "stopped" && (value.State == "invoking" || value.State == "approval_required") {
 		state, code = "uncertain", "worker_uncertain"
 	}
 
-	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET state=?,error_code=?,owner_token=NULL,lease_until=NULL,updated_at=? WHERE id=?", state, code, s.now().UnixMilli(), value.ID)
-
-	return err
+	return state, code, nil
 }
 
 func bridgeFailureState(code string) (string, bool) {
@@ -118,4 +129,8 @@ func bridgeFailureState(code string) (string, bool) {
 	}
 
 	return "", false
+}
+
+func preserveBridgeResult(value bridgeRecord, code string) bool {
+	return value.State == "result_recorded" || (value.State == "acked" && code == "worker_uncertain")
 }

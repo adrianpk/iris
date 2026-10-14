@@ -17,8 +17,8 @@ func readBridge(ctx context.Context, reader projectReader, where string, args ..
 		pending          *string
 	)
 
-	err := reader.QueryRowContext(ctx, `SELECT b.id,b.conversation_id,b.project_id,p.canonical_path,b.consumer_id,b.thread_id,b.turn_id,b.input_message_id,b.result_message_id,b.state,b.limits_json,b.usage_tokens,b.owner_token,b.lease_until,b.updated_at,b.error_code,b.stop_requested_at,b.turns_used,b.started_at,b.pending_request_id,b.pending_method,b.pending_result_json
- FROM bridge_bindings b JOIN projects p ON p.id=b.project_id WHERE `+where, args...).Scan(&value.ID, &value.ConversationID, &value.ProjectID, &value.ProjectPath, &value.ConsumerID, &value.ThreadID, &value.TurnID, &value.InputMessageID, &value.ResultMessageID, &value.State, &options, &value.UsageTokens, &value.ownerToken, &lease, &updated, &value.ErrorCode, &stopped, &value.TurnsUsed, &started, &value.PendingRequestID, &value.PendingMethod, &pending)
+	err := reader.QueryRowContext(ctx, `SELECT b.id,b.conversation_id,b.project_id,p.canonical_path,b.consumer_id,b.thread_id,b.turn_id,b.input_message_id,b.result_message_id,b.state,b.limits_json,b.usage_tokens,b.owner_token,b.lease_until,b.updated_at,b.error_code,b.stop_requested_at,b.turns_used,b.started_at,b.pending_request_id,b.pending_method,b.pending_result_json,b.usage_floor
+ FROM bridge_bindings b JOIN projects p ON p.id=b.project_id WHERE `+where, args...).Scan(&value.ID, &value.ConversationID, &value.ProjectID, &value.ProjectPath, &value.ConsumerID, &value.ThreadID, &value.TurnID, &value.InputMessageID, &value.ResultMessageID, &value.State, &options, &value.UsageTokens, &value.ownerToken, &lease, &updated, &value.ErrorCode, &stopped, &value.TurnsUsed, &started, &value.PendingRequestID, &value.PendingMethod, &pending, &value.usageFloor)
 	if errors.Is(err, sql.ErrNoRows) {
 		return value, problem("not_found", "bridge binding does not exist")
 	}
@@ -171,9 +171,11 @@ func (s *store) nextBridgeOwner(ctx context.Context, tx *sql.Tx, params bridgeCl
 		return s.insertBridge(ctx, tx, params, selected)
 	}
 
-	if params.Recover {
-		params.Options = existing.Options
+	if !params.Recover && params.Options != existing.Options {
+		return bridgeOutcome{}, problem("invalid_request", "bridge options cannot change on restart; recover retains the recorded policy")
 	}
+
+	params.Options = existing.Options
 
 	return s.reclaimBridge(ctx, tx, params.Options, existing.ID)
 }

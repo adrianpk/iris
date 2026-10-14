@@ -13,7 +13,7 @@ func (client *codexClient) initialize(ctx context.Context) error {
 		return err
 	}
 
-	return client.write(map[string]any{"method": "initialized", "params": map[string]any{}})
+	return client.writeContext(ctx, map[string]any{"method": "initialized", "params": map[string]any{}})
 }
 
 func (client *codexClient) openThread(ctx context.Context, binding bridgeBinding) (string, error) {

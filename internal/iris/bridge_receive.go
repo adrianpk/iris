@@ -79,9 +79,13 @@ func (s *store) receiveBridgeOnce(ctx context.Context, owner bridgeOwner) (bridg
 		}
 
 		result.Stopping = value.StopRequestedAt != nil
-		result.Page, err = readBridgePage(ctx, tx, value)
 
-		return err
+		result.Page, err = readBridgePage(ctx, tx, value)
+		if err != nil {
+			return err
+		}
+
+		return s.bridgeDeliveryBudget(value, result)
 	})
 
 	return result, err
@@ -101,4 +105,12 @@ func readBridgePage(ctx context.Context, tx *sql.Tx, value bridgeRecord) (receiv
 	_, err = tx.ExecContext(ctx, "UPDATE consumer_cursors SET delivered_sequence=? WHERE conversation_id=? AND project_id=? AND consumer_id=?", page.DeliveredSequence, value.ConversationID, value.ProjectID, value.ConsumerID)
 
 	return page, err
+}
+
+func (s *store) bridgeDeliveryBudget(value bridgeRecord, delivery bridgeDelivery) error {
+	if !delivery.Active || len(delivery.Page.Messages) == 0 || delivery.Page.Messages[0].Kind != "message" {
+		return nil
+	}
+
+	return s.bridgeBudget(value)
 }

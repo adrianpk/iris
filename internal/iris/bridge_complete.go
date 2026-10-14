@@ -100,7 +100,7 @@ func (s *store) completeBridgeTx(ctx context.Context, tx *sql.Tx, value bridgeRe
 		return nil, err
 	}
 
-	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',pending_result_json=NULL,input_message_id=?,result_message_id=?,turn_id=NULLIF(?,''),usage_tokens=COALESCE(?,usage_tokens),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.TurnID, params.UsageTokens, s.now().UnixMilli(), value.ID)
+	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',pending_result_json=NULL,input_message_id=?,result_message_id=?,turn_id=NULLIF(?,''),usage_tokens=CASE WHEN ? THEN ? ELSE usage_tokens END,usage_floor=max(usage_floor,COALESCE(?,0)),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.TurnID, input.Kind == "message", params.UsageTokens, params.UsageTokens, s.now().UnixMilli(), value.ID)
 
 	return nil, err
 }

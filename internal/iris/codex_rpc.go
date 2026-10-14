@@ -43,7 +43,7 @@ func (client *codexClient) call(ctx context.Context, method string, params any, 
 	client.nextID++
 
 	id := client.nextID
-	if err := client.write(map[string]any{"id": id, "method": method, "params": params}); err != nil {
+	if err := client.writeContext(ctx, map[string]any{"id": id, "method": method, "params": params}); err != nil {
 		return nil, err
 	}
 
@@ -82,10 +82,10 @@ func jsonNumber(value int) string {
 	return string(encoded)
 }
 
-func (client *codexClient) rejectRequests(_ context.Context, frame codexFrame) error {
+func (client *codexClient) rejectRequests(ctx context.Context, frame codexFrame) error {
 	if len(frame.ID) == 0 {
 		return nil
 	}
 
-	return client.write(map[string]any{"id": frame.ID, "error": codexRPCError{Code: -32601, Message: "unsupported client request"}})
+	return client.writeContext(ctx, map[string]any{"id": frame.ID, "error": codexRPCError{Code: -32601, Message: "unsupported client request"}})
 }

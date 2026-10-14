@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 8, in-progress; bridge recovery.
 
-Active tasks: T8.3 through T8.5.
+Active tasks: T8.4 and T8.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 7 of 10 slices delivered; 33 of 44 tasks completed.
+Progress: 7 of 10 slices delivered; 34 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -133,8 +133,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T8.1 | completed | `feat(bridge): recover Iris worker progress` | `fdf1fa70cddd` | Real SQLite reopen, result checkpoint immutability, exclusive generation ownership, lost completion confirmation and no-model publication passed with race checks; exact stored turn recovery rejects foreign/incomplete work. |
-| T8.2 | completed | `feat(bridge): report uncertain Iris worker outcomes` | pending | Distinct failure/status hints, expired-lease uncertainty, three safe startup retries with 1/2/4-second delays, definitive rejection and durable approval-decline recovery checks passed; no turn invocation retries. |
-| T8.3 | pending | `feat(bridge): enforce Iris execution limits` | pending | Time/turn/available-usage limits, terminal cancellation, and owned-resource cleanup. |
+| T8.2 | completed | `feat(bridge): report uncertain Iris worker outcomes` | `32a9b0816257` | Distinct failure/status hints, expired-lease uncertainty, three safe startup retries with 1/2/4-second delays, definitive rejection and durable approval-decline recovery checks passed; no turn invocation retries. |
+| T8.3 | completed | `feat(bridge): enforce Iris execution limits` | pending | Persisted restart policy, pre-provider budgets, nullable telemetry with observed floor, expired-budget saved-result recovery, global owner cap, blocked-stdin deadlines and owned process cleanup passed with race checks. |
 | T8.4 | pending | `test(security): verify Iris input and authority boundaries` | pending | Malformed/oversized input, injection/isolation/permissions, focused fuzz/race checks. |
 | T8.5 | pending | `test(bridge): verify Iris recovery and idle behavior` | pending | Real adapter restart/resumption, zero idle model calls, resource measurements, and honest recovery limitations. |
 

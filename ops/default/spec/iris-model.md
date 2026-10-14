@@ -214,6 +214,8 @@ ALTER TABLE bridge_bindings ADD COLUMN started_at INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE bridge_bindings ADD COLUMN pending_request_id TEXT;
 ALTER TABLE bridge_bindings ADD COLUMN pending_method TEXT;
 ALTER TABLE bridge_bindings ADD COLUMN pending_result_json TEXT CHECK (pending_result_json IS NULL OR json_valid(pending_result_json));
+ALTER TABLE bridge_bindings ADD COLUMN usage_floor INTEGER NOT NULL DEFAULT 0 CHECK (usage_floor >= 0);
+UPDATE bridge_bindings SET usage_floor=COALESCE(usage_tokens,0);
 ```
 
 ## Transaction and query ownership
@@ -274,3 +276,6 @@ the explicitly selected model, sandbox, approval mode and execution bounds.
 Bridge result migration 3 adds bounded versioned final-result JSON before
 publication. `result_recorded` can be reclaimed and completed without a model.
 Reply, acknowledgment and result-checkpoint clearance still commit together.
+
+Bridge usage migration 4 retains the maximum observed cumulative token count
+for budget enforcement independently of nullable current usage telemetry.
