@@ -42,6 +42,7 @@ func callService(ctx context.Context, cfg config, req request) (reply response, 
 		if errors.Is(err, errFrameLimit) {
 			return response{}, problem("limit_exceeded", "encoded request exceeds the protocol limit")
 		}
+
 		return response{}, unavailable(err)
 	}
 

@@ -83,6 +83,15 @@ func (s *store) call(ctx context.Context, params callParams) (conversation, erro
 			return err
 		}
 
+		state, err := loadLifecycle(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		if err := s.expireIfDue(ctx, tx, &state); err != nil {
+			return err
+		}
+
 		result, err = readConversation(ctx, tx, id)
 
 		return err

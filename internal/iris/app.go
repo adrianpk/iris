@@ -48,9 +48,15 @@ func (app *App) run(ctx context.Context, args []string) error {
 		return err
 	}
 
+	return app.runCommand(ctx, args)
+}
+
+func (app *App) runCommand(ctx context.Context, args []string) error {
 	switch args[0] {
 	case "serve":
 		return app.runServe(ctx, args[1:])
+	case "join", "close":
+		return app.runHandshake(ctx, args[0], args[1:])
 	case "call":
 		return app.runCall(ctx, args[1:])
 	case "projects":

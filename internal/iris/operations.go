@@ -92,3 +92,30 @@ func (s *store) handleCall(ctx context.Context, req request) response {
 
 	return operationResponse(ctx, value, err)
 }
+
+func (s *store) handleHandshake(ctx context.Context, req request) response {
+	switch req.Operation {
+	case "call":
+		return s.handleCall(ctx, req)
+	case "join":
+		var params joinParams
+		if err := decodeJSON(req.Params, &params); err != nil {
+			return failure("invalid_request", "invalid join parameters", false)
+		}
+
+		value, err := s.join(ctx, params)
+
+		return operationResponse(ctx, value, err)
+	case "close":
+		var params conversationParams
+		if err := decodeJSON(req.Params, &params); err != nil {
+			return failure("invalid_request", "invalid close parameters", false)
+		}
+
+		value, err := s.closeConversation(ctx, params)
+
+		return operationResponse(ctx, value, err)
+	}
+
+	return failure("unknown_operation", "unsupported conversation operation", false)
+}

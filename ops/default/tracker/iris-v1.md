@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 3, in-progress; projects and handshake.
 
-Active tasks: T3.4 through T3.5.
+Active tasks: T3.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 2 of 10 slices delivered; 11 of 44 tasks completed.
+Progress: 2 of 10 slices delivered; 12 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -86,8 +86,8 @@ future artifacts; create each during its owning slice.
 | --- | --- | --- | --- | --- |
 | T3.1 | completed | `feat(projects): register Iris project identities` | `acec8da3ec95` | Focused canonical/nested/symlink, optional override, explicit selector, bounded project page and no-generated-project-state tests passed; lint passed. |
 | T3.2 | completed | `feat(projects): manage Iris aliases and project moves` | `4ab7e92e56c6` | Focused collision, ambiguous selector, stable ID, historical snapshot, and explicit relocation tests passed; lint passed. |
-| T3.3 | completed | `feat(conversations): create Iris invitations` | pending | Concurrent A/B allocation and retries, atomic provisional identity, initial persistence/reopen, bounded input/quota, collision rollback and permanent code/request tombstones passed with the race detector; lint passed. |
-| T3.4 | pending | `feat(conversations): join and close Iris conversations` | pending | Correct/wrong/expired/concurrent join, first message, terminal-state rejection, and no reopen. |
+| T3.3 | completed | `feat(conversations): create Iris invitations` | `c66c7fa45eb1` | Concurrent A/B allocation and retries, atomic provisional identity, initial persistence/reopen, bounded input/quota, collision rollback and permanent code/request tombstones passed with the race detector; lint passed. |
+| T3.4 | completed | `feat(conversations): join and close Iris conversations` | pending | Correct/wrong/concurrent joins, persisted expiry boundaries, unchanged initial content, duplicate non-renewal, participant-only idempotent closure, close/join races, reserved terminal event and no consumer acknowledgment passed with the race detector; lint passed. |
 | T3.5 | pending | `test(conversations): verify Iris project handshakes` | pending | Real two-project handshake; human output and valid JSON/`jq`; no implicit acknowledgment. |
 
 ## Slice 4 Tasks

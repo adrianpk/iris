@@ -44,8 +44,8 @@ func (s *store) handle(ctx context.Context, req request) response {
 		return s.handleProjects(ctx, req)
 	}
 
-	if req.Operation == "call" {
-		return s.handleCall(ctx, req)
+	if req.Operation == "call" || req.Operation == "join" || req.Operation == "close" {
+		return s.handleHandshake(ctx, req)
 	}
 
 	if req.Operation != "stats" {

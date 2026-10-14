@@ -31,6 +31,13 @@ changed content conflicts. Failed creation rolls back every allocation.
 
 The CLI accepts initial text, a file, or stdin without altering the content.
 
+Join validates the expected project before binding a provisional directory.
+The first acceptance activates the conversation and appends one sequenced
+system event; duplicate accepts return the same topic and initial message
+without renewing activity or acknowledging consumer work. Either joined
+participant can close. Terminal state and its one system event commit together.
+Expired or closed invitations cannot activate a conversation.
+
 ## Implementation Notes
 
 Filesystem discovery and optional-file validation happen before the write
@@ -40,6 +47,11 @@ Project JSON has schema version 1 and nullable provisional registration fields.
 The fixed version-1 dictionary contains 256 distinct words. Three independent
 cryptographic byte indexes select a code. Allocation tries at most 16 codes;
 SHA-256 code tombstones and request tombstones remain after history removal.
+
+The injected clock checks stored invitation expiry and active inactivity in
+call retries, join, and close transactions. A due transition commits even
+when the operation returns a lifecycle error. The final event has a reserved
+message slot and uses an empty body if the stored-body budget is exhausted.
 
 ## Contracts Added or Changed
 
@@ -63,8 +75,11 @@ inference. Registry pages expose a next cursor and truncation.
 
 - `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestInvitation' -count=1` — passed.
 
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestJoin|TestClose' -count=1` — passed.
+
 Final controller-recorded exact-HEAD checks follow the remaining slice tasks.
 
 ## Risks and Follow-ups
 
-Join/close and actual-binary handshake acceptance remain in T3.4 and T3.5.
+Actual-binary handshake acceptance remains in T3.5. Configurable lifecycle
+policy and autonomous timer reconciliation remain assigned to Slice 6.
