@@ -23,7 +23,7 @@ Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: Slice 3, in-progress; projects and handshake. The first two slices are integrated.
+Active slice: Slice 3, reviewing in PR #3; projects and handshake. The first two slices are integrated.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.

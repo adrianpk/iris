@@ -1,11 +1,11 @@
 # Slice 3: Projects and Handshake
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-3-iris-projects-handshake`
-PR: pending
+PR: [#3](https://forge.adrianpk.com/adrianpk/iris/pulls/3)
 
 ## Purpose
 
@@ -81,24 +81,36 @@ inference. Registry pages expose a next cursor and truncation.
 | T3.2 | `4ab7e92e56c6` |
 | T3.3 | `c66c7fa45eb1` |
 | T3.4 | `3151c6e7f69c` |
-| T3.5 | pending |
+| T3.5 | `0857a91d0f42` |
 
 ## Validation
 
-- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject|TestStats' -count=1` — passed.
-- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix ./...` — passed.
+The controller recorded these successful commands, in this order, for clean
+implementation head `0857a91d0f4232fa58fd9a19d4516f4f88058f28`:
 
-- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject' -count=1` — passed for collision, rename and relocation behavior.
+- `make check`
+- `make lint`
+- `make docs-check`
+- `make test-integration`
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --build-tags=integration ./...`
+- `python3 scripts/check-contracts.py`
+- `git diff --check`
 
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestInvitation' -count=1` — passed.
+The process suite uses the actual binary, private XDG roots, two project
+contexts, and `jq`. It covers code-only join, text/file/stdin input, encoded
+request overflow, identity moves, separate conversations, graceful/crashed
+restart, and zero consumer state. Unit/race checks cover concurrent allocation,
+retry/closure/join races, code exhaustion rollback, provisional registration,
+request tombstones, persisted expiry boundaries and terminal event budgets.
+The contract checker confirms ten consecutive slices, 44 tasks, fourteen
+tables, eleven negative constraints, rollback and allocation retention.
+All fixture processes finish under their owned cleanup.
 
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestJoin|TestClose' -count=1` — passed.
-
-- `GOTOOLCHAIN=go1.26.3 go test -tags=integration ./internal/iris -run '^TestProcessHandshake$' -count=1` — passed.
-- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --build-tags=integration ./...` — passed.
-- `python3 scripts/check-contracts.py` — passed: ten matching slices, 44 tasks, fourteen tables, eleven negative constraints, rollback and allocation retention.
-
-Final controller-recorded exact-HEAD validation follows PR preparation.
+Readiness requires regenerated controller evidence for the clean PR head
+after this PR-reference update. That evidence binds its exact SHA and this
+ordered command list. The PR links the report's full introduction commit,
+`acec8da3ec9521ef5f73b083b92d3bc0d4407b5b`.
 
 ## Risks and Follow-ups
 

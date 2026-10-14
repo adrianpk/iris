@@ -14,9 +14,9 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 3, in-progress; projects and handshake.
+Active slice: Slice 3, reviewing in PR #3; projects and handshake.
 
-Active tasks: none; preparing the Slice 3 PR.
+Active tasks: none; Slice 3 implementation complete, awaiting controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
@@ -50,7 +50,7 @@ Slice 1 was integrated through PR `#1` at
 | --- | --- | --- | --- | --- | --- | --- |
 | Slice 1 | audit and contracts | delivered | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | `#1` | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
 | Slice 2 | service and storage | delivered | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
-| Slice 3 | projects and handshake | in-progress | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
+| Slice 3 | projects and handshake | reviewing | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | `#3` | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | pending | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | pending | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
@@ -88,7 +88,7 @@ future artifacts; create each during its owning slice.
 | T3.2 | completed | `feat(projects): manage Iris aliases and project moves` | `4ab7e92e56c6` | Focused collision, ambiguous selector, stable ID, historical snapshot, and explicit relocation tests passed; lint passed. |
 | T3.3 | completed | `feat(conversations): create Iris invitations` | `c66c7fa45eb1` | Concurrent A/B allocation and retries, atomic provisional identity, initial persistence/reopen, bounded input/quota, collision rollback and permanent code/request tombstones passed with the race detector; lint passed. |
 | T3.4 | completed | `feat(conversations): join and close Iris conversations` | `3151c6e7f69c` | Correct/wrong/concurrent joins, persisted expiry boundaries, unchanged initial content, duplicate non-renewal, participant-only idempotent closure, close/join races, reserved terminal event and no consumer acknowledgment passed with the race detector; lint passed. |
-| T3.5 | completed | `test(conversations): verify Iris project handshakes` | pending | Actual-binary handshake and jq passed with code-only join, human/JSON output, explicit selection, rename/move, separate initial requests, text/file/stdin and encoded-frame rejection, terminal rejection, no generated project files, zero consumer state, and graceful/crash recovery; integration-tag lint passed. |
+| T3.5 | completed | `test(conversations): verify Iris project handshakes` | `0857a91d0f42` | Actual-binary handshake and jq passed with code-only join, human/JSON output, explicit selection, rename/move, separate initial requests, text/file/stdin and encoded-frame rejection, terminal rejection, no generated project files, zero consumer state, and graceful/crash recovery; integration-tag lint passed. |
 
 ## Slice 4 Tasks
 
@@ -166,6 +166,7 @@ future artifacts; create each during its owning slice.
 | Live Codex probe for Slice 1 | passed | Six bounded assertions verified separate owned workers, cwd, real results, resumption, denied approval, and interruption. This is feasibility evidence, not the future Iris exchange. |
 | Contract gate for Slice 1 | passed | Looper validated the final PR head `06041b58bf5dd44c42202c5463ab202da511308a` with `make docs-check`, `python3 scripts/check-contracts.py`, then `git diff --check`: fourteen tables, eleven rejected invalid cases, rollback and allocation retention. The canonical PR merged at that same head. |
 | Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for final PR head `a42a4152540a53de5811802d0d67b7602663fc58`; the canonical PR merged at that same head. |
+| Project handshake gate | passed | All eight ordered PR checks passed through Looper on implementation head `0857a91d0f4232fa58fd9a19d4516f4f88058f28`. PR `#3` records the immutable report introduction. Readiness requires regenerated evidence for its clean head after this reference update. |
 | User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
 
 ## Completion gates
