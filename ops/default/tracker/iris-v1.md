@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 2, in-progress; service and storage.
 
-Active tasks: T2.2 through T2.4.
+Active tasks: T2.3 and T2.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 1 of 10 slices delivered; 5 of 44 tasks completed.
+Progress: 1 of 10 slices delivered; 6 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -75,8 +75,8 @@ artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T2.1 | completed | `feat(core): establish Iris executable and configuration` | pending | Focused path/config/help/error/cancellation tests passed; Go 1.26.3 lint passed. |
-| T2.2 | pending | `feat(store): establish Iris SQLite persistence` | pending | Fresh/upgrade migrations, rollback, foreign keys, transactions, indexes, and reopen. |
+| T2.1 | completed | `feat(core): establish Iris executable and configuration` | `d37086957a3f` | Focused path/config/help/error/cancellation tests passed; Go 1.26.3 lint passed. |
+| T2.2 | completed | `feat(store): establish Iris SQLite persistence` | pending | Driver tests passed for fresh/reopened data, atomic upgrade rollback/retry, checksum/newer-schema rejection, foreign keys/pragmas/private files, concurrent transactions, and online backup; race checks passed. |
 | T2.3 | pending | `feat(service): expose Iris local protocol` | pending | Actual Unix socket, private permissions, bounds, version errors, and cancellation. |
 | T2.4 | pending | `test(service): verify Iris daemon and database recovery` | pending | `make test-integration` added; real binary/daemon restart and persisted-state checks. |
 
