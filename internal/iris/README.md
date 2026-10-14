@@ -51,8 +51,8 @@ The final event has a reserved sequence slot and can use an empty body.
 `make test-integration` also runs a two-project actual-binary handshake with
 `jq`, text/file/stdin input, scoped errors, rename/move, independent conversations
 and crash/restart. Fixture database inspection happens while its daemon is
-stopped. Public history paging and autonomous lifecycle maintenance have their
-own tasks in the implementation plan.
+stopped. History and lifecycle have independent handlers and do not change
+consumer processing state.
 
 
 Delivery uses the existing message/recipient and consumer tables. Send compares
@@ -99,3 +99,14 @@ pair counters, code digests and request-key tombstones survive deletion.
 Only confirmation metadata changes during a preview; selections are complete
 and bounded to 1,000 candidates and 64 live tokens. Runtime export leases are
 accessed only under the daemon's serialized store transactions.
+
+
+History selects participant-visible metadata in short serialized transactions.
+Creation-time/ID cursors bind resolved identities and filters. Literal text
+search uses parameterized substring queries, existing pair/date/message
+indexes and bounded excerpts. Show pages messages without delivery state.
+Runtime dump leases freeze metadata/labels and the maximum sequence, block
+prune and expire after 120 seconds; no lease survives daemon restart.
+The CLI streams bounded pages into a private 128 MiB spool before publishing
+complete text or JSON. Statistics separate scoped counts from service-wide
+logical SQLite allocation. See the [history reference](../../docs/reference/history.md).

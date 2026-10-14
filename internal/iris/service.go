@@ -2,17 +2,24 @@ package iris
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 )
 
 type statistics struct {
-	SchemaVersion        int     `json:"schema_version"`
-	ProjectID            *string `json:"project_id"`
-	Ready                bool    `json:"ready"`
-	StorageSchemaVersion int     `json:"storage_schema_version"`
-	Projects             int64   `json:"projects"`
-	Conversations        int64   `json:"conversations"`
-	Messages             int64   `json:"messages"`
+	SchemaVersion         int                `json:"schema_version"`
+	ProjectID             *string            `json:"project_id"`
+	Ready                 bool               `json:"ready"`
+	StorageSchemaVersion  int                `json:"storage_schema_version"`
+	Projects              int64              `json:"projects"`
+	Conversations         int64              `json:"conversations"`
+	Messages              int64              `json:"messages"`
+	States                conversationStates `json:"states"`
+	RetainedConversations int64              `json:"retained_conversations"`
+	PruneEligible         int64              `json:"prune_eligible"`
+	BodyBytes             int64              `json:"body_bytes"`
+	Lifecycle             lifecyclePolicy    `json:"lifecycle"`
+	Storage               storageStatistics  `json:"storage"`
 }
 
 type statsParams struct {
@@ -21,12 +28,15 @@ type statsParams struct {
 }
 
 func (s *store) statistics(ctx context.Context) (statistics, error) {
-	result := statistics{SchemaVersion: 1, Ready: true}
-	err := s.db.QueryRowContext(ctx, `SELECT
-        (SELECT max(version) FROM schema_migrations),
-        (SELECT count(*) FROM projects WHERE canonical_path IS NOT NULL),
-        (SELECT count(*) FROM conversations),
-        (SELECT count(*) FROM messages)`).Scan(&result.StorageSchemaVersion, &result.Projects, &result.Conversations, &result.Messages)
+	var result statistics
+
+	err := s.write(ctx, func(tx *sql.Tx) error {
+		var err error
+
+		result, err = s.readStatistics(ctx, tx, nil)
+
+		return err
+	})
 
 	return result, err
 }

@@ -9,6 +9,9 @@ activation, authority handling, completion, bounds and live acceptance.
 See the [lifecycle reference](reference/lifecycle.md) for expiration, retained
 history and exact-confirmation pruning.
 
+See the [history reference](reference/history.md) for bounded discovery, complete
+text/JSON transcripts and scoped storage statistics.
+
 - `tutorials/`: guided learning paths.
 - `how-to/`: task procedures.
 - `reference/`: public contracts and exact behavior.

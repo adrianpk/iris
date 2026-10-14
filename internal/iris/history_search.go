@@ -118,3 +118,21 @@ func validateHistoryDates(params historyParams) error {
 
 	return nil
 }
+
+func prepareHistoryPair(selectors []string) ([]string, error) {
+	result := slices.Clone(selectors)
+	for index, selector := range result {
+		if selector == "" {
+			return nil, problem("invalid_request", "pair selectors must not be empty")
+		}
+
+		plan, err := explicitSelection(selector)
+		if err != nil {
+			return nil, err
+		}
+
+		result[index] = plan.selector
+	}
+
+	return result, nil
+}

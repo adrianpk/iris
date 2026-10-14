@@ -66,6 +66,14 @@ func (s *store) planHistory(ctx context.Context, params historyParams) (historyP
 		return plan, err
 	}
 
+	pair, err := prepareHistoryPair(params.Pair)
+	if err != nil {
+		return plan, err
+	}
+
+	params.Pair = pair
+	plan.params = params
+
 	if params.AllProjects {
 		if params.Project != "" || params.CWD != "" {
 			return plan, problem("invalid_request", "all-projects cannot be combined with project selection")

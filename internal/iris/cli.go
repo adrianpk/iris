@@ -135,9 +135,7 @@ func (app *App) runStats(ctx context.Context, args []string) error {
 		return unavailable(err)
 	}
 
-	_, err = fmt.Fprintf(app.stdout, "Iris ready; schema %d; %d projects; %d conversations; %d messages\n", result.StorageSchemaVersion, result.Projects, result.Conversations, result.Messages)
-
-	return err
+	return app.printStatistics(result)
 }
 
 func (app *App) reportError(err error, jsonOutput bool) error {

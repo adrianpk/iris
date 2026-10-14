@@ -76,7 +76,7 @@ func (app *App) historyReference(options historyCLIOptions) (historyParams, erro
 func (app *App) runHistory(ctx context.Context, command string, args []string) error {
 	flags, options := historyFlags(command)
 	if err := flags.Parse(args); err != nil {
-		return app.flagError(err, "Usage: iris "+command+" [--project <selector>|--all-projects] [--state <state>|--active|--all] [--limit <1-100>] [--cursor <cursor>] [--json] [conversation-id]\n")
+		return app.flagError(err, historyHelp(command))
 	}
 
 	if command == "show" {
@@ -152,7 +152,7 @@ func (app *App) printHistoryShow(data json.RawMessage) error {
 	}
 
 	if value.Truncated {
-		_, err := fmt.Fprintln(app.stdout, "Transcript truncated; use iris dump for complete history.")
+		_, err := fmt.Fprintln(app.stdout, "Transcript truncated; use iris dump for complete history. Next cursor:", *value.NextCursor)
 
 		return err
 	}
@@ -224,4 +224,8 @@ func (app *App) printHistoryMatches(item historyConversation) error {
 	}
 
 	return nil
+}
+
+func historyHelp(command string) string {
+	return "Usage: iris " + command + " [--project <selector>|--all-projects] [--state <state>|--active|--all] [--limit <1-100>] [--cursor <cursor>] [--json] [conversation-id]\nFilters: --conversation <id>, --pair <first,second>, --ordinal <number>, --text <literal>, --since <RFC3339>, --until <RFC3339>.\nShow requires one ID or an explicit pair and ordinal.\n"
 }

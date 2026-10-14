@@ -10,9 +10,11 @@ Messages persist in sequence order and consumers explicitly acknowledge
 processing. See the [delivery reference](docs/reference/delivery.md) for the
 CLI, protocol fields, cursor rules and limits.
 
-The [accepted specification](ops/default/spec/iris.md) and
-[data model](ops/default/spec/iris-model.md) also define history inspection and export, which remain in the implementation
-plan.
+Find retained conversations with `iris conversations` and `iris search`, inspect
+messages with `iris show`, and export complete transcripts with `iris dump`.
+See the [history reference](docs/reference/history.md) for scope, filters,
+pagination, text/JSON exports and statistics. The [accepted specification](ops/default/spec/iris.md)
+and [data model](ops/default/spec/iris-model.md) define the full contracts.
 
 Run explicit foreground workers with `iris bridge start CONVERSATION_ID` in
 each joined project. The [Codex bridge reference](docs/reference/bridge.md)

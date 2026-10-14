@@ -7,7 +7,7 @@ import (
 
 func (s *store) selectedStatistics(ctx context.Context, params statsParams) (statistics, error) {
 	if params.AllProjects {
-		if params.Project != "" {
+		if params.Project != "" || params.CWD != "" {
 			return statistics{}, problem("invalid_request", "all_projects and project cannot be combined")
 		}
 
@@ -19,20 +19,17 @@ func (s *store) selectedStatistics(ctx context.Context, params statsParams) (sta
 		return statistics{}, err
 	}
 
-	result := statistics{SchemaVersion: 1, Ready: true, Projects: 1}
+	var result statistics
+
 	err = s.write(ctx, func(tx *sql.Tx) error {
 		selected, err := s.selectProjectTx(ctx, tx, plan)
 		if err != nil {
 			return err
 		}
 
-		result.ProjectID = &selected.ID
+		result, err = s.readStatistics(ctx, tx, &selected.ID)
 
-		return tx.QueryRowContext(ctx, `SELECT
-            (SELECT max(version) FROM schema_migrations),
-            (SELECT count(*) FROM participants WHERE project_id=?),
-            (SELECT count(*) FROM messages m WHERE EXISTS
-                (SELECT 1 FROM participants p WHERE p.conversation_id=m.conversation_id AND p.project_id=?))`, selected.ID, selected.ID).Scan(&result.StorageSchemaVersion, &result.Conversations, &result.Messages)
+		return err
 	})
 
 	return result, err
