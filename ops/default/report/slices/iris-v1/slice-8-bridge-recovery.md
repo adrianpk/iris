@@ -1,6 +1,6 @@
 # Slice 8: Bridge Recovery
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -88,17 +88,17 @@ the new turn identity. The adapter now ignores those pre-identity history
 notifications while continuing to reject foreign events after binding the turn.
 Focused resume/protocol race checks passed; the regenerated ordered gate passed.
 
-The extended real fixture passed with Codex 0.161.0 in 42.889 seconds. It
+The extended real fixture passed with Codex 0.161.0 in 48.521 seconds. It
 recovered the completed owned turn after a dropped result checkpoint without
 another invocation, then restarted both workers on their original threads and
 consumers to process a fresh project-local proof. Budgets persisted, counts
 remained one turn per worker before restart and two afterward, and idle intervals
 produced no additional turns. The one-second sample observed 0 CPU ticks and
-36,520 KiB combined RSS for the daemon and two Iris workers, excluding provider
+36,348 KiB combined RSS for the daemon and two Iris workers, excluding provider
 subprocesses. These are bounded observations.
 
-All ten ordered checks passed through Looper on clean implementation candidate
-`e8e23503a43ca443dac802eb1b312894df003c34` before canonical PR #8 opened:
+All ten ordered checks passed through Looper on final canonical PR #8 head
+`de6aec26826b250356a584f413c249aacf3de52e`, which merged into `dev` unchanged:
 
 - `make check`
 - `make lint`
@@ -111,9 +111,9 @@ All ten ordered checks passed through Looper on clean implementation candidate
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge ./...`
 - `git diff --check`
 
-The integration-tag race check passed in 57.314 seconds. The PR-reference
-follow-up requires regeneration on its exact clean head with this same ordered
-list; the canonical PR head and controller ledger identify final evidence.
+The integration-tag race check passed in 56.987 seconds. The final controller
+ledger binds this exact head and ordered command list. Acta merge event
+`01M4XK4XPX143MMXM6RNTFYBFG` confirms Rebase + Fast-forward integration.
 
 ## Risks and Follow-ups
 
