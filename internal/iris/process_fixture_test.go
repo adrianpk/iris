@@ -1,4 +1,4 @@
-//go:build integration
+//go:build integration || bridge
 
 package iris
 
@@ -24,6 +24,7 @@ type processFixture struct {
 type ownedProcess struct {
 	cmd    *exec.Cmd
 	stderr bytes.Buffer
+	stdout bytes.Buffer
 	exited chan struct{}
 	err    error
 }

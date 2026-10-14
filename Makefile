@@ -6,7 +6,7 @@ GO_BUILD_CACHE := $(CURDIR)/$(DEV_ROOT)/go-build-cache
 GOLANGCI_LINT_CACHE := $(CURDIR)/$(DEV_ROOT)/golangci-lint-cache
 COVERAGE_OUT ?= /tmp/iris-coverage.out
 
-.PHONY: fmt test test-integration test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
+.PHONY: fmt test test-integration test-bridge test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
 
 fmt:
 	@$(GO) fmt ./...
@@ -16,6 +16,9 @@ test:
 
 test-integration:
 	@$(GO) test -tags=integration ./internal/iris -run '^TestProcess' -count=1
+
+test-bridge:
+	@$(GO) test -tags=bridge ./internal/iris -run '^TestBridgeLive' -count=1 -timeout=5m
 
 test-coverage:
 	@$(GO) test -coverprofile=$(COVERAGE_OUT) ./...

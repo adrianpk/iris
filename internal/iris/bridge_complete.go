@@ -96,7 +96,7 @@ func (s *store) completeBridgeTx(ctx context.Context, tx *sql.Tx, value bridgeRe
 		return nil, err
 	}
 
-	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',input_message_id=?,result_message_id=?,usage_tokens=COALESCE(?,usage_tokens),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.UsageTokens, s.now().UnixMilli(), value.ID)
+	_, err = tx.ExecContext(ctx, "UPDATE bridge_bindings SET state='acked',input_message_id=?,result_message_id=?,turn_id=NULLIF(?,''),usage_tokens=COALESCE(?,usage_tokens),pending_request_id=NULL,pending_method=NULL,error_code=NULL,updated_at=? WHERE id=?", input.ID, resultID, params.TurnID, params.UsageTokens, s.now().UnixMilli(), value.ID)
 
 	return nil, err
 }
@@ -114,6 +114,10 @@ func validateBridgeCompletion(value bridgeRecord, params bridgeCompletion, input
 }
 
 func checkBridgeRetry(ctx context.Context, tx *sql.Tx, value bridgeRecord, params bridgeCompletion) error {
+	if !sameBridgeTurn(value, params.TurnID) {
+		return problem("idempotency_conflict", "bridge completion has a different turn identity")
+	}
+
 	if value.ResultMessageID == nil && params.Answer.Action == "ack" {
 		return nil
 	}
@@ -166,4 +170,12 @@ func validateInformationalCompletion(value bridgeRecord, params bridgeCompletion
 	}
 
 	return nil
+}
+
+func sameBridgeTurn(value bridgeRecord, turn string) bool {
+	if value.TurnID == nil {
+		return turn == ""
+	}
+
+	return *value.TurnID == turn
 }

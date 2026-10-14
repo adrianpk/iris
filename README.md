@@ -11,9 +11,13 @@ processing. See the [delivery reference](docs/reference/delivery.md) for the
 CLI, protocol fields, cursor rules and limits.
 
 The [accepted specification](ops/default/spec/iris.md) and
-[data model](ops/default/spec/iris-model.md) also define on-demand Codex
-workers, automatic lifecycle maintenance, and history export. Those
+[data model](ops/default/spec/iris-model.md) also define automatic lifecycle maintenance and history export. Those
 capabilities remain in the implementation plan.
+
+Run explicit foreground workers with `iris bridge start CONVERSATION_ID` in
+each joined project. The [Codex bridge reference](docs/reference/bridge.md)
+explains separate owned threads, sandbox/approval settings, completion, limits,
+and `bridge status` / `bridge stop`.
 
 ## Run the service
 
@@ -225,7 +229,10 @@ build the actual binary, run private daemon fixtures, and check the two-project
 handshake, JSON through `jq`, human output, identity moves, conversation
 isolation, concurrent sends, independent consumers, lost-response retry, waits and
 graceful/crashed restart. Only owned processes are signaled.
-They do not install a service or invoke a model.
+Those tests do not install a service or invoke a model. The separate
+`make test-bridge` target requires the installed, authenticated Codex CLI and
+runs a real two-project question/response/acknowledgment exchange. It fails
+instead of skipping an unavailable provider.
 
 See the [documentation index](docs/index.md) and
 [application package](internal/iris/README.md).

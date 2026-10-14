@@ -13,3 +13,6 @@ All notable changes to Iris are documented here.
 - Exchange ordered messages and status updates with durable retries, replies,
   independent consumer progress, bounded waiting, and explicit acknowledgment
   after processing. Unacknowledged messages remain available after a restart.
+- Start conversation-scoped Codex workers that exchange technical replies and
+  acknowledge completed work automatically, with explicit sandbox and approval
+  settings, finite execution budgets, and no model calls while idle.

@@ -107,8 +107,8 @@ future artifacts; create each during its owning slice.
 | T5.1 | completed | `feat(bridge): manage conversation-scoped Iris workers` | `842f9dcb8f89` | Lease, concurrent ownership, stop/restart, public status isolation and migration race checks passed; foreground worker cleanup releases only its own binding. |
 | T5.2 | completed | `feat(bridge): run Iris exchanges through Codex` | `eb4150888e0c` | Installed app-server protocol adapter passes race checks for handshake, bound thread/resumption, final-only output, usage, failure/interrupt, and owned process cwd/cleanup. Live end-to-end exchange remains T5.5. |
 | T5.3 | completed | `feat(bridge): preserve Codex authority boundaries` | `482d7e7dd69a` | Denial, one-request human acceptance, foreign/unknown requests, empty permission grants, durable pending identity, nonterminal refusal and final-success rejection passed under race checks. |
-| T5.4 | completed | `feat(bridge): complete bounded Iris exchanges` | this commit | Real SQLite rollback/retry, stale owner, close/completion race, informational no-model processing, turn/time/usage limits, idle ownership and confirmed/uncertain interruption passed with the race detector. |
-| T5.5 | pending | `test(bridge): demonstrate autonomous Iris communication` | pending | `make test-bridge` added; real question/response/ack without human relay; zero idle model invocations. |
+| T5.4 | completed | `feat(bridge): complete bounded Iris exchanges` | `9757ea078bae` | Real SQLite rollback/retry, stale owner, close/completion race, informational no-model processing, turn/time/usage limits, idle ownership and confirmed/uncertain interruption passed with the race detector. |
+| T5.5 | in-progress | `test(bridge): demonstrate autonomous Iris communication` | this commit | Live fixture and target implemented; actual provider acceptance awaits controller validation. |
 
 ## Slice 6 Tasks
 

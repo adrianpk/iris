@@ -60,7 +60,7 @@ normalized payload digests before rejecting a committed retry on terminal
 history. New sends validate joined membership, lifecycle, reply scope and
 budgets, then commit sequence, recipients, counters and significant activity
 before success. The internal result-plus-ack primitive shares that transaction;
-bridge ownership checks remain the caller's responsibility in its owning slice.
+the bridge rechecks ownership in its own completion transaction.
 
 Receive pages bound both item count and encoded bytes. Cursors carry version,
 conversation, project, consumer and sequence, and cannot jump beyond the
@@ -73,3 +73,14 @@ commits. Idle waits hold neither SQLite nor a repeating database timer. Linux
 socket hangup detection blocks in the kernel and uses a cancellation pipe for
 cleanup, preserving the protocol's required write half-close. Framing remains
 bounded; receive operation/client deadlines use wait plus five seconds.
+
+
+The bridge is a separate foreground process with an exclusive project/conversation
+lease. Typed owner RPCs receive, checkpoint, renew and atomically complete work.
+`bridge.receive` uses the same bounded wait hub and may expose reachable terminal
+system events. The Codex adapter starts lazily, uses one bound thread, extracts
+only completed final output, and fails closed for denied or uncertain execution.
+Local interactive authority requires a terminal and a once-only decision.
+`make test-bridge` enables a separate live build tag and exercises real Codex
+question/response/acknowledgment with two isolated projects. Ordinary unit and
+integration targets do not invoke a model.

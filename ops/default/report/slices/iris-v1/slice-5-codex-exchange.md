@@ -61,6 +61,11 @@ before ownership is acquired.
 - `internal/iris/bridge_cli.go`: explicit foreground command boundary.
 - `internal/iris/migrations/002_bridge_progress.sql`: incremental progress schema.
 
+`make test-bridge` now owns an isolated actual-binary fixture with two temporary
+projects, distinct real Codex threads, a random receiving-project file value,
+and durable acknowledgment. It fails unavailable providers instead of skipping.
+The fixture is implemented; live acceptance is pending controller validation.
+
 ## Validation
 
 - Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestBridge|TestMigration' -count=1`.
