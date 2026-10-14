@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/iris-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 5, in-progress; Codex exchange.
+Active slice: Slice 5, reviewing; Codex exchange.
 
-Active tasks: T5.5.
+Active tasks: none; Slice 5 prepared for canonical PR integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 4 of 10 slices delivered; 22 of 44 tasks completed.
+Progress: 4 of 10 slices delivered; 23 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -52,7 +52,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 2 | service and storage | delivered | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | `#2` | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | delivered | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | `#3` | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | delivered | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | `#4` | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
-| Slice 5 | Codex exchange | in-progress | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
+| Slice 5 | Codex exchange | reviewing | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | pending | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | pending | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | pending | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
 | Slice 7 | history and export | pending | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | pending | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
@@ -108,7 +108,7 @@ future artifacts; create each during its owning slice.
 | T5.2 | completed | `feat(bridge): run Iris exchanges through Codex` | `eb4150888e0c` | Installed app-server protocol adapter passes race checks for handshake, bound thread/resumption, final-only output, usage, failure/interrupt, and owned process cwd/cleanup. Live end-to-end exchange remains T5.5. |
 | T5.3 | completed | `feat(bridge): preserve Codex authority boundaries` | `482d7e7dd69a` | Denial, one-request human acceptance, foreign/unknown requests, empty permission grants, durable pending identity, nonterminal refusal and final-success rejection passed under race checks. |
 | T5.4 | completed | `feat(bridge): complete bounded Iris exchanges` | `9757ea078bae` | Real SQLite rollback/retry, stale owner, close/completion race, informational no-model processing, turn/time/usage limits, idle ownership and confirmed/uncertain interruption passed with the race detector. |
-| T5.5 | in-progress | `test(bridge): demonstrate autonomous Iris communication` | this commit | Live fixture and target implemented; actual provider acceptance awaits controller validation. |
+| T5.5 | completed | `test(bridge): demonstrate autonomous Iris communication` | `df1a3822a8b5` | All eight ordered Looper checks passed on clean candidate `3235973b8edc63ba07efa8b7a7f20d566857f080`; actual Codex question/response/ack, distinct threads, project-local random proof, one turn each and zero idle invocations passed. |
 
 ## Slice 6 Tasks
 
@@ -168,7 +168,8 @@ future artifacts; create each during its owning slice.
 | Service/storage focused checks | passed | Executable/configuration, real driver/SQLite, private socket/protocol, cancellation, ownership, and real-binary graceful/crash recovery pass. All eight PR checks passed through Looper for final PR head `a42a4152540a53de5811802d0d67b7602663fc58`; the canonical PR merged at that same head. |
 | Project handshake gate | passed | All eight ordered PR checks passed through Looper on final PR head `87e469db951c618513335c3d98644a58a81c54fc`. Canonical PR `#3` merged into `dev` at that same head; its report and tracker entries are closed. |
 | Durable delivery gate | passed | Eight ordered controller checks passed on final PR head `2d3a02e33e450563ee7758df44ea765cb3f8200e`, including all integration-tag race checks and actual-process recovery. Canonical PR `#4` merged at the same head; report/tracker entries are closed. |
-| User-systemd/live Iris exchange | not run | These targets and acceptance workflows remain assigned to their owning slices. |
+| Codex exchange gate | passed | Eight ordered Looper checks passed on clean candidate `3235973b8edc63ba07efa8b7a7f20d566857f080`, including the real two-project exchange, durable acknowledgment, idle counts and integration race checks. PR-reference follow-up requires exact-HEAD regeneration. |
+| User-systemd acceptance | not run | This target remains assigned to its owning slice. |
 
 ## Completion gates
 
