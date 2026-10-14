@@ -29,3 +29,27 @@ migration and returns current project, conversation and message counts.
 binary through graceful and crash recovery using isolated fixture roots.
 Only test-owned processes are signaled. A changed migration checksum is
 reported as `schema_mismatch` before the listener starts.
+
+Project operations canonicalize filesystem inputs before a write transaction,
+then recheck unique path/alias ownership in SQLite. IDs remain stable through
+explicit rename/relocation; participants and messages retain alias snapshots.
+Only call, join and explicit registration can bind an unregistered cwd.
+
+Call creation atomically stores the unordered-pair ordinal, two participants,
+invitation, initial message and request-key digest. Code digests are permanent
+tombstones; up to sixteen cryptographically generated candidates are attempted.
+The fixed version-1 dictionary contains 256 unique ASCII words. An unknown
+recipient alias reserves a project ID before its directory is registered.
+
+Join validates recipient identity before binding its directory. The first join
+adds one system event; identical retries return the initial request without
+creating consumer state or renewing inactivity. Close requires joined
+participation. Terminal transitions and their sequenced system events commit
+together, including due-expiry transitions that return an operation error.
+The final event has a reserved sequence slot and can use an empty body.
+
+`make test-integration` also runs a two-project actual-binary handshake with
+`jq`, text/file/stdin input, scoped errors, rename/move, independent conversations
+and crash/restart. Fixture database inspection happens while its daemon is
+stopped. Public history paging and autonomous lifecycle maintenance have their
+own tasks in the implementation plan.

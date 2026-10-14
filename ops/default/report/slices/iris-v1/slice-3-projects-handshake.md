@@ -38,6 +38,13 @@ without renewing activity or acknowledging consumer work. Either joined
 participant can close. Terminal state and its one system event commit together.
 Expired or closed invitations cannot activate a conversation.
 
+The actual-binary fixture connects two temporary project contexts by carrying
+only the invitation code. It verifies clean human/JSON output, independent
+initial requests, explicit selection, alias/move identity preservation, late
+join rejection, crash/restart persistence, and absence of generated project
+files or consumer acknowledgment state. README examples and Unreleased notes
+describe the usable invitation workflow.
+
 ## Implementation Notes
 
 Filesystem discovery and optional-file validation happen before the write
@@ -66,6 +73,16 @@ inference. Registry pages expose a next cursor and truncation.
 - `internal/iris/operations.go`: typed operation failures and project dispatch.
 - `internal/iris/project_test.go`: canonical, nested, symlink, override and page checks.
 
+## Task Commits
+
+| Task | Commit |
+| --- | --- |
+| T3.1 | `acec8da3ec95` |
+| T3.2 | `4ab7e92e56c6` |
+| T3.3 | `c66c7fa45eb1` |
+| T3.4 | `3151c6e7f69c` |
+| T3.5 | pending |
+
 ## Validation
 
 - `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject|TestStats' -count=1` — passed.
@@ -77,9 +94,15 @@ inference. Registry pages expose a next cursor and truncation.
 
 - `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestJoin|TestClose' -count=1` — passed.
 
-Final controller-recorded exact-HEAD checks follow the remaining slice tasks.
+- `GOTOOLCHAIN=go1.26.3 go test -tags=integration ./internal/iris -run '^TestProcessHandshake$' -count=1` — passed.
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --build-tags=integration ./...` — passed.
+- `python3 scripts/check-contracts.py` — passed: ten matching slices, 44 tasks, fourteen tables, eleven negative constraints, rollback and allocation retention.
+
+Final controller-recorded exact-HEAD validation follows PR preparation.
 
 ## Risks and Follow-ups
 
-Actual-binary handshake acceptance remains in T3.5. Configurable lifecycle
-policy and autonomous timer reconciliation remain assigned to Slice 6.
+Configurable lifecycle policy and autonomous timer reconciliation remain
+assigned to Slice 6. Durable send/receive/ack and Codex execution remain in
+their recorded slices; joining exposes the initial request without processing
+it on behalf of a consumer.
