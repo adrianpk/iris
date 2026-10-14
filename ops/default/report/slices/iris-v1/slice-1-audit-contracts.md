@@ -77,8 +77,18 @@ message never changes sandbox or approval policy.
 The audit selects compatible structure and operation while preserving SQLite
 persistence and on-demand model execution as separate Iris responsibilities.
 The selected Codex bridge uses versioned stdio app-server requests and only
-its own conversation-bound threads. Detailed runtime and data contracts are
-pending T1.3.
+its own conversation-bound threads. Specification section 17 and its model
+companion settle physical schema, query mappings, project discovery and
+placeholder recipients, allocation, non-reused invitations, versioned
+messages/errors, consumer acknowledgment, bridge uncertainty, bounded waits,
+resource limits, retention, complete export, and confirmed pruning.
+
+Selected `modernc.org/sqlite v1.60.1` after inspecting its versioned module and
+driver documentation. Its Go 1.26.0 requirement fits the repository baseline;
+no module dependency was added. Actual driver and migration acceptance stays
+with T2.2. Defaults are WAL, full synchronization, per-connection foreign keys,
+a five-second busy timeout, one initial connection, and atomic ordered SQL
+migrations with immutable checksums.
 
 ## Files of Interest
 
@@ -93,6 +103,6 @@ documentation and cross-reference checks will be recorded before PR readiness.
 
 ## Risks and Follow-ups
 
-Detailed SQLite/protocol contracts and acceptance baseline remain in T1.3 and
-T1.4. Existing interactive-session attachment is unverified; separate owned
+Acceptance fixtures, promotion, and final document/schema validation remain
+in T1.4. Existing interactive-session attachment is unverified; separate owned
 workers are the verified mode.

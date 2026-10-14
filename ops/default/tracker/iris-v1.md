@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 1, in-progress; audit and contracts.
 
-Active tasks: T1.3 and T1.4.
+Active tasks: T1.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 0 of 10 slices delivered; 2 of 44 tasks completed.
+Progress: 0 of 10 slices delivered; 3 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -36,7 +36,7 @@ Progress: 0 of 10 slices delivered; 2 of 44 tasks completed.
 | Approved plan/tracker committed on `dev` | satisfied | Canonical `dev` is `5b548d2851eb60e2a06140b17793157efe893fab`. |
 | Published canonical `dev` base | satisfied | Live origin refs match the planning baseline and initial `main`; Forgejo was inspected before branching. |
 | Detailed spec/model baseline | pending | T1.3 and T1.4 settle decisions and promote the pair before Slice 2. |
-| SQLite dependency selected and confirmed | pending | T1.3; no database dependency has been added. |
+| SQLite dependency selected and confirmed | satisfied | T1.3 selects modernc.org/sqlite v1.60.1; its module requires Go 1.26.0. Addition and driver tests belong to T2.2. |
 | Real Codex integration feasibility | satisfied | T1.2 verified separate owned workers using real turns, own-thread resumption, denial, and interruption. The Iris exchange remains T5.5 acceptance. |
 | Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
 
@@ -66,8 +66,8 @@ none is claimed to exist or to contain delivered evidence now.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T1.1 | completed | `docs(architecture): record Iris family patterns` | `9dc6a7a7c8c0` | Eight-point source audit recorded in the canonical report; final documentation checks pending. |
-| T1.2 | completed | `docs(bridge): verify Codex integration contract` | pending | Six live probe assertions passed on Codex 0.161.0: cwd/turn, fresh thread, own-thread recovery, interrupt, denied approval, and absent write. Existing-session attachment unverified. |
-| T1.3 | pending | `docs(spec): finalize Iris runtime and data contracts` | pending | SQLite choice/confirmation; comparable model/store/query contracts; bounded protocol and recovery semantics. |
+| T1.2 | completed | `docs(bridge): verify Codex integration contract` | `27ac95322321` | Six live probe assertions passed on Codex 0.161.0: cwd/turn, fresh thread, own-thread recovery, interrupt, denied approval, and absent write. Existing-session attachment unverified. |
+| T1.3 | completed | `docs(spec): finalize Iris runtime and data contracts` | pending | Selected and confirmed modernc.org/sqlite v1.60.1 metadata; settled schema/query mapping, identity, delivery, lifecycle, bounds, and recovery contracts; final checker pending. |
 | T1.4 | pending | `docs(plan): establish Iris acceptance baseline` | pending | Settled/promoted spec/model pair, updated links, acceptance ownership, and documentation checks. |
 
 ## Slice 2 Tasks

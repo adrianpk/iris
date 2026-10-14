@@ -327,11 +327,10 @@ This mode runs a separate Codex worker in the project. It does not claim to
 wake or attach to an existing interactive session. No model call occurs while
 the bridge is waiting on the Iris service for a message.
 
-## 9. Proposed CLI
+## 9. CLI contract
 
-Adapt names and flags to verified Acta and Lore conventions while preserving
-these capabilities. Commands below define **required functions**; final
-spelling may change.
+Use the following command names and the standard-library flag style verified
+in the sibling tools. Versioned service operations are mapped in section 17.3.
 
 | Conceptual command | Function |
 | --- | --- |
@@ -576,3 +575,322 @@ recognizable identities across Codex session creation and closure. Old
 conversations must not contaminate new ones. The user must retain the ability
 to inspect, export, and prune history through a CLI as consistent as possible
 with Acta and Lore.
+
+## 17. Settled v1 implementation contracts
+
+This section resolves the initial design alternatives for implementation. The
+[model companion](iris-draft-model.md) defines the matching schema, indexes,
+transactions, and query mappings. These contracts are selected for v1; later
+slices must provide their runtime evidence before claiming the behavior works.
+
+### 17.1 Storage and dependency
+
+Select `modernc.org/sqlite v1.60.1`, the pure-Go `database/sql` driver, for T2.2.
+Its downloaded module metadata requires Go 1.26.0 and is compatible with this
+repository's Go 1.26.3 baseline. This confirms the dependency selection before
+addition; Slice 1 does not change `go.mod`. Pin the driver and its required
+transitive versions when adding it. See its
+[versioned documentation](https://pkg.go.dev/modernc.org/sqlite@v1.60.1).
+
+Only the daemon opens the database for normal operation. Configure every
+connection with foreign keys, a five-second busy timeout, WAL journal mode,
+and `synchronous=FULL`. Use one database connection initially; never hold a
+transaction while waiting on a socket, approval, or model. Use immediate write
+transactions for allocation and state changes; apply a bounded retry only
+before a transaction has committed. An uncertain transport reply is retried
+with the original idempotency key. See SQLite's
+[transaction](https://www.sqlite.org/lang_transaction.html) and
+[WAL](https://www.sqlite.org/wal.html) contracts.
+
+Use ordered embedded SQL migrations with a version/checksum ledger. Apply
+pending migrations and their ledger writes atomically before listening; fail
+on a newer schema, a changed applied checksum, or migration failure. A failed
+upgrade rolls back and does not serve partially migrated state. Backups use
+SQLite's online backup interface or a verified consistent snapshot after all
+owned connections are closed. Copying a live `iris.db` alone is not a backup.
+
+Use `$XDG_DATA_HOME/iris/iris.db`, defaulting to
+`~/.local/share/iris/iris.db`; `$XDG_CONFIG_HOME/iris/config.json`, defaulting
+to `~/.config/iris/config.json`; and
+`$XDG_RUNTIME_DIR/iris/iris.sock`. Require absolute XDG overrides and an owned
+runtime directory. Directories are 0700; database, WAL, backup, and temporary
+export files are private to the user, with umask 0077. A version-1 JSON config
+contains only documented policy fields; reject unknown fields and invalid
+ranges. CLI `--help` works without a socket or XDG runtime setup.
+
+### 17.2 Identity, aliases, and invitation resolution
+
+Canonicalize existing directories with absolute normalization and symlink
+resolution. For discovery, choose the nearest registered canonical ancestor
+of cwd, without reading Git metadata. When none exists, `call`, `join`, or
+`projects register` may register the exact cwd; other project-facing commands
+return `project_not_found`. Register from the intended root before using an
+unregistered nested directory. Explicit `--project` accepts a stable ID,
+canonical path, or unambiguous alias and disables cwd inference.
+
+Aliases use lowercase ASCII letters, digits, and single hyphens, 1 through
+64 bytes, with letters or digits at both ends. For a derived alias, lowercase
+the basename, replace runs of other characters with a hyphen, and trim edge
+hyphens; reject an empty or overlong result. Explicit names must already
+satisfy this grammar. The optional `.iris.toml` supports one `name = "alias"`
+assignment with blank lines and full-line comments; reject duplicate or other
+keys rather than pretending to parse arbitrary TOML. Read it during
+registration, including a first call/join registration. Later edits require
+an explicit rename. Iris never creates or rewrites it.
+
+Persist a random 128-bit project ID independently of path or alias. An alias
+is unique in central storage. Registration with an occupied alias fails
+unless it is the unregistered destination placeholder being resolved by the
+same canonical registration. Renaming requires `projects rename <id>
+--name <alias>`; moving requires `projects relocate <id> --path <directory>`.
+Neither operation merges project IDs or changes historical participant labels.
+A path already assigned to another ID produces `project_conflict`.
+
+For an unknown `call --to <alias>`, create a provisional project with that
+reserved alias and no path. Allocate its stable ID immediately, so pair
+numbering does not change when it joins. Registration/join binds the matching
+alias to its first canonical path transactionally. A different alias or a
+project already registered under another identity cannot claim the invitation.
+Placeholders cannot be renamed or relocated before registration.
+
+Sort the two distinct project IDs to identify an unordered pair. Allocate its
+next ordinal, conversation, two participant snapshots, invitation, and initial
+message in one transaction. Allocate an ordinal only on successful creation;
+never reset or delete the pair allocation row or its referenced project IDs
+when pruning. Display ordinals with at least four digits and no upper-width
+truncation. Topics are required, at most 256 UTF-8 bytes.
+
+Generate three lowercase words independently with `crypto/rand` from a fixed,
+versioned 256-word ASCII list; repeated words are allowed. Try at most 16
+candidates. Keep SHA-256 code tombstones after history pruning and never
+reissue a code. This prevents a saved invitation from joining a later
+conversation. The code is a convenience identifier within the same-user trust
+boundary. Concurrent join is a compare-and-set transaction: exactly one
+project binds the expected participant, records the join event, and activates
+the conversation. A repeated join by that same project returns the same
+conversation and initial message without another event; another project gets
+`recipient_mismatch`. Expired or closed invitations cannot activate anything.
+
+### 17.3 Message, consumer, and protocol contracts
+
+Each public message has `schema_version: 1`, `conversation_id`, `message_id`,
+positive `sequence`, nullable `sender_project_id` for daemon events,
+`sender_alias`, `recipients` containing project IDs, UTC RFC3339Nano
+`created_at`, `kind`, `body`, `topic`, and nullable `reply_to`,
+`correlation_id`, and `idempotency_key`. IDs are opaque 128-bit random values
+encoded as 32 lowercase hexadecimal characters. `message` and `status` come
+from joined participants; `system` is daemon-only and uses sender alias
+`iris`. Messages are immutable. Reply targets must be in the same
+conversation. Preserve sender/participant alias snapshots on historical reads.
+
+Initial technical content is sequence 1 and is addressed to the expected
+recipient. Join and terminal lifecycle events receive ordinary next sequence
+numbers. Allocate sequences and insert the message and recipient rows in the
+same transaction. Default human sends address the other participant; reject
+recipients outside the conversation. Ordinary sends require an active
+conversation and joined sender. Lifecycle events do not invoke models.
+
+Creation requires a caller request key scoped to `(initiator_project_id,
+request_key)`. The CLI generates one per call unless `--idempotency-key` is
+supplied and reuses it for transport retries. Store the digest of normalized
+recipient selector, topic and initial content with the resulting conversation.
+An identical call retry returns that original invitation and conversation;
+changed content conflicts. After pruning, retain the request tombstone and
+return `not_found` rather than creating another conversation for that key.
+
+Scope message idempotency to `(conversation_id, sender_project_id, idempotency_key)`.
+Store a canonical payload digest covering kind, body, sorted recipients,
+reply target, and correlation ID. An identical retry returns the original
+message, sequence, and timestamp, including after closure; different content
+with the same key returns `idempotency_conflict`. Do not compare an invented
+new timestamp or message ID. Without a key, repeated sends are separate
+messages. Keys and correlation IDs are at most 128 UTF-8 bytes.
+
+A consumer is identified by `(conversation_id, project_id, consumer_id)`;
+`consumer_id` is a nonempty string of at most 128 bytes. Manual receive defaults
+to `manual`; each bridge binding uses its own stable consumer ID. Default
+receive starts after the durable acknowledged sequence and returns addressed
+messages in sequence order. Reading can advance `delivered_sequence` but
+never `acked_sequence`. An explicit cursor encodes version, conversation,
+project, consumer, and after-sequence; validate all scope fields and reject
+future/out-of-range positions. Cursors grant no authority.
+
+`ack <conversation> --message-id <id> --consumer <id>` acknowledges only the
+next unacknowledged addressed message that has been delivered to that
+consumer. It cannot skip an earlier addressed message or another consumer's
+work; duplicate acknowledgments are idempotent. Ignore gaps consisting only
+of messages not addressed to the consumer. Persist acknowledgments
+transactionally. Delivery is at least once until acknowledgment; no guarantee
+of exactly-once agent execution is made. Closed/expired histories are
+available through explicit inspection/export, not ordinary receive.
+
+Use one bounded newline-terminated JSON request and response per Unix stream:
+`{"protocol":"iris/v1","operation":"send","params":{}}`.
+The success shape is
+`{"protocol":"iris/v1","schema_version":1,"ok":true,"result":{}}`;
+a failure replaces `result` with
+`"error":{"code":"invalid_request","message":"...","retryable":false}`
+and sets `ok:false`. Result objects and exported messages use version 1.
+Reject malformed UTF-8/JSON, trailing values, unknown fields, unsupported
+versions, and unknown operations. CLI JSON success prints the same semantic
+result envelope, without logging or decoration. On failure stdout is empty,
+stderr contains a readable error or the JSON error envelope when `--json` is
+set, and the process exits nonzero. Exit 0 means success, 2 means invalid CLI
+usage, 1 means an operating/service failure, and 130 means interruption.
+
+Stable codes are `invalid_request`, `unsupported_protocol`,
+`unknown_operation`, `project_not_found`, `project_conflict`, `alias_conflict`,
+`not_found`, `recipient_mismatch`, `invitation_expired`,
+`conversation_inactive`, `not_participant`, `idempotency_conflict`,
+`invalid_cursor`, `ack_out_of_order`, `limit_exceeded`, `server_busy`,
+`storage_busy`, `storage_unavailable`, `schema_mismatch`, `export_expired`,
+`preview_stale`, `approval_required`, `provider_capacity`, `worker_failed`,
+`worker_uncertain`, `cancelled`, and `internal_error`. Mark retryability only
+when the operation can safely be attempted again with the same identity.
+Never include private paths, credentials, or transcripts in generic errors.
+
+The exact operation names and required parameter concepts are:
+
+| CLI | Service operation and parameters |
+| --- | --- |
+| `projects register/list/rename/relocate` | `projects.register` (path, optional name), `projects.list` (page), `projects.rename` (project ID, name), `projects.relocate` (project ID, path) |
+| `call` | `call` (initiator, recipient selector, topic, initial body, request key) |
+| `join <code>` | `join` (project, code) |
+| `send <id>` | `send` (project, conversation, body, kind, recipients, reply/correlation/key) |
+| `receive <id> --consumer <id> --wait <seconds>` | `receive` (project, conversation, consumer, optional cursor, limit, wait seconds) |
+| `ack <id> --message-id <id> --consumer <id>` | `ack` (project, conversation, consumer, message ID) |
+| `conversations`, `show`, `search` | `conversations`, `show`, `search` (explicit project or human all-project scope; ID/pair/ordinal/date/text filters and page where applicable) |
+| `close <id>` | `close` (project, conversation) |
+| `dump <id> --format text/json` | `dump.open` (scope, conversation), `dump.page` (lease, cursor), `dump.close` (lease); complete client spool |
+| `prune --dry-run`, `prune --confirm <token>` | `prune.preview` (scope, eligibility filters), `prune.confirm` (token) |
+| `stats` | `stats` (project or explicit all-project scope) |
+| `bridge start/status/stop` | `bridge.claim`, `bridge.status`, `bridge.stop`; owner-only `bridge.renew`, `bridge.checkpoint`, `bridge.complete` for the running adapter |
+
+All service field names use snake_case, including `project_id`,
+`conversation_id`, `consumer_id`, `message_id`, `request_key`, `wait_seconds`,
+`owner_token`, and `lease_id`. CLI flags use kebab-case. `--message`, `--file`,
+and stdin are mutually exclusive inputs for call/send; no input or empty
+content fails. Options follow the subcommand and precede positional operands,
+as required by Go's flag parser. `--project` and `--json` are command options;
+project listing and help work without an inferred project.
+
+`bridge start` runs a foreground adapter process for one project/conversation,
+with explicit sandbox, approval mode (`deny` by default or interactive with a
+terminal), and limits. The daemon handles only its typed persistence and
+ownership requests. Interactive approvals are displayed locally and answered
+by the operator; no peer response can approve them. `bridge stop` requests
+cancellation through the binding; owner lease renewal reports that request,
+and the adapter interrupts its owned turn and releases its lease.
+
+### 17.4 Explicit resource bounds
+
+All size units below count encoded bytes. Validate positive policy values on
+startup; cap externally supplied limits to the configured maximum and reject
+invalid input rather than silently truncating content.
+
+| Policy | Default | Allowed range or invariant |
+| --- | --- | --- |
+| Message body | 256 KiB | 1 byte through 512 KiB; valid nonempty UTF-8 |
+| Encoded IPC request / response | 1 MiB / 8 MiB | Hard version-1 wire ceilings; body must fit the request |
+| Topic / query text / identifiers | 256 / 512 / 128 bytes | Topic, search, consumer, correlation, and key limits enforced before storage |
+| Result page | 50 items | 1 through 100; explicit next cursor and `truncated` |
+| Receive wait | 30 seconds | 0 through 60 seconds; empty result on timeout |
+| Ordinary request deadline | 10 seconds | Wait uses requested wait plus five seconds, not the ordinary timeout |
+| Connections / waiters | 128 / 64 | At most 16 waiters per project; reject excess with `server_busy` |
+| Active conversations | 64 per project | Count pending and active; retries do not consume another slot |
+| Messages / stored body bytes | 10,000 / 64 MiB per conversation | Reserve one message slot for a terminal daemon event; reject ordinary sends before exhaustion |
+| Consumers | 64 per conversation/project | Reject additional identities before allocation |
+| Export leases / lifetime | 16 / 120 seconds | Fixed snapshot and complete output, bounded temporary spool at 128 MiB |
+| Prune preview | 1,000 candidates / 120 seconds | Require a narrower filter when the complete selection exceeds the cap |
+| Concurrent bridges | 4 | At most one owner per conversation/project |
+| Worker time / turns / total time | 120 seconds / 20 / 600 seconds | Time limits 1 through 3,600 seconds; turns 1 through 100 |
+| Worker usage | 100,000 reported tokens | Stop before another turn once observed cumulative usage reaches the configured budget; a running turn can overshoot |
+| Safe startup retries | 3 | Exponential delays of 1, 2, and 4 seconds; no retry after an uncertain invocation |
+| Bridge ownership lease | 15 seconds | Renew every five seconds; loss of ownership prevents further turns or publication |
+
+A conversation close/expire event uses its reserved final message slot and
+empty body when the body budget is exhausted. Usage measures only what Codex
+reports; unavailable cost or usage fields are `null` with an explicit
+limitation, never zero estimates. Token limits do not claim a monetary cap.
+A timeout or exhausted budget stops the owned bridge and surfaces the reason.
+
+### 17.5 Bridge completion and recovery
+
+A bridge requires explicit activation with conversation, selected project,
+worker permissions, limits, and approval handling. Recheck joined
+participation and active lifecycle before each turn and before publishing a
+reply. Only Iris-owned thread IDs recorded in that binding may be resumed.
+Conversation closure cancels an owned active turn and stops further sends.
+
+Persist an input checkpoint and `invoking` state before `turn/start`. Capture
+the turn ID when available. Only a completed turn's final agent message is a
+response; intermediate reasoning, tool output, and progress are not replies.
+Use `bridge:<binding-id>:<input-message-id>` as the stable response key.
+Record the final response and advance processing acknowledgment together in
+one SQLite transaction after rechecking ownership. A terminal system event
+is acknowledged without a model call. A `status` message is informational
+and is also acknowledged without a model turn, preventing status echo loops.
+
+The durable binding stores its thread/turn, input/result checkpoint, limits,
+usage, status, and error. The running process and its live handles are
+replaceable, never project identity. Claim ownership with an unguessable
+generation token and a renewable lease; compare the token on every update.
+After loss of ownership, no process may publish or acknowledge. Lease expiry
+alone never proves that a model execution did not happen.
+
+After a crash, inspect only the owned thread's recorded turn. A durably
+completed result can be published with the same response key and acknowledged
+without another invocation. A recorded reply/ack transaction needs no replay.
+If invocation may have begun but completion cannot be established, expose
+`worker_uncertain` and require an explicit operator recovery decision. Do not
+rerun potentially non-idempotent tools automatically. Expose failed,
+interrupted, capacity, approval-required, and uncertain outcomes distinctly.
+No provider-capacity retry is safe after invocation becomes uncertain.
+
+A disconnected human cannot silently approve an outstanding request. Preserve
+the request identity while connected, expose `approval_required`, and deny or
+interrupt when the configured deadline expires. Do not widen permissions or
+use `thread/shellCommand` as an escape from the worker sandbox. Idle bridges
+block on bounded service waits and generate no `turn/start` requests.
+
+### 17.6 Lifecycle, history, and destructive operations
+
+The injected service clock is authoritative for all UTC millisecond storage
+times. `call`, successful `join`, and newly persisted participant messages
+or status updates are significant activity. Reads, waits, acknowledgments,
+exports, bridge heartbeats, duplicate retries, and maintenance do not extend
+inactivity. Evaluate due expiration in the same transaction as each stateful
+operation and through a bounded service timer; no model is needed.
+
+Pending expires at creation plus the configured two hours. Active expires at
+last significant activity plus the configured 24 hours. `close` and expiration
+set `terminal_at` once, append one system event, reject new ordinary messages,
+and cancel active waits/bridges. Repeated closure does not extend retention.
+Retained history becomes eligible at `terminal_at` plus the configured 30 days.
+Export neither deletes history nor extends its retention period.
+
+Project-facing `conversations`, `show`, `search`, and `dump` require
+participation and default to the inferred project. Human inspection outside a
+project requires explicit `--all-projects`; it does not change bridge context.
+Lists/search are keyset-paged by `(created_at, id)` and expose truncation.
+Message pages order by sequence. Text search is bounded parameterized SQL,
+with literal substring semantics rather than user SQL or regular expressions.
+
+`dump` freezes lifecycle metadata, participant labels, and the highest message
+sequence in a short-lived daemon-owned export lease. Pages are bounded by the
+wire ceiling. Prune cannot remove a leased conversation. The CLI spools pages
+to a private bounded temporary file, publishes the complete chronological text
+or one complete JSON object only after success, then deletes the spool. An
+expired lease or daemon restart fails explicitly; it never reports a partial
+transcript as successful. Exported JSON contains `schema_version`,
+`conversation`, `participants`, and ordered `messages`.
+
+`prune --dry-run` returns the complete bounded eligible selection, its sizes,
+and a random confirmation token. Bind the token digest to sorted candidate
+IDs and revisions, policy, eligibility cutoff, and a 120-second lifetime.
+`prune --confirm <token>` revalidates the exact selection and export leases in
+one write transaction. A changed, missing, newly ineligible, or leased
+candidate produces `preview_stale` and deletes nothing. Consume the token on
+successful deletion. Preserve project identities, pair counters, and code
+tombstones. Data eligible after the preview is not silently added to its
+selection. Bare `prune` is a preview and never deletes data.
