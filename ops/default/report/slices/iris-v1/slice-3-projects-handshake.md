@@ -1,6 +1,6 @@
 # Slice 3: Projects and Handshake
 
-Status: reviewing
+Status: delivered
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -86,7 +86,7 @@ inference. Registry pages expose a next cursor and truncation.
 ## Validation
 
 The controller recorded these successful commands, in this order, for clean
-implementation head `0857a91d0f4232fa58fd9a19d4516f4f88058f28`:
+final PR head `87e469db951c618513335c3d98644a58a81c54fc`, merged through PR #3 at that same head:
 
 - `make check`
 - `make lint`
@@ -107,9 +107,8 @@ The contract checker confirms ten consecutive slices, 44 tasks, fourteen
 tables, eleven negative constraints, rollback and allocation retention.
 All fixture processes finish under their owned cleanup.
 
-Readiness requires regenerated controller evidence for the clean PR head
-after this PR-reference update. That evidence binds its exact SHA and this
-ordered command list. The PR links the report's full introduction commit,
+Final exact-HEAD evidence was regenerated after the PR-reference update and
+verified before controller integration. The PR links the report introduction
 `acec8da3ec9521ef5f73b083b92d3bc0d4407b5b`.
 
 ## Risks and Follow-ups
