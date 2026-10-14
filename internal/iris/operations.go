@@ -50,6 +50,24 @@ func (s *store) handleProjects(ctx context.Context, req request) response {
 		value, err := s.registerProject(ctx, params)
 
 		return operationResponse(ctx, value, err)
+	case "projects.rename":
+		var params projectRename
+		if err := decodeJSON(req.Params, &params); err != nil {
+			return failure("invalid_request", "invalid rename parameters", false)
+		}
+
+		value, err := s.renameProject(ctx, params)
+
+		return operationResponse(ctx, value, err)
+	case "projects.relocate":
+		var params projectRelocation
+		if err := decodeJSON(req.Params, &params); err != nil {
+			return failure("invalid_request", "invalid relocation parameters", false)
+		}
+
+		value, err := s.relocateProject(ctx, params)
+
+		return operationResponse(ctx, value, err)
 	case "projects.list":
 		var params projectListParams
 		if err := decodeJSON(req.Params, &params); err != nil {

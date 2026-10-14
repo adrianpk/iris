@@ -44,10 +44,14 @@ func (app *App) runProjects(ctx context.Context, args []string) error {
 	switch args[0] {
 	case "list":
 		return app.runProjectList(ctx, args[1:])
+	case "rename":
+		return app.runProjectRename(ctx, args[1:])
+	case "relocate":
+		return app.runProjectRelocate(ctx, args[1:])
 	case "register":
 		return app.runProjectRegister(ctx, args[1:])
 	case "--help", "-h":
-		_, err := io.WriteString(app.stdout, "Usage: iris projects [list|register] [options]\n")
+		_, err := io.WriteString(app.stdout, "Usage: iris projects [list|register|rename|relocate] [options]\n")
 
 		return err
 	}

@@ -19,7 +19,9 @@ or read a user-authored `.iris.toml`, and expose bounded registry pages. Cwd
 selection follows the nearest registered canonical ancestor. An explicit ID,
 path, or unambiguous alias selects a project independently of cwd. Iris creates
 no project-local runtime files. Statistics support project and explicit human
-all-project scope.
+all-project scope. Explicit rename and relocation preserve project IDs, registration
+times, and historical participant aliases. Alias/path collisions and ambiguous
+selectors fail rather than selecting another project.
 
 ## Implementation Notes
 
@@ -29,7 +31,7 @@ Project JSON has schema version 1 and nullable provisional registration fields.
 
 ## Contracts Added or Changed
 
-`projects.register` and `projects.list` operate over the versioned local
+`projects.register`, `projects.list`, `projects.rename`, and `projects.relocate` operate over the versioned local
 protocol. The optional alias file accepts exactly one lowercase `name`
 assignment and comments, at most 4 KiB. Explicit selection disables cwd
 inference. Registry pages expose a next cursor and truncation.
@@ -45,9 +47,11 @@ inference. Registry pages expose a next cursor and truncation.
 - `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject|TestStats' -count=1` — passed.
 - `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix ./...` — passed.
 
+- `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject' -count=1` — passed for collision, rename and relocation behavior.
+
 Final controller-recorded exact-HEAD checks follow the remaining slice tasks.
 
 ## Risks and Follow-ups
 
-Alias/move operations, invitation allocation, join/close, and actual-binary
-handshake acceptance remain in T3.2 through T3.5.
+Invitation allocation, join/close, and actual-binary handshake acceptance remain
+in T3.3 through T3.5.

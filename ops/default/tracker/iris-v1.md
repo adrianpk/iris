@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 3, in-progress; projects and handshake.
 
-Active tasks: T3.2 through T3.5.
+Active tasks: T3.3 through T3.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 2 of 10 slices delivered; 9 of 44 tasks completed.
+Progress: 2 of 10 slices delivered; 10 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -84,8 +84,8 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T3.1 | completed | `feat(projects): register Iris project identities` | pending | Focused canonical/nested/symlink, optional override, explicit selector, bounded project page and no-generated-project-state tests passed; lint passed. |
-| T3.2 | pending | `feat(projects): manage Iris aliases and project moves` | pending | Collision rejection, rename history, and explicit reassociation. |
+| T3.1 | completed | `feat(projects): register Iris project identities` | `acec8da3ec95` | Focused canonical/nested/symlink, optional override, explicit selector, bounded project page and no-generated-project-state tests passed; lint passed. |
+| T3.2 | completed | `feat(projects): manage Iris aliases and project moves` | pending | Focused collision, ambiguous selector, stable ID, historical snapshot, and explicit relocation tests passed; lint passed. |
 | T3.3 | pending | `feat(conversations): create Iris invitations` | pending | Concurrent unordered-pair ordinals, unique live codes, expected recipient, and initial persistence. |
 | T3.4 | pending | `feat(conversations): join and close Iris conversations` | pending | Correct/wrong/expired/concurrent join, first message, terminal-state rejection, and no reopen. |
 | T3.5 | pending | `test(conversations): verify Iris project handshakes` | pending | Real two-project handshake; human output and valid JSON/`jq`; no implicit acknowledgment. |
