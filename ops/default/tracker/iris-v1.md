@@ -151,7 +151,7 @@ future artifacts; create each during its owning slice.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T10.1 | pending | `docs(guide): explain Iris project conversations` | pending | Reproduce installation/handshake/bridge workflow using the User Guide and temporary projects. |
+| T10.1 | in-progress | `docs(guide): explain Iris project conversations` | pending | Reproduce installation/handshake/bridge workflow using the User Guide and temporary projects. |
 | T10.2 | pending | `docs(reference): document Iris contracts and future capabilities` | pending | Runtime/schema/CLI consistency, links/package docs, and preserved forum/broadcast future scope. |
 | T10.3 | pending | `test(acceptance): verify the complete Iris v1 workflow` | pending | All ten required test groups; real processes/systemd/Codex, retention/export/prune, and fresh-context isolation. |
 | T10.4 | pending | `chore(delivery): finalize Iris v1 validation` | pending | Immutable candidate SHA, full gate, canonical reports, and concrete limits; release publication remains separate. |

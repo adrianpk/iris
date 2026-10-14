@@ -1,0 +1,53 @@
+# Slice 10: Acceptance and Documentation
+
+Status: drafting
+Delivery set: iris-v1
+Plan: [Iris v1 plan](../../../plan/iris-v1.md)
+Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
+Branch: `test/slice-10-iris-acceptance-documentation`
+PR: pending
+
+## Purpose
+
+Complete the user learning path, public contracts and acceptance automation for
+the implemented v1 behavior. Preserve exact evidence for controller integration
+and the subsequent full delivery gate.
+
+## Delivered Behavior
+
+The User Guide leads from source installation through two-project invitation,
+explicit bounded Codex workers, retained history, export and closure. README
+and quadrant navigation lead to that path and supporting operational references.
+
+## Implementation Notes
+
+An actual-binary test executes the published invitation/history shell blocks
+unchanged in owned temporary projects. It catches command and JSON-format drift.
+The guide distinguishes separate owned workers from existing interactive
+sessions and keeps tools and approval decisions explicit.
+
+## Contracts Added or Changed
+
+Documentation exposes existing behavior; runtime and storage formats are unchanged.
+Plain JSON transcripts use the semantic transcript object; `dump --json` uses
+the versioned success envelope.
+
+## Files of Interest
+
+- `docs/tutorials/user-guide/index.md`: progressive user learning path.
+- `docs/reference/projects.md`: identity, selection and invitation contracts.
+- `internal/iris/process_guide_test.go`: executable guide commands.
+
+## Validation
+
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessUserGuide$' -count=1`.
+The published commands create/join, inspect, export both formats, close and
+preview without deletion. IDs, ordinal, terminal state and ordered messages
+are checked through the actual binary. An initial guide assertion expected an
+envelope for plain `--format json`; the real execution caught it and the
+published jq assertion now checks the semantic transcript object.
+
+## Risks and Follow-ups
+
+The integrated immutable candidate and full gate belong to the controller's
+later gate/closure phases. Current focused evidence does not close that gate.
