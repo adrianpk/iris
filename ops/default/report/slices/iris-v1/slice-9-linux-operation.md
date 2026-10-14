@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `feat/slice-9-iris-linux-operation`
-PR: pending
+PR: [#9](https://forge.adrianpk.com/adrianpk/iris/pulls/9)
 
 ## Purpose
 
@@ -53,39 +53,49 @@ remain 0600 and 0700. Shutdown closes only the inherited descriptor.
 
 ## Validation
 
-Passed focused checks:
+All nine ordered checks passed through Looper on clean implementation candidate
+`95ab6656dfee575f190c4180775e4b10edaba59b` before canonical PR #9 opened:
 
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestActivation|^TestRuntime|^TestClientSocket' -count=1`
+- `make check`
+- `make lint`
+- `make docs-check`
+- `make test-systemd`
+- `python3 scripts/check-contracts.py`
 - `python3 scripts/test-install.py`
-- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessBackupRestore$|^TestBackup|^TestServeDiagnostic$' -count=1`
-- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestActivation|^TestServeDiagnostic$' -count=1`
-- `GOTOOLCHAIN=go1.26.3 go test -v -race -tags=systemd ./internal/iris -run '^TestSystemdOperation$' -count=1 -timeout=2m`
-- `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --allow-serial-runners --build-tags=integration,bridge,systemd ./...`
+- `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcess|^TestActivation|^TestBackup|^TestServeDiagnostic$' -count=1`
+- `GOTOOLCHAIN=go1.26.3 golangci-lint run --allow-serial-runners --build-tags=integration,bridge,systemd ./...`
+- `git diff --check`
 
-Descriptor tests cover metadata, type, path, permissions and retained manager
-ownership. Three installation cases verify repeated build hashes, actual binary
-execution, atomic replacement, real unit verification, escaped paths, rejected
-symlinks and preserved data/config. The executable documentation recipe refuses
-live WAL, then verifies stopped-copy integrity and restored CLI IDs/messages;
-later writes disappear after restoration. Online-backup/cancellation and daemon
-stderr regressions also pass.
-
-The initial focused systemd run failed at `218/CAPABILITIES`: an empty capability
-bounding-set directive required privilege unavailable to the user manager.
-The unit now uses restrictions supported by the unprivileged manager; the real
-test verifies zero effective capabilities and no new privileges. The shutdown
-fixture also accepts an explicit cancellation error envelope as well as EOF.
-
-The corrected real user-manager race check passed in 6.028 seconds. Private,
-uniquely named runtime units verified inactive-before-request activation,
+The controller's required `make test-systemd` run passed in 5.062 seconds.
+Uniquely named runtime units verified inactive-before-request activation,
 matching XDG roots with spaces/percent/dollar signs, 0600 socket/database/WAL/SHM,
 0700 roots, no implicit restart during upgrade, deliberate restart, crash
 restart, durable IDs/messages, long-poll disconnect, cancelled waits, retained
-socket inode and orderly shutdown/reopen. A one-second idle observation measured
-0 CPU ticks and 13,656 KiB daemon RSS with no bridge/provider children. Cleanup
-removed all owned units, links and roots. Missing manager access fails the test.
+socket inode and orderly shutdown/reopen. Its one-second idle observation
+measured 0 CPU ticks and 13,524 KiB daemon RSS with no bridge/provider children.
+Cleanup removed all owned units, links and roots; missing manager access fails.
 
-The ordered controller validation must bind the clean PR head before integration.
+The actual-process and changed-boundary race command passed in 13.981 seconds.
+Descriptor tests reject incorrect metadata, network/packet listeners, unsafe
+modes and foreign paths while preserving manager ownership. Three installation
+cases verify repeated build hashes, executable output, atomic replacement,
+real unit syntax, escaped paths, rejected symlinks and data/config preservation.
+The executable documentation recipe refuses live WAL, verifies stopped-copy
+integrity and restores CLI IDs/messages while discarding later writes. Online
+backup/cancellation and daemon stderr regressions also pass. The contract checker
+verified ten matching slices, 44 tasks, fourteen tables and eleven invalid cases.
+
+Additional focused check passed:
+`GOTOOLCHAIN=go1.26.3 go test -v -race -tags=systemd ./internal/iris -run '^TestSystemdOperation$' -count=1 -timeout=2m`
+(6.028 seconds). The initial run failed at `218/CAPABILITIES`: an empty capability
+bounding-set directive required privilege unavailable to the user manager.
+The corrected unit uses unprivileged-manager restrictions; the running daemon
+has zero effective capabilities and no new privileges. The shutdown fixture
+accepts an explicit cancellation error envelope as well as EOF.
+
+The PR-reference follow-up requires regeneration on its exact clean head with
+this same ordered command list. The canonical PR head and controller ledger
+identify final integration evidence.
 
 ## Risks and Follow-ups
 

@@ -16,7 +16,7 @@ Base branch: `dev`
 
 Active slice: Slice 9, reviewing; Linux operation.
 
-Active tasks: none; Slice 9 awaits ordered validation and its canonical PR.
+Active tasks: none; canonical PR `#9` awaits controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
@@ -56,7 +56,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 6 | lifecycle and retention | delivered | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | `#6` | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
 | Slice 7 | history and export | delivered | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | `#7` | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | delivered | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | `#8` | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
-| Slice 9 | Linux operation | reviewing | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
+| Slice 9 | Linux operation | reviewing | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | `#9` | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
 The first eight slices have delivered reports. Remaining report paths identify
@@ -145,7 +145,7 @@ future artifacts; create each during its owning slice.
 | T9.1 | completed | `feat(systemd): activate the Iris user service` | `de3bf4c2ca19` | Descriptor/runtime race checks and actual isolated user-manager activation passed. Unit restrictions verified on the running daemon; manager retains its socket across restart. |
 | T9.2 | completed | `build(linux): install and remove Iris user components` | `f6a48af24743` | Three isolated installation cases passed: reproducible binary, atomic upgrade, actual unit validation, explicit activation, private units, rejected symlinks and preserved data/config. |
 | T9.3 | completed | `docs(operation): document Iris backup and recovery` | `cabd4ac3b5a4` | Actual documented recipe rejects a live WAL copy; stopped snapshot integrity, restored original CLI IDs/messages and rollback of later writes passed with race checks. Daemon startup causes reach stderr; diagnostics/shutdown documented. |
-| T9.4 | completed | `test(systemd): verify Iris user service operation` | pending | Added real isolated user-manager target. Race acceptance passed activation, upgrade/restart, crash restart, private modes, disconnect/cancellation, shutdown/reopen and idle observation; owned fixtures cleaned. |
+| T9.4 | completed | `test(systemd): verify Iris user service operation` | `95ab6656dfee` | Added real isolated user-manager target. Race acceptance passed activation, upgrade/restart, crash restart, private modes, disconnect/cancellation, shutdown/reopen and idle observation; owned fixtures cleaned. |
 
 ## Slice 10 Tasks
 
@@ -172,7 +172,7 @@ future artifacts; create each during its owning slice.
 | Lifecycle and retention gate | passed | All seven ordered Looper checks passed on final PR head `f802b42de7d94253aa3545ae382f9d6c74dc312b`, including actual daemon/CLI expiration, retention/pruning, fresh context and all integration-tag race checks. Canonical PR `#6` merged at that head; report/tracker entries are closed. |
 | History and export gate | passed | All seven ordered controller checks passed on final PR head `cb35ff0ce59feb94db6d453626d328eeb875b7e3`, including actual binaries, complete exports, jq and integration race checks. Canonical PR `#7` merged at that head; report/tracker entries are closed. |
 | Bridge recovery gate | passed | Ten ordered controller checks passed on final PR head `de6aec26826b250356a584f413c249aacf3de52e`, including real recovery/restart, two bounded fuzz campaigns, integration race checks and combined-tag lint. Canonical PR `#8` merged at that head; report/tracker entries are closed. |
-| User-systemd acceptance | passed focused | Real isolated user-manager race acceptance passed; ordered clean-head controller evidence pending. |
+| User-systemd acceptance | passed | All nine ordered controller checks passed on clean implementation candidate `95ab6656dfee575f190c4180775e4b10edaba59b`, including actual isolated units, installation, process race checks and combined-tag lint. PR-reference follow-up requires exact-HEAD regeneration. |
 
 ## Completion gates
 
