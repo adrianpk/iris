@@ -19,3 +19,5 @@ All notable changes to Iris are documented here.
 - Configure invitation, inactivity and retention durations, let the service
   expire conversations automatically, and remove eligible history only after
   confirming an exact preview while preserving project identities and numbering.
+- Inspect retained conversations with project-scoped listings and paged messages,
+  or select all projects explicitly for local administration.

@@ -20,6 +20,8 @@ Commands:
   call                        Invite a project with an initial request
   join <code>                 Accept an invitation and read the initial request
   close <id>                  Close a conversation without deleting history
+  conversations               List visible retained conversations
+  show <id>                   Inspect metadata and bounded messages
   prune                       Preview or confirm retention-eligible deletion
   projects                    Register and inspect project identities
   stats [--project <selector>|--all-projects] [--json] Inspect storage counts
