@@ -14,14 +14,14 @@ Model: [Iris data model](../spec/drafts/iris-draft-model.md)
 
 Base branch: `dev`
 
-Active slice: Slice 1, planned; not started.
+Active slice: Slice 1, in-progress; audit and contracts.
 
-Active tasks: none
+Active tasks: T1.2 through T1.4.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 0 of 10 slices delivered; 0 of 44 tasks completed.
+Progress: 0 of 10 slices delivered; 1 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -33,21 +33,21 @@ Progress: 0 of 10 slices delivered; 0 of 44 tasks completed.
 | Canonical remote configured | satisfied | `origin` is configured; the remote was empty when inspected. |
 | Plan and tracker drafted | satisfied | This tracker and its linked plan define ten slices and 44 tasks. |
 | Plan approved for implementation | satisfied | User authorized Looper execution on 2026-10-14, including the controller's configured slice integrations into `dev`. |
-| Approved plan/tracker committed on `dev` | startup check | Verify these approved artifacts are committed before `looper init`. |
-| Published canonical `dev` base | startup check | Publish initial `main` and approved `dev`, then verify the forge base before execution. |
+| Approved plan/tracker committed on `dev` | satisfied | Canonical `dev` is `5b548d2851eb60e2a06140b17793157efe893fab`. |
+| Published canonical `dev` base | satisfied | Live origin refs match the planning baseline and initial `main`; Forgejo was inspected before branching. |
 | Detailed spec/model baseline | pending | T1.3 and T1.4 settle decisions and promote the pair before Slice 2. |
 | SQLite dependency selected and confirmed | pending | T1.3; no database dependency has been added. |
 | Real Codex integration feasibility | pending | Installed 0.161.0 schema was inspected; real invocation and session behavior belong to T1.2. |
 | Full/live/systemd acceptance environment | pending | Establish isolated fixtures and provider/user-manager availability in their owning slices. |
 
-These are entry conditions, not failed implementation tasks. No slice branch,
-worker, service installation, or provider-backed test has been started.
+Slice 1 executes in its dedicated worktree. The primary checkout remains on
+`dev`; the external controller owns integration.
 
 ## Slice status
 
 | Slice | Short Name | Status | Branch | Expected PR title | PR | Report |
 | --- | --- | --- | --- | --- | --- | --- |
-| Slice 1 | audit and contracts | pending | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | pending | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
+| Slice 1 | audit and contracts | in-progress | `docs/slice-1-iris-audit-contracts` | `docs(slice-1): define Iris implementation contracts` | pending | `ops/default/report/slices/iris-v1/slice-1-audit-contracts.md` |
 | Slice 2 | service and storage | pending | `feat/slice-2-iris-service-storage` | `feat(slice-2): establish Iris service and SQLite storage` | pending | `ops/default/report/slices/iris-v1/slice-2-service-storage.md` |
 | Slice 3 | projects and handshake | pending | `feat/slice-3-iris-projects-handshake` | `feat(slice-3): connect projects through Iris invitations` | pending | `ops/default/report/slices/iris-v1/slice-3-projects-handshake.md` |
 | Slice 4 | durable delivery | pending | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | pending | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
@@ -65,7 +65,7 @@ none is claimed to exist or to contain delivered evidence now.
 
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
-| T1.1 | pending | `docs(architecture): record Iris family patterns` | pending | Eight-point source comparison and adopted/different decisions; documentation checks. |
+| T1.1 | completed | `docs(architecture): record Iris family patterns` | pending | Eight-point source audit recorded in the canonical report; final documentation checks pending. |
 | T1.2 | pending | `docs(bridge): verify Codex integration contract` | pending | Bounded real Codex probe: cwd, turns, own-thread resume, approval, cancellation, and session limitations. |
 | T1.3 | pending | `docs(spec): finalize Iris runtime and data contracts` | pending | SQLite choice/confirmation; comparable model/store/query contracts; bounded protocol and recovery semantics. |
 | T1.4 | pending | `docs(plan): establish Iris acceptance baseline` | pending | Settled/promoted spec/model pair, updated links, acceptance ownership, and documentation checks. |
@@ -167,8 +167,8 @@ none is claimed to exist or to contain delivered evidence now.
 ## Completion gates
 
 - [x] Delivery set explicitly approved for execution through Looper.
-- [ ] Approved artifacts committed and canonical startup prerequisites verified.
-- [ ] Canonical `dev` base published for slice PR delivery.
+- [x] Approved artifacts committed and canonical startup prerequisites verified.
+- [x] Canonical `dev` base published for slice PR delivery.
 - [ ] Slice 1 delivered; detailed spec/model settled and SQLite dependency confirmed.
 - [ ] Slice 2 delivered; real CLI/daemon/SQLite integration passes.
 - [ ] Slice 3 delivered; identity, numbering, invitation, join, and close pass.
