@@ -23,6 +23,7 @@ Commands:
   conversations               List visible retained conversations
   search                      Find history by literal text, pair and dates
   show <id>                   Inspect metadata and bounded messages
+  dump <id>                   Export a complete text or JSON transcript
   prune                       Preview or confirm retention-eligible deletion
   projects                    Register and inspect project identities
   stats [--project <selector>|--all-projects] [--json] Inspect storage counts

@@ -44,6 +44,10 @@ func (s *store) handle(ctx context.Context, req request) response {
 }
 
 func (s *store) dispatch(ctx context.Context, req request) response {
+	if strings.HasPrefix(req.Operation, "dump.") {
+		return s.handleHistory(ctx, req)
+	}
+
 	if strings.HasPrefix(req.Operation, "prune.") {
 		return s.handlePrune(ctx, req)
 	}
@@ -57,10 +61,8 @@ func (s *store) dispatch(ctx context.Context, req request) response {
 	}
 
 	switch req.Operation {
-	case "conversations", "search":
-		return typedOperation(ctx, req, s.listConversations)
-	case "show":
-		return typedOperation(ctx, req, s.showConversation)
+	case "conversations", "search", "show":
+		return s.handleHistory(ctx, req)
 	case "receive", "ack":
 		return s.handleDelivery(ctx, req)
 	case "send":

@@ -14,13 +14,6 @@ type storedPrunePreview struct {
 	expires         int64
 }
 
-// Export leases are runtime-owned and accessed only inside the serialized store transactions.
-// The history/export operations extend this record when they acquire their snapshot leases.
-type exportLease struct {
-	conversationID string
-	expiresAt      time.Time
-}
-
 func (s *store) confirmPrune(ctx context.Context, params pruneConfirmation) (pruneResult, error) {
 	if !validID(params.Token) {
 		return pruneResult{}, problem("invalid_request", "prune confirmation requires its exact preview token")

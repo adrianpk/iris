@@ -18,6 +18,10 @@ Conversation listings default to registered project participation. Explicit
 all-project scope supports administration outside a project. State filters
 include pending, active, closed and expired history. Show reads immutable
 participant labels and ordered message pages without creating consumers.
+Complete text and JSON exports freeze lifecycle metadata, participant labels
+and the highest sequence. Runtime leases block pruning. Private spools enforce
+a 128 MiB ceiling and publish only after all bounded pages succeed. Failure,
+cancellation, expiry or restart cannot publish a successful partial transcript.
 Search combines literal case-sensitive text, project pair, inclusive creation
 dates, ordinal, ID and state. Matching message IDs, sequences and bounded
 excerpts support explicit inspection. Pair/ordinal selection is unambiguous.
@@ -29,6 +33,9 @@ keysets and scope-bound cursors. Message pages bound item count and wire size.
 
 ## Contracts Added or Changed
 
+`dump.open/page/close` use at most 16 runtime leases with a fixed 120-second
+lifetime. Restart invalidates leases. `dump --format json` emits one complete
+transcript object; `--json` wraps that object in the standard response envelope.
 `conversations` and `show` use the existing versioned Unix protocol. Lists and
 message pages default to 50 and permit up to 100 items, with explicit next
 cursor and truncation fields.
@@ -45,6 +52,10 @@ Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestHistory' 
 Scope, retained-state access, cursors, consumer isolation and real Unix CLI
 requests pass. Slice-level validation remains pending during implementation.
 
+Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run '^TestDump|^TestHistory|^TestPrune' -count=1`. Export snapshots, wire/item pages,
+lease bounds, retained data, private cleanup, expiry/restart and no partial
+publication pass.
+
 ## Risks and Follow-ups
 
-Exports and extended statistics remain in this slice's recorded tasks.
+Extended statistics remain in this slice's recorded tasks.
