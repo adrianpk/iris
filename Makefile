@@ -18,7 +18,7 @@ test-integration:
 	@$(GO) test -tags=integration ./internal/iris -run '^TestProcess' -count=1
 
 test-bridge:
-	@$(GO) test -tags=bridge ./internal/iris -run '^TestBridgeLive' -count=1 -timeout=5m
+	@$(GO) test -v -tags=bridge ./internal/iris -run '^TestBridgeLive' -count=1 -timeout=5m
 
 test-coverage:
 	@$(GO) test -coverprofile=$(COVERAGE_OUT) ./...

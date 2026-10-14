@@ -127,8 +127,14 @@ confirmation remains uncertain.
 projects, then explicitly starts two real Codex workers using existing provider
 configuration. It requires a random fact read from the receiving project's
 file, distinct threads, one technical reply and durable processing acknowledgment.
-It also verifies zero initial idle turns and stable turn/message counts after
-completion. It never skips missing authentication or capacity, relays a reply
+It drops one completed-result delivery, checks unacknowledged uncertain state,
+and recovers the exact recorded provider turn without another invocation.
+Both workers then restart with their original bindings/threads, process a new
+project-local proof, and retain cumulative budgets. Zero initial idle turns
+and stable completed turn/message counts exclude echo loops. A one-second
+idle sample reports CPU ticks and resident memory for the daemon and two Iris
+worker processes; it excludes provider subprocesses and is observation rather
+than a general performance guarantee. It never skips missing authentication or capacity, relays a reply
 manually, or substitutes a fake model. Cleanup stops only fixture-owned workers
 and service. The separate unit suite uses protocol fixtures for failures and
 approval decisions; those fixtures do not establish live acceptance.

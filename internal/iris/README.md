@@ -110,3 +110,15 @@ prune and expire after 120 seconds; no lease survives daemon restart.
 The CLI streams bounded pages into a private 128 MiB spool before publishing
 complete text or JSON. Statistics separate scoped counts from service-wide
 logical SQLite allocation. See the [history reference](../../docs/reference/history.md).
+
+
+Bridge recovery checkpoints completed final results before atomic publication.
+Migration 3 adds versioned pending result JSON; migration 4 keeps the observed
+usage floor independently of nullable current telemetry. Generation tokens
+protect result capture/publication, and explicit recovery reads only the exact
+stored owned thread/turn. It cannot grant a disconnected approval or replay
+unfinished work. Setup retries are bounded before invoking state. Restart
+preserves policy, counters and lifetime; the daemon checks budgets before
+provider startup. Pipe writes and owned process shutdown honor deadlines.
+The live bridge target exercises lost result delivery, no-invocation recovery,
+original-thread restart, pending work and bounded idle observations.

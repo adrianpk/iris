@@ -17,6 +17,7 @@ type liveExchange struct {
 	conversation conversation
 	workers      [2]*ownedProcess
 	proof        string
+	service      *ownedProcess
 }
 
 // Two real Codex workers exchange a project-local fact through Iris and acknowledge it without a relay or echo.
@@ -25,11 +26,15 @@ func TestBridgeLiveExchange(t *testing.T) {
 	flow.workers[0] = flow.startWorker(t, 0)
 	flow.assertInitialIdle(t)
 
-	flow.workers[1] = flow.startWorker(t, 1)
+	flow.workers[1] = flow.startFaultedWorker(t)
+	flow.awaitRecoveryFailure(t)
+
+	flow.workers[1] = flow.startBridgeWorker(t, 1, []string{"bridge", "recover", "--json", flow.conversation.ID}, flow.fixture.env)
 	flow.awaitExchange(t)
 	flow.verifyExchange(t)
 	flow.assertFinalIdle(t)
 	flow.stopWorkers(t)
+	flow.verifyRestartExchange(t)
 }
 
 func prepareLiveExchange(t *testing.T) *liveExchange {
@@ -55,7 +60,7 @@ func prepareLiveExchange(t *testing.T) *liveExchange {
 		t.Fatal(err)
 	}
 
-	fixture.start(t)
+	flow.service = fixture.start(t)
 	processJSON[project](t, fixture, fixture.projects[0], "projects", "register", "--json")
 	processJSON[project](t, fixture, fixture.projects[1], "projects", "register", "--json")
 
@@ -68,9 +73,19 @@ func prepareLiveExchange(t *testing.T) *liveExchange {
 func (flow *liveExchange) startWorker(t *testing.T, index int) *ownedProcess {
 	t.Helper()
 
+	return flow.startBridgeWorker(t, index, flow.workerArguments(), flow.fixture.env)
+}
+
+func (flow *liveExchange) workerArguments() []string {
+	return []string{"bridge", "start", "--sandbox", "read-only", "--approvals", "deny", "--turn-seconds", "90", "--total-seconds", "210", "--max-turns", "2", "--max-tokens", "150000", "--json", flow.conversation.ID}
+}
+
+func (flow *liveExchange) startBridgeWorker(t *testing.T, index int, args, environment []string) *ownedProcess {
+	t.Helper()
+
 	worker := &ownedProcess{exited: make(chan struct{})}
-	worker.cmd = exec.Command(flow.fixture.binary, "bridge", "start", "--sandbox", "read-only", "--approvals", "deny", "--turn-seconds", "90", "--total-seconds", "210", "--max-turns", "2", "--max-tokens", "150000", "--json", flow.conversation.ID)
-	worker.cmd.Dir, worker.cmd.Env = flow.fixture.projects[index], flow.fixture.env
+	worker.cmd = exec.Command(flow.fixture.binary, args...)
+	worker.cmd.Dir, worker.cmd.Env = flow.fixture.projects[index], environment
 
 	worker.cmd.Stdout, worker.cmd.Stderr = &worker.stdout, &worker.stderr
 
@@ -244,7 +259,14 @@ func (flow *liveExchange) verifyAcknowledgment(t *testing.T, index int, binding 
 
 func (flow *liveExchange) assertFinalIdle(t *testing.T) {
 	t.Helper()
+
+	before := flow.idleResources(t)
+	started := time.Now()
+
 	waitLiveInterval(t, time.Second)
+
+	after := flow.idleResources(t)
+	t.Logf("idle measurement: interval_ms=%d cpu_ticks=%d rss_kib=%d for daemon and two Iris bridge processes; provider subprocesses excluded", time.Since(started).Milliseconds(), after.ticks-before.ticks, after.rss)
 	flow.assertWorkersRunning(t)
 
 	for index := range flow.workers {

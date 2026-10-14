@@ -1,6 +1,6 @@
 # Slice 8: Bridge Recovery
 
-Status: drafting
+Status: reviewing
 Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
@@ -48,6 +48,10 @@ turn, completion status, tool outcomes and final answer schema.
 - `internal/iris/bridge_result.go`: durable result and recovery orchestration.
 - `internal/iris/codex_recovery.go`: bounded read-only provider inspection.
 - `internal/iris/migrations/003_bridge_result.sql`: result checkpoint storage.
+- `internal/iris/bridge_retry.go`: safe setup retry boundaries.
+- `internal/iris/bridge_limits_test.go`: budget/telemetry/recovery boundaries.
+- `internal/iris/bridge_live_recovery_test.go`: real recovery and restart fixture.
+- `docs/reference/bridge.md`: operator recovery and execution limits.
 
 ## Validation
 
@@ -79,8 +83,8 @@ failure. These bounded campaigns supplement deterministic boundary/race checks.
 
 ## Risks and Follow-ups
 
-Real adapter
-recovery/idle measurements remain in this slice's recorded tasks.
+Required ordered controller validation, including the extended real adapter
+recovery/idle fixture, remains pending before PR creation.
 The installed 0.161.0 schema supports `thread/read` with `includeTurns`;
 recovery fails explicitly if bounded complete history is unavailable.
 [Official app-server reference](https://learn.chatgpt.com/docs/app-server).

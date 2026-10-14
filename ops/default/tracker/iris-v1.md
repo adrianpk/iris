@@ -135,8 +135,8 @@ future artifacts; create each during its owning slice.
 | T8.1 | completed | `feat(bridge): recover Iris worker progress` | `fdf1fa70cddd` | Real SQLite reopen, result checkpoint immutability, exclusive generation ownership, lost completion confirmation and no-model publication passed with race checks; exact stored turn recovery rejects foreign/incomplete work. |
 | T8.2 | completed | `feat(bridge): report uncertain Iris worker outcomes` | `32a9b0816257` | Distinct failure/status hints, expired-lease uncertainty, three safe startup retries with 1/2/4-second delays, definitive rejection and durable approval-decline recovery checks passed; no turn invocation retries. |
 | T8.3 | completed | `feat(bridge): enforce Iris execution limits` | `c6e7ce18fe48` | Persisted restart policy, pre-provider budgets, nullable telemetry with observed floor, expired-budget saved-result recovery, global owner cap, blocked-stdin deadlines and owned process cleanup passed with race checks. |
-| T8.4 | completed | `test(security): verify Iris input and authority boundaries` | pending | Actual Unix malformed/oversized/UTF-8/scope rejection, literal peer injection, forged owner and private mode checks passed with race detection; bounded request/recovery fuzzing passed with two workers. |
-| T8.5 | pending | `test(bridge): verify Iris recovery and idle behavior` | pending | Real adapter restart/resumption, zero idle model calls, resource measurements, and honest recovery limitations. |
+| T8.4 | completed | `test(security): verify Iris input and authority boundaries` | `1f1c2b352c1d` | Actual Unix malformed/oversized/UTF-8/scope rejection, literal peer injection, forged owner and private mode checks passed with race detection; bounded request/recovery fuzzing passed with two workers. |
+| T8.5 | in-progress | `test(bridge): verify Iris recovery and idle behavior` | pending | Live fixture now injects a lost result checkpoint, recovers the recorded real turn, restarts both original threads with pending work and samples bounded idle CPU/RSS. Required controller validation is pending. |
 
 ## Slice 9 Tasks
 
