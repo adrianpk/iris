@@ -34,7 +34,7 @@ func callService(ctx context.Context, cfg config, req request) (reply response, 
 		}
 	}()
 
-	if err := setClientDeadline(ctx, cfg, connection); err != nil {
+	if err := setClientDeadline(ctx, cfg, connection, req); err != nil {
 		return response{}, unavailable(err)
 	}
 
@@ -84,8 +84,8 @@ func unavailable(cause error) *serviceError {
 	return &serviceError{Code: "storage_unavailable", Message: "cannot reach Iris service; start iris serve or check runtime permissions", cause: cause}
 }
 
-func setClientDeadline(ctx context.Context, cfg config, connection net.Conn) error {
-	deadline := time.Now().Add(time.Duration(cfg.settings.RequestTimeoutSeconds) * time.Second)
+func setClientDeadline(ctx context.Context, cfg config, connection net.Conn, req request) error {
+	deadline := time.Now().Add(requestDuration(cfg, req))
 	if parent, ok := ctx.Deadline(); ok && parent.Before(deadline) {
 		deadline = parent
 	}

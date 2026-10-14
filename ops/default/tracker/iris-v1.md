@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: Slice 4, in-progress; durable delivery.
 
-Active tasks: T4.3 through T4.5.
+Active tasks: T4.4 through T4.5.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 3 of 10 slices delivered; 15 of 44 tasks completed.
+Progress: 3 of 10 slices delivered; 16 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -95,8 +95,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T4.1 | completed | `feat(messages): persist ordered Iris messages` | `ea515bd` | Iris concurrent send, canonical retry, participant/reply isolation and injected rollback checks passed with the race detector; lint passed. |
-| T4.2 | completed | `feat(delivery): track Iris consumer processing` | pending | Iris independent consumer replay, scoped cursor, ordered acknowledgment, reopen, bounded page/consumer and atomic result-plus-ack race checks passed; lint passed. |
-| T4.3 | pending | `feat(delivery): wait for Iris messages efficiently` | pending | Wait/commit race, notification, timeout, disconnect, and terminal-state wakeup. |
+| T4.2 | completed | `feat(delivery): track Iris consumer processing` | `9de12aa` | Iris independent consumer replay, scoped cursor, ordered acknowledgment, reopen, bounded page/consumer and atomic result-plus-ack race checks passed; lint passed. |
+| T4.3 | completed | `feat(delivery): wait for Iris messages efficiently` | pending | Iris long-poll commit/subscription race, terminal wakeup, timeout, cancellation, Unix half-close/full-disconnect and waiter capacity race checks passed; lint passed. |
 | T4.4 | pending | `feat(cli): send and receive Iris message content` | pending | Text/file/stdin and limits across CLI/socket/store; clean JSON stdout. |
 | T4.5 | pending | `test(delivery): verify Iris message recovery and isolation` | pending | Real processes, concurrency, restart/retry, and project/conversation isolation. |
 

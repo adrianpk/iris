@@ -27,12 +27,23 @@ or future positions. Acknowledgment requires the next addressed, delivered
 message; it cannot skip work or another consumer. A result-plus-ack persistence
 primitive rolls both changes back on failure.
 
+Receivers subscribe before rechecking storage and wake only after committed
+changes. Empty waits hold no SQLite transaction. Cancellation, full peer
+disconnect, timeout and terminal state release subscriptions. There are at
+most 64 waiters, with 16 per project. Wire deadlines allow requested wait plus
+five seconds rather than using the ordinary request timeout.
+
 ## Implementation Notes
 
 The existing SQLite schema owns delivery identities and constraints. One write
 transaction validates membership and lifecycle, normalizes recipients, compares
 the payload digest, allocates a sequence and persists all message rows before
 returning success. Expiry transitions commit before returning lifecycle errors.
+
+Linux disconnect detection uses a blocking kernel hangup wait with a private
+cancellation pipe. It distinguishes full disconnect from request write EOF;
+no repeated SQLite query or timed socket probe runs while idle. The existing
+`golang.org/x/sys` module is now a direct dependency for that boundary.
 
 ## Contracts Added or Changed
 
@@ -52,8 +63,10 @@ message slot for a terminal event and respect body/storage bounds.
 
 - `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestReceive|TestAck|TestDelivery' -count=1` — passed, including reopen, byte/page and 64-consumer limits.
 
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestWait' -count=1 -timeout=30s` — passed after correcting a test fixture's page limit and replacing a racy connection-count assertion with a bounded concurrent writer check.
+
 Controller-recorded exact-HEAD validation follows the remaining tasks.
 
 ## Risks and Follow-ups
 
-Efficient waits, CLI content and process recovery remain in T4.3 through T4.5.
+CLI content and process recovery remain in T4.4 and T4.5.

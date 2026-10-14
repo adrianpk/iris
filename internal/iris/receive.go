@@ -18,7 +18,12 @@ func (s *store) receive(ctx context.Context, params receiveParams) (receivePage,
 		return receivePage{}, err
 	}
 
-	return s.receiveOnce(ctx, params, plan)
+	page, err := s.receiveOnce(ctx, params, plan)
+	if err != nil {
+		return receivePage{}, err
+	}
+
+	return s.waitForDelivery(ctx, params, plan, page)
 }
 
 func (s *store) receiveOnce(ctx context.Context, params receiveParams, plan selectionPlan) (receivePage, error) {
@@ -27,6 +32,10 @@ func (s *store) receiveOnce(ctx context.Context, params receiveParams, plan sele
 	err := s.write(ctx, func(tx *sql.Tx) error { var err error; outcome, err = s.receiveTx(ctx, tx, params, plan); return err })
 	if err != nil {
 		return receivePage{}, err
+	}
+
+	if outcome.problem != nil {
+		s.events.notify(params.ConversationID)
 	}
 
 	return outcome.page, outcome.problem

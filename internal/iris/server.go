@@ -90,13 +90,13 @@ func (s *server) connection(ctx context.Context, connection net.Conn) (resultErr
 		}
 	}()
 
-	ctx, cancel := context.WithTimeout(ctx, time.Duration(s.config.settings.RequestTimeoutSeconds)*time.Second)
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	stop := closeOnCancel(ctx, connection)
 	defer func() { resultErr = errors.Join(resultErr, stop()) }()
 
-	deadline, _ := ctx.Deadline()
+	deadline := time.Now().Add(time.Duration(s.config.settings.RequestTimeoutSeconds) * time.Second)
 	if err := connection.SetDeadline(deadline); err != nil {
 		return err
 	}
@@ -113,6 +113,29 @@ func (s *server) connection(ctx context.Context, connection net.Conn) (resultErr
 	var req request
 	if err := decodeJSON(data, &req); err != nil {
 		return writeFrame(connection, failure("invalid_request", "invalid JSON request", false), maxResponseBytes)
+	}
+
+	return s.respond(ctx, connection, req)
+}
+
+func (s *server) respond(ctx context.Context, connection net.Conn, req request) (resultErr error) {
+	ctx, cancel := context.WithTimeout(ctx, requestDuration(s.config, req))
+	defer cancel()
+
+	deadline, _ := ctx.Deadline()
+	if err := connection.SetDeadline(deadline); err != nil {
+		return err
+	}
+
+	if waitsForMessages(req) {
+		watched, stop, err := watchDisconnect(ctx, connection)
+		if err != nil {
+			return err
+		}
+
+		ctx = watched
+
+		defer func() { resultErr = errors.Join(resultErr, stop()) }()
 	}
 
 	reply := s.handle(ctx, req)

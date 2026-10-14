@@ -46,6 +46,8 @@ func (s *store) join(ctx context.Context, params joinParams) (conversation, erro
 		return conversation{}, err
 	}
 
+	s.events.notify(outcome.value.ID)
+
 	return outcome.value, outcome.problem
 }
 
@@ -74,7 +76,7 @@ func (s *store) joinTx(ctx context.Context, tx *sql.Tx, plan selectionPlan, code
 	}
 
 	if state.state == "closed" || state.state == "expired" {
-		return handshakeOutcome{problem: joinStateError(state, invite)}, nil
+		return handshakeOutcome{value: conversation{ID: state.id}, problem: joinStateError(state, invite)}, nil
 	}
 
 	if state.state == "pending" {

@@ -31,6 +31,8 @@ func (s *store) closeConversation(ctx context.Context, params conversationParams
 		return conversation{}, err
 	}
 
+	s.events.notify(params.ConversationID)
+
 	return outcome.value, outcome.problem
 }
 

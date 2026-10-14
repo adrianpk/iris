@@ -16,6 +16,7 @@ type store struct {
 	db       *sql.DB
 	now      func() time.Time
 	makeCode func() (string, error)
+	events   waitHub
 }
 
 func openStore(ctx context.Context, cfg config) (*store, error) {
