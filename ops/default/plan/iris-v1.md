@@ -1,6 +1,6 @@
 # Iris v1 Implementation Plan
 
-Status: approved
+Status: Completed
 
 Approved: maintainer, 2026-10-14; execute this delivery set with Looper.
 
@@ -23,7 +23,8 @@ Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: none. All ten slices are integrated; the controller-owned full gate and delivery closure remain pending.
+Active slice: none. All ten slices are delivered and integrated; all 44 tasks
+are complete, including the controller-owned full gate and documentation closure.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.
@@ -415,17 +416,23 @@ links, ten slice identities, 44 task identities, the accepted spec/model
 pair, and meaningful SQLite constraint/rollback/prune invariants. It is not
 a substitute for implementation tests with the selected Go driver.
 
-The controller owns the final integrated-candidate freeze and full gate. Slice 10
-prepares the automation, report and focused PR evidence; T10.4 gate recording
-and delivery-set closure finish only after that exact gate passes.
+The controller froze and validated integrated candidate
+`5b951abbf401eb3226ab294cceb2b1089da99f5a` with the unchanged full gate:
+
+- `make verify && make docs-check && make test-integration && make test-systemd && make test-bridge && git diff --check`
+
+The recorded gate passed strict lint, ordinary tests, document and storage
+contracts, acceptance mapping, installation, actual-process integration,
+isolated user-systemd operation and real Codex exchange/recovery with fresh
+conversation context. T10.4 is complete. Subsequent closure changes are limited
+to the configured documentation paths; the full-gate result belongs to that
+immutable candidate.
 
 ## Completion boundary
 
-All 44 tasks and 10 slices must be delivered and merged into `dev`, with their
-canonical reports and required acceptance evidence. A messaging-only daemon
-does not complete this delivery set. If the installed environment cannot
-support the bridge, report the achieved scope and verified limitation and
-revisit the plan rather than silently removing the central requirement.
+All 44 tasks are complete, all ten canonical slice PRs are merged into `dev`,
+and all ten reports are delivered with their required acceptance evidence.
+The integrated full gate includes real bridge and user-systemd acceptance.
 
 Forum/group channels, broadcasts, claims, other-agent adapters, and remote or
 multiuser operation remain documented future capabilities. Release versions,

@@ -33,8 +33,10 @@ old history and idle counts.
 
 Verification retains strict lint and ordinary tests and adds document/public
 contracts, acceptance-map checks and source installation/removal. The exact
-candidate procedure records a clean full hash and ordered results. All slice PRs are integrated; full-gate
-execution and delivery closure remain pending controller evidence.
+candidate procedure records a clean full hash and ordered results. All ten slice
+PRs are integrated, and the controller's unchanged full gate passed at
+`5b951abbf401eb3226ab294cceb2b1089da99f5a`. T10.4 and delivery documentation
+closure are complete.
 
 ## Implementation Notes
 
@@ -94,18 +96,39 @@ lint passed. Published configuration equals executable defaults and embedded
 migrations match the accepted SQL model.
 
 `make -n verify` confirmed the wiring of strict lint, ordinary tests, contract
-checks, acceptance mapping and installation checks. The integrated full gate has
-not run in this phase. T10.4's integrated candidate and full-gate recording remain
-pending the controller's gate and closure phases.
+checks, acceptance mapping and installation checks before integration.
 
-The final controller ledger binds this exact head and ordered command list.
+The PR validation ledger binds the final PR head and ordered command list above.
 Acta merge event `01M4XNPYKED01SCTBARZZRB34S` confirms Rebase + Fast-forward
-integration. Full-gate prerequisites were checked without starting fixture
-services: required tools, private writable runtime/Unix socket and unit-link
-paths, a reachable user manager and authenticated Codex 0.161.0 are available.
-Fixtures create and clean isolated state when their checks run.
+integration. Required tools, private writable runtime/Unix socket and unit-link
+paths, a reachable user manager and authenticated Codex 0.161.0 supported the
+subsequent integrated gate.
+
+The controller's separate full-gate ledger records successful validation of
+immutable candidate `5b951abbf401eb3226ab294cceb2b1089da99f5a` with:
+
+- `make verify && make docs-check && make test-integration && make test-systemd && make test-bridge && git diff --check`
+
+Strict lint reported zero issues; ordinary tests, 42-document contract checks,
+the ten-group acceptance map and three installation cases passed. Actual-process
+integration passed in 12.267 seconds, isolated user-systemd operation in 4.864
+seconds and the real Codex recovery/fresh-context exchange in 70.576 seconds.
+The bridge recovered a completed result without another invocation, resumed
+both original threads/consumers and completed a second conversation with two
+fresh threads/consumers and a new project-local proof while preserving old
+history. Idle counts showed no extra turns. One-second samples observed zero
+CPU ticks with 13,596 KiB RSS for the idle systemd daemon and 42,748 KiB RSS for
+the daemon plus two Iris bridge processes, excluding provider subprocesses.
+
+Owned fixtures cleaned up after their checks; no acceptance units remain
+running. The plan and tracker are completed, all ten reports are delivered and
+all 44 tasks are complete. Changes after the tested candidate are confined to
+configured closure documentation; they do not change the candidate bound to
+the full-gate evidence.
 
 ## Risks and Follow-ups
 
-The integrated immutable candidate and full gate belong to the controller's
-later gate/closure phases. Current focused evidence does not close that gate.
+Bridge acceptance covers separate conversation-bound workers. Attachment to an
+existing interactive session remains unverified. CPU/RSS and idle measurements
+are bounded observations from the recorded fixtures, not general resource
+guarantees.

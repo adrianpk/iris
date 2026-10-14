@@ -1,6 +1,6 @@
 # Iris v1 Implementation Tracker
 
-Status: approved
+Status: Completed
 
 Approved: maintainer, 2026-10-14; execute this delivery set with Looper.
 
@@ -16,12 +16,12 @@ Base branch: `dev`
 
 Active slice: none; all ten slice implementations are integrated.
 
-Active tasks: T10.4 controller-owned integrated gate and final closure.
+Active tasks: none; the integrated gate and documentation closure are complete.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
 
-Progress: 10 of 10 slices delivered; 43 of 44 tasks completed.
+Progress: 10 of 10 slices delivered; 44 of 44 tasks completed.
 
 ## Entry conditions
 
@@ -38,7 +38,7 @@ Progress: 10 of 10 slices delivered; 43 of 44 tasks completed.
 | Detailed spec/model baseline | satisfied | Accepted `spec/iris.md` and `spec/iris-model.md` settle section 17 behavior and physical storage together. |
 | SQLite dependency selected and confirmed | satisfied | T2.2 added modernc.org/sqlite v1.60.1 and verified migration, transaction, concurrency, reopen and online-backup behavior with the real driver. |
 | Real Codex integration feasibility | satisfied | T1.2 verified separate owned workers using real turns, own-thread resumption, denial, and interruption. The Iris exchange remains T5.5 acceptance. |
-| Full/live/systemd acceptance environment | satisfied focused | Prior slices verified real Codex and user-systemd with owned fixtures. The integrated full gate remains pending. |
+| Full/live/systemd acceptance environment | satisfied | The controller's integrated full gate passed real Codex and isolated user-systemd acceptance on `5b951abbf401eb3226ab294cceb2b1089da99f5a`. Owned fixtures cleaned up; no acceptance units remain running. |
 
 Slice 1 was integrated through PR `#1` at
 `06041b58bf5dd44c42202c5463ab202da511308a`. The primary checkout remains on
@@ -60,7 +60,9 @@ Slice 1 was integrated through PR `#1` at
 | Slice 10 | acceptance and documentation | delivered | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | `#10` | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
 
 All ten slices have delivered reports and canonical PRs merged into `dev`.
-The final integrated gate remains distinct from their focused PR checks.
+The controller's final integrated gate passed at
+`5b951abbf401eb3226ab294cceb2b1089da99f5a`; its evidence is distinct from the
+focused PR checks and subsequent documentation closure.
 
 ## Slice 1 Tasks
 
@@ -154,7 +156,7 @@ The final integrated gate remains distinct from their focused PR checks.
 | T10.1 | completed | `docs(guide): explain Iris project conversations` | `790b6f6007ca` | Published invitation/history snippets execute unchanged against the real binary with race checks; source installation and bounded worker forms match owning fixtures. Live fresh-context acceptance follows in T10.3. |
 | T10.2 | completed | `docs(reference): document Iris contracts and future capabilities` | `c668448ca53c` | Contract checker passed forty documents, eighteen typed operation names, storage schema 4 and SQL constraints. Published configuration equals executable defaults; migration/model and reference tests passed. Planned capabilities and separate-worker limitations documented. |
 | T10.3 | completed | `test(acceptance): verify the complete Iris v1 workflow` | `9b9d85c479f5` | Ten-group map validates 28 actual cases/selectors. Changed guide/lifecycle/reference race checks passed. Real Codex lost-result recovery, own-thread resumption and a new conversation with fresh threads/consumers/proof passed in 58.854 seconds; no idle echo. |
-| T10.4 | in-progress | `chore(delivery): finalize Iris v1 validation` | `47a9163f33c7` | Exact-candidate verification automation and evidence procedure prepared; strict lint/tests retained with contract, acceptance-map and installation checks added. Integrated candidate hash/full gate and final closure remain controller-owned and pending. |
+| T10.4 | completed | `chore(delivery): finalize Iris v1 validation` | `47a9163f33c7` | Exact-candidate automation retains strict lint/tests, contracts, acceptance mapping and installation checks. The controller's unchanged full gate passed on `5b951abbf401eb3226ab294cceb2b1089da99f5a`; plan/tracker/report closure records that evidence with only configured documentation changes afterward. |
 
 ## Validation evidence
 
@@ -174,8 +176,8 @@ The final integrated gate remains distinct from their focused PR checks.
 | Bridge recovery gate | passed | Ten ordered controller checks passed on final PR head `de6aec26826b250356a584f413c249aacf3de52e`, including real recovery/restart, two bounded fuzz campaigns, integration race checks and combined-tag lint. Canonical PR `#8` merged at that head; report/tracker entries are closed. |
 | User-systemd acceptance | passed | All nine ordered controller checks passed on final PR head `562059bc7f3605f784d5e038a24f0425ec1675b2`, including actual isolated units, installation, process race checks and combined-tag lint. Canonical PR `#9` merged at that head; report/tracker entries are closed. |
 | Acceptance/documentation PR checks | passed | Ten ordered controller checks passed on final PR head `879bde689b196fe4c8ee74d2afdc1424354075a3`, including changed process race checks, real fresh-context Codex and combined-tag lint. Canonical PR `#10` merged at that head; report/tracker entries are closed. |
-| Full-gate prerequisites | prepared | Required tools, private writable runtime/Unix socket and runtime unit-link paths, reachable user manager and authenticated Codex 0.161.0 verified. Process/systemd/live fixtures allocate and clean their own isolated roots and units when the controller runs their checks. No fixture service remains running. |
-| Integrated delivery gate | pending | The controller must record the exact integrated candidate and unchanged full-gate result after PR integration. No full-gate result is claimed here. |
+| Full-gate prerequisites | satisfied | Required tools, private writable runtime/Unix socket and runtime unit-link paths, reachable user manager and authenticated Codex 0.161.0 supported the successful gate. Process/systemd/live fixtures cleaned their own isolated roots and units. No acceptance unit remains running. |
+| Integrated delivery gate | passed | The controller recorded `make verify && make docs-check && make test-integration && make test-systemd && make test-bridge && git diff --check` on immutable candidate `5b951abbf401eb3226ab294cceb2b1089da99f5a`. Process integration passed in 12.267 seconds, isolated user-systemd in 4.864 seconds and real Codex recovery/fresh-context exchange in 70.576 seconds. Later changes are confined to configured closure documentation. |
 
 ## Completion gates
 
@@ -193,7 +195,7 @@ The final integrated gate remains distinct from their focused PR checks.
 - [x] Slice 9 delivered; installation and real isolated user-systemd operation pass.
 - [x] Slice 10 delivered; User Guide, references, future capabilities, and focused acceptance pass.
 - [x] All ten canonical reports delivered and slice PRs merged into `dev`.
-- [ ] Full gate green for the recorded immutable integrated candidate.
+- [x] Full gate green for the recorded immutable integrated candidate.
 - [x] Achieved Codex session mode and concrete product limitations documented.
 
 ## Update rules
