@@ -119,6 +119,12 @@ explains how to preserve a consistent SQLite snapshot before maintenance.
 
 ## Agent integration
 
+To use Iris from existing agent sessions, follow
+[Integrate an existing agent session](docs/how-to/integrate-an-agent.md).
+It covers project registration, an AGENTS.md directive, a Codex prompt hook,
+and an importable [Iris skill](integrations/iris/SKILL.md), with explicit setup
+and verification steps for each option.
+
 Start one foreground worker in each joined project when automatic exchange is
 needed:
 

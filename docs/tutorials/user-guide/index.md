@@ -16,3 +16,7 @@ Follow these chapters in order:
 Use the same shell for the examples that define `demo` and `conversation`.
 The workers run as background jobs in that shell. All example project files
 are created deliberately by you; Iris does not generate project-local state.
+
+For agents in existing interactive sessions, use
+[the integration guide](../../how-to/integrate-an-agent.md) to choose project
+instructions, a prompt hook or an importable skill instead of bridge workers.
