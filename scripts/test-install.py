@@ -25,7 +25,7 @@ class Installation(unittest.TestCase):
         self.units = self.root / "units"
         self.env = dict(os.environ, XDG_DATA_HOME=str(self.root / "data"),
                         XDG_CONFIG_HOME=str(self.root / "config"),
-                        XDG_RUNTIME_DIR=str(self.root / "runtime"))
+                        XDG_RUNTIME_DIR=str(self.root / "runtime with % and $ signs"))
         self.command = ["python3", str(ROOT / "scripts/install.py")]
         self.paths = ["--prefix", str(self.prefix), "--unit-dir", str(self.units)]
 
@@ -55,7 +55,7 @@ class Installation(unittest.TestCase):
         self.assertIn("prefix with %% and $ signs/bin/iris", service)
         self.assertIn("XDG_DATA_HOME=" + self.env["XDG_DATA_HOME"], service)
         socket = (self.units / "iris.socket").read_text()
-        self.assertIn(self.env["XDG_RUNTIME_DIR"] + "/iris/iris.sock", socket)
+        self.assertIn(self.env["XDG_RUNTIME_DIR"].replace("%", "%%") + "/iris/iris.sock", socket)
         subprocess.run(["systemd-analyze", "--user", "verify", str(self.units / "iris.service"),
                         str(self.units / "iris.socket")], check=True)
         inode = binary.stat().st_ino

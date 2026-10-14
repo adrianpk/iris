@@ -17,7 +17,13 @@ func TestProcessBackupRestore(t *testing.T) {
 	process := fixture.start(t)
 	args := []string{"call", "--to", "beta", "--topic", "Recovery snapshot", "--message", "Preserve this request.", "--idempotency-key", "snapshot", "--json"}
 	original := processJSON[conversation](t, fixture, fixture.projects[0], args...)
-	snapshot := filepath.Join(t.TempDir(), "snapshot.db")
+
+	backupRoot := filepath.Join(t.TempDir(), "private")
+	if err := privateDirectory(backupRoot); err != nil {
+		t.Fatal(err)
+	}
+
+	snapshot := filepath.Join(backupRoot, "snapshot.db")
 	runBackupRecipe(t, fixture.config.database, snapshot, false)
 	stopProcess(t, process, syscall.SIGTERM)
 	runBackupRecipe(t, fixture.config.database, snapshot, true)

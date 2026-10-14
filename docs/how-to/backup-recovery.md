@@ -37,17 +37,23 @@ import os
 from pathlib import Path
 import shutil
 import sqlite3
+import stat
 import sys
 
 source, snapshot = map(Path, sys.argv[1:])
-assert not Path(str(source) + "-wal").exists(), "WAL remains; stop all connections cleanly"
-assert not Path(str(source) + "-shm").exists(), "SHM remains; stop all connections cleanly"
-with source.open("rb") as original, snapshot.open("xb") as output:
-    os.chmod(snapshot, 0o600)
-    shutil.copyfileobj(original, output)
+if any(Path(str(source) + suffix).exists() for suffix in ("-wal", "-shm")):
+    raise RuntimeError("Journals remain; stop all connections cleanly")
+parent = snapshot.parent.lstat()
+if not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.geteuid() or parent.st_mode & 0o077:
+    raise RuntimeError("Backup directory must be user-owned and private")
+with source.open("rb") as original:
+    descriptor = os.open(snapshot, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "wb") as output:
+        shutil.copyfileobj(original, output)
 connection = sqlite3.connect(snapshot.as_uri() + "?mode=ro", uri=True)
 try:
-    assert connection.execute("PRAGMA integrity_check").fetchone() == ("ok",)
+    if connection.execute("PRAGMA integrity_check").fetchone() != ("ok",):
+        raise RuntimeError("Backup integrity check failed")
 finally:
     connection.close()
 PY

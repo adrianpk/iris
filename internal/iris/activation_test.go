@@ -96,6 +96,7 @@ func TestActivationDescriptors(t *testing.T) {
 		{name: "public socket", file: activationUnixFile, mode: 0o666},
 		{name: "regular file", file: activationRegularFile},
 		{name: "network listener", file: activationTCPFile},
+		{name: "packet listener", file: activationPacketFile},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -215,4 +216,32 @@ func activationMode(t *testing.T, path string, mode os.FileMode) {
 	if err := os.Chmod(path, mode); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func activationPacketFile(t *testing.T, path string) *os.File {
+	t.Helper()
+
+	listener, err := net.ListenUnix("unixpacket", &net.UnixAddr{Name: path, Net: "unixpacket"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		if err := listener.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+
+	file, err := listener.File()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		if err := file.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+
+	return file
 }

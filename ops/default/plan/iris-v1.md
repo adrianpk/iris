@@ -23,7 +23,7 @@ Tracker: [Iris v1 tracker](../tracker/iris-v1.md)
 
 Base branch: `dev`
 
-Active slice: Slice 9, in-progress; Linux operation. The first eight slices are integrated.
+Active slice: Slice 9, reviewing; Linux operation. The first eight slices are integrated.
 
 Execution gate: the user's 2026-10-14 instruction to use Looper authorizes
 execution of this delivery set and its controller-owned integration into `dev`.
@@ -347,10 +347,10 @@ to fill a slice.
 | User systemd | `make test-systemd` | Added in T9.4; real isolated user units. Unavailable user-manager access is a blocker, not a pass. |
 | Final delivery | `make verify`; `make docs-check`; `make test-integration`; `make test-systemd`; `make test-bridge`; `git diff --check` | Run once for the immutable integrated candidate. Bind every result to its actual tested SHA. |
 
-The process-integration target is implemented in Slice 2. The live bridge
-and user-systemd targets remain planned interfaces until their owning slices. The current `make verify` covers lint and ordinary
-Go tests; it is insufficient by itself to prove autonomous communication or
-real systemd operation.
+The process-integration, live bridge and user-systemd targets are implemented
+in Slices 2, 5 and 9. The current `make verify` covers lint and ordinary Go tests;
+it is insufficient by itself to prove autonomous communication or real systemd
+operation.
 
 Use scheduled exact-commit validation if configured during delivery; otherwise
 run the required gate in the authorized acceptance environment. Do not repeat
@@ -400,8 +400,9 @@ and cleanup outcomes. No credential or transcript is written into a report.
 | 9. Bridge | Two real project workers exchange question, response and acknowledgment with no manual relay; count `turn/start` calls during idle wait; interrupt/restart only owned adapters at recovery checkpoints. | Slices 1/5/8/10; `make test-bridge` |
 | 10. Security | Malformed/oversized frames, wrong project, denied approval, untrusted peer text, private file/socket modes and stale owner tokens; failures cannot grant authority or publish under another worker's ownership. | Slices 2/4/5/8/9 focused parser/race/process checks |
 
-T2.4 implements `make test-integration`. T5.5 adds `make test-bridge` and
-T9.4 adds `make test-systemd`; those two remain required future interfaces. Live provider tests require authenticated access and bounded turns.
+T2.4, T5.5 and T9.4 implement `make test-integration`, `make test-bridge` and
+`make test-systemd`. Live provider tests require authenticated access and bounded
+turns.
 The systemd fixture requires a working user manager and private, uniquely
 named test units; unavailable access is an explicit blocker. The installed
 Codex probe in Slice 1 is feasibility evidence only. It does not replace the

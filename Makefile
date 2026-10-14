@@ -7,7 +7,7 @@ GO_BUILD_CACHE := $(CURDIR)/$(DEV_ROOT)/go-build-cache
 GOLANGCI_LINT_CACHE := $(CURDIR)/$(DEV_ROOT)/golangci-lint-cache
 COVERAGE_OUT ?= /tmp/iris-coverage.out
 
-.PHONY: build install uninstall fmt test test-integration test-bridge test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
+.PHONY: build install uninstall fmt test test-integration test-bridge test-systemd test-coverage lint lint-strict check verify docs-check check-go-style check-package-readmes clean-dev
 
 build:
 	@CGO_ENABLED=0 $(GO) build -trimpath -buildvcs=false -ldflags=-buildid= -o $(DEV_ROOT)/bin/iris .
@@ -26,6 +26,9 @@ test:
 
 test-integration:
 	@$(GO) test -tags=integration ./internal/iris -run '^TestProcess' -count=1
+
+test-systemd:
+	@$(GO) test -v -tags=systemd ./internal/iris -run '^TestSystemd' -count=1 -timeout=2m
 
 test-bridge:
 	@$(GO) test -v -tags=bridge ./internal/iris -run '^TestBridgeLive' -count=1 -timeout=5m

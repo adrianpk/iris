@@ -8,7 +8,6 @@ Type=exec
 ExecStart="%h/.local/bin/iris" serve
 UMask=0077
 NoNewPrivileges=yes
-CapabilityBoundingSet=
 RestrictAddressFamilies=AF_UNIX
 RestrictRealtime=yes
 RestrictSUIDSGID=yes

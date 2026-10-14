@@ -1,4 +1,4 @@
-//go:build integration || bridge
+//go:build integration || bridge || systemd
 
 package iris
 

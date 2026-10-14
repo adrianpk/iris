@@ -72,7 +72,7 @@ func inheritedListener(path string, file *os.File) (*net.UnixListener, error) {
 	}
 
 	unix, ok := listener.(*net.UnixListener)
-	if !ok {
+	if !ok || listener.Addr().Network() != "unix" {
 		return nil, errors.Join(fmt.Errorf("inherited socket must use Unix streams"), listener.Close())
 	}
 

@@ -122,3 +122,11 @@ preserves policy, counters and lifetime; the daemon checks budgets before
 provider startup. Pipe writes and owned process shutdown honor deadlines.
 The live bridge target exercises lost result delivery, no-invocation recovery,
 original-thread restart, pending work and bounded idle observations.
+
+
+`make test-systemd` uses the systemd build tag and a real user manager. It
+installs into private temporary roots, links only uniquely named runtime units,
+and verifies activation, upgrade/restart, crash recovery, client disconnect,
+permissions and shutdown. Missing manager access fails the target. Cleanup
+stops/removes only owned units. The daemon adopts one validated inherited Unix
+stream and never unlinks the manager's endpoint. Bridge workers run separately.
