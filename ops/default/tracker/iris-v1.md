@@ -16,7 +16,7 @@ Base branch: `dev`
 
 Active slice: Slice 7, reviewing; history and export.
 
-Active tasks: none; canonical PR preparation and exact-HEAD validation in progress.
+Active tasks: none; canonical PR `#7` awaits controller integration.
 
 Execution gate: authorized by the user's 2026-10-14 instruction to use Looper.
 Startup requires committed/published planning artifacts and successful preflight.
@@ -54,7 +54,7 @@ Slice 1 was integrated through PR `#1` at
 | Slice 4 | durable delivery | delivered | `feat/slice-4-iris-durable-delivery` | `feat(slice-4): deliver ordered Iris messages` | `#4` | `ops/default/report/slices/iris-v1/slice-4-durable-delivery.md` |
 | Slice 5 | Codex exchange | delivered | `feat/slice-5-iris-codex-exchange` | `feat(slice-5): enable autonomous Codex conversations` | `#5` | `ops/default/report/slices/iris-v1/slice-5-codex-exchange.md` |
 | Slice 6 | lifecycle and retention | delivered | `feat/slice-6-iris-lifecycle-retention` | `feat(slice-6): manage Iris expiration and retention` | `#6` | `ops/default/report/slices/iris-v1/slice-6-lifecycle-retention.md` |
-| Slice 7 | history and export | reviewing | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | pending | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
+| Slice 7 | history and export | reviewing | `feat/slice-7-iris-history-export` | `feat(slice-7): inspect and export Iris conversations` | `#7` | `ops/default/report/slices/iris-v1/slice-7-history-export.md` |
 | Slice 8 | bridge recovery | pending | `feat/slice-8-iris-bridge-recovery` | `feat(slice-8): recover and bound Iris bridge execution` | pending | `ops/default/report/slices/iris-v1/slice-8-bridge-recovery.md` |
 | Slice 9 | Linux operation | pending | `feat/slice-9-iris-linux-operation` | `feat(slice-9): operate Iris through user systemd` | pending | `ops/default/report/slices/iris-v1/slice-9-linux-operation.md` |
 | Slice 10 | acceptance and documentation | pending | `test/slice-10-iris-acceptance-documentation` | `test(slice-10): verify Iris v1 workflows and documentation` | pending | `ops/default/report/slices/iris-v1/slice-10-acceptance-documentation.md` |
@@ -126,7 +126,7 @@ future artifacts; create each during its owning slice.
 | T7.1 | completed | `feat(history): inspect Iris conversations` | `f2430a906c3e` | Participant/default/all-project scope, retained message pages, scoped cursors, unchanged consumers and real Unix CLI checks passed with the race detector. |
 | T7.2 | completed | `feat(search): find Iris conversation history` | `dfc2b5479dda` | Combined literal text/pair/date/ordinal/ID filters, bounded matching excerpts, immutable aliases, equal-timestamp keysets and SQLite query-plan indexes passed with race checks. |
 | T7.3 | completed | `feat(export): dump readable Iris transcripts` | `3af9bcf380c4` | Frozen metadata/sequence, 112-message text/JSON exports, encoded wire bounds, lease/prune races, expiration/restart, private spool cleanup, cancellation and zero partial stdout passed with race checks. |
-| T7.4 | completed | `feat(cli): summarize Iris storage and conversations` | pending | Actual binary/jq checks passed for scoped discovery, text/JSON transcripts beyond 100 messages, restart, stderr separation and zero consumer/activity changes. State/body/retention/storage statistics match fixtures; human examples documented. |
+| T7.4 | completed | `feat(cli): summarize Iris storage and conversations` | `bb351bbc0245` | Actual binary/jq checks passed for scoped discovery, text/JSON transcripts beyond 100 messages, restart, stderr separation and zero consumer/activity changes. State/body/retention/storage statistics match fixtures; human examples documented. |
 
 ## Slice 8 Tasks
 
@@ -170,7 +170,7 @@ future artifacts; create each during its owning slice.
 | Durable delivery gate | passed | Eight ordered controller checks passed on final PR head `2d3a02e33e450563ee7758df44ea765cb3f8200e`, including all integration-tag race checks and actual-process recovery. Canonical PR `#4` merged at the same head; report/tracker entries are closed. |
 | Codex exchange gate | passed | Eight ordered Looper checks passed on final PR head `c0bb1ff0c0221a3c3d12e962529fbf42f333c563`, including the real two-project exchange, durable acknowledgment, idle counts and integration race checks. Canonical PR `#5` merged at that head; report/tracker entries are closed. |
 | Lifecycle and retention gate | passed | All seven ordered Looper checks passed on final PR head `f802b42de7d94253aa3545ae382f9d6c74dc312b`, including actual daemon/CLI expiration, retention/pruning, fresh context and all integration-tag race checks. Canonical PR `#6` merged at that head; report/tracker entries are closed. |
-| History and export gate | pending | Task-level race and real-binary checks passed; ordered controller validation remains pending on the final clean PR head. |
+| History and export gate | passed | All seven ordered controller checks passed on clean implementation candidate `bb351bbc02454d7bb52acd5a07aa69bbeec6ab21`, including actual binaries, complete exports, jq and integration race checks. Canonical PR `#7` is open; its reference follow-up requires exact-HEAD regeneration. |
 | User-systemd acceptance | not run | This target remains assigned to its owning slice. |
 
 ## Completion gates
