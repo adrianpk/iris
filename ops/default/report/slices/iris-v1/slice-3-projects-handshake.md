@@ -23,11 +23,23 @@ all-project scope. Explicit rename and relocation preserve project IDs, registra
 times, and historical participant aliases. Alias/path collisions and ambiguous
 selectors fail rather than selecting another project.
 
+Call creation atomically allocates a globally unique conversation ID, an
+unordered-pair ordinal, immutable participant aliases, the initial message,
+and a three-word invitation. Unknown recipient aliases reserve stable IDs
+until registration. Identical request-key retries return the original result;
+changed content conflicts. Failed creation rolls back every allocation.
+
+The CLI accepts initial text, a file, or stdin without altering the content.
+
 ## Implementation Notes
 
 Filesystem discovery and optional-file validation happen before the write
 transaction. The transaction rechecks identity and unique path/alias ownership.
 Project JSON has schema version 1 and nullable provisional registration fields.
+
+The fixed version-1 dictionary contains 256 distinct words. Three independent
+cryptographic byte indexes select a code. Allocation tries at most 16 codes;
+SHA-256 code tombstones and request tombstones remain after history removal.
 
 ## Contracts Added or Changed
 
@@ -49,9 +61,10 @@ inference. Registry pages expose a next cursor and truncation.
 
 - `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestProject' -count=1` — passed for collision, rename and relocation behavior.
 
+- `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestCall|TestInvitation' -count=1` — passed.
+
 Final controller-recorded exact-HEAD checks follow the remaining slice tasks.
 
 ## Risks and Follow-ups
 
-Invitation allocation, join/close, and actual-binary handshake acceptance remain
-in T3.3 through T3.5.
+Join/close and actual-binary handshake acceptance remain in T3.4 and T3.5.

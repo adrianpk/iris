@@ -51,6 +51,8 @@ func (app *App) run(ctx context.Context, args []string) error {
 	switch args[0] {
 	case "serve":
 		return app.runServe(ctx, args[1:])
+	case "call":
+		return app.runCall(ctx, args[1:])
 	case "projects":
 		return app.runProjects(ctx, args[1:])
 	case "stats":

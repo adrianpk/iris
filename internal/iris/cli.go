@@ -13,6 +13,7 @@ const rootHelp = `Usage: iris <command> [options]
 
 Commands:
   serve                       Run the private local service
+  call                        Invite a project with an initial request
   projects                    Register and inspect project identities
   stats [--project <selector>|--all-projects] [--json] Inspect storage counts
   help                        Show command help

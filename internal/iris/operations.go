@@ -81,3 +81,14 @@ func (s *store) handleProjects(ctx context.Context, req request) response {
 
 	return failure("unknown_operation", "unsupported project operation", false)
 }
+
+func (s *store) handleCall(ctx context.Context, req request) response {
+	var params callParams
+	if err := decodeJSON(req.Params, &params); err != nil {
+		return failure("invalid_request", "invalid call parameters", false)
+	}
+
+	value, err := s.call(ctx, params)
+
+	return operationResponse(ctx, value, err)
+}
