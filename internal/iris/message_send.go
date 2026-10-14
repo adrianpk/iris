@@ -83,7 +83,7 @@ func (s *store) send(ctx context.Context, params sendParams) (message, error) {
 		return message{}, err
 	}
 
-	s.events.notify(params.ConversationID)
+	s.notify(params.ConversationID)
 
 	return outcome.value, outcome.problem
 }

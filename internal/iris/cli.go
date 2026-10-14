@@ -61,6 +61,10 @@ func serveConfigured(ctx context.Context, cfg config) (resultErr error) {
 
 	defer func() { resultErr = errors.Join(resultErr, s.close()) }()
 
+	if err := s.reconcile(ctx); err != nil {
+		return storageFailure(err)
+	}
+
 	listener, err := listenUnix(cfg.socket)
 	if err != nil {
 		return unavailable(err)
@@ -72,9 +76,7 @@ func serveConfigured(ctx context.Context, cfg config) (resultErr error) {
 		}
 	}()
 
-	service := server{config: cfg, handle: s.handle}
-
-	return service.serve(ctx, listener)
+	return serveWithMaintenance(ctx, cfg, s, listener)
 }
 
 func (app *App) flagError(err error, help string) error {

@@ -35,7 +35,7 @@ func (s *store) receiveOnce(ctx context.Context, params receiveParams, plan sele
 	}
 
 	if outcome.problem != nil {
-		s.events.notify(params.ConversationID)
+		s.notify(params.ConversationID)
 	}
 
 	return outcome.page, outcome.problem

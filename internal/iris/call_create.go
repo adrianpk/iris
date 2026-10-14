@@ -35,8 +35,8 @@ func (s *store) checkConversationSlots(ctx context.Context, tx *sql.Tx, ids ...s
 	for _, id := range ids {
 		var count int
 
-		err := tx.QueryRowContext(ctx, `SELECT count(*) FROM conversations c JOIN participants p ON p.conversation_id=c.id JOIN invitations i ON i.conversation_id=c.id
-            WHERE p.project_id=? AND ((c.state='pending' AND i.expires_at>?) OR (c.state='active' AND c.last_activity_at>?))`, id, s.now().UnixMilli(), cutoff).Scan(&count)
+		err := tx.QueryRowContext(ctx, `SELECT count(*) FROM conversations c JOIN participants p ON p.conversation_id=c.id LEFT JOIN invitations i ON i.conversation_id=c.id
+            WHERE p.project_id=? AND ((c.state='pending' AND COALESCE(i.expires_at,c.created_at+?)>?) OR (c.state='active' AND c.last_activity_at>?))`, id, s.policy.invitationLifetime().Milliseconds(), s.now().UnixMilli(), cutoff).Scan(&count)
 		if err != nil {
 			return err
 		}

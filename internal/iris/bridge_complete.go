@@ -63,7 +63,7 @@ func (s *store) completeBridge(ctx context.Context, params bridgeCompletion) (br
 		return bridgeBinding{}, err
 	}
 
-	s.events.notify(result.ConversationID)
+	s.notify(result.ConversationID)
 
 	return result.bridgeBinding, outcome
 }

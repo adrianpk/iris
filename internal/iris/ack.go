@@ -60,6 +60,9 @@ func (s *store) acknowledge(ctx context.Context, params ackParams) (consumerPosi
 
 		return err
 	})
+	if err == nil {
+		s.notify(params.ConversationID)
+	}
 
 	return position, err
 }

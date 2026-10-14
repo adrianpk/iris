@@ -30,17 +30,15 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 			return err
 		}
 
-		if params.Action != "failure" && params.Action != "stop" {
-			active, err := s.bridgeActive(ctx, tx, value)
-			if err != nil {
-				return err
-			}
+		active, err := s.checkBridgeLifecycle(ctx, tx, value, params.Action)
+		if err != nil {
+			return err
+		}
 
-			if !active || value.StopRequestedAt != nil {
-				outcome = problem("conversation_inactive", "bridge work is stopping")
+		if !active {
+			outcome = problem("conversation_inactive", "bridge work is stopping")
 
-				return nil
-			}
+			return nil
 		}
 
 		if err := s.updateBridgeCheckpoint(ctx, tx, value, params); err != nil {
@@ -53,6 +51,10 @@ func (s *store) checkpointBridge(ctx context.Context, params bridgeCheckpoint) (
 	})
 	if err != nil {
 		return bridgeBinding{}, err
+	}
+
+	if outcome != nil {
+		s.notify(value.ConversationID)
 	}
 
 	return value.bridgeBinding, outcome
@@ -153,4 +155,14 @@ func (s *store) bindBridgeTurn(ctx context.Context, tx *sql.Tx, value bridgeReco
 	_, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET turn_id=?,updated_at=? WHERE id=?", turn, s.now().UnixMilli(), value.ID)
 
 	return err
+}
+
+func (s *store) checkBridgeLifecycle(ctx context.Context, tx *sql.Tx, value bridgeRecord, action string) (bool, error) {
+	if action == "failure" || action == "stop" {
+		return true, nil
+	}
+
+	active, err := s.bridgeActive(ctx, tx, value)
+
+	return active && value.StopRequestedAt == nil, err
 }

@@ -96,6 +96,9 @@ func (s *store) call(ctx context.Context, params callParams) (conversation, erro
 
 		return err
 	})
+	if err == nil {
+		s.notify(result.ID)
+	}
 
 	return result, err
 }

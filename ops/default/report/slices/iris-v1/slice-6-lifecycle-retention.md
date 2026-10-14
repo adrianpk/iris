@@ -19,6 +19,12 @@ Startup loads validated invitation, inactivity and retention durations with
 Current daemon policy controls inactivity and retention. Reads, waits and
 acknowledgments do not renew activity.
 
+The daemon reconciles overdue state before readiness and expires pending or
+active conversations without an agent. Work is bounded to 128 transitions per
+transaction; timers use the nearest deadline with a 30-second maximum recheck.
+Terminal state, its system event and bridge shutdown markers commit together;
+only committed transitions notify waiters.
+
 ## Implementation Notes
 
 The store's injected clock owns durable timestamps, including migration
@@ -33,6 +39,8 @@ Version-1 configuration accepts a partial `lifecycle` object with
 
 ## Files of Interest
 
+- `internal/iris/maintenance.go`: bounded scheduling, startup and shutdown.
+- `internal/iris/maintenance_expire.go`: transactional expiration batches.
 - `internal/iris/lifecycle_policy.go`: defaults, bounds and durations.
 - `internal/iris/conversation_lifecycle.go`: configured expiration decisions.
 - `internal/iris/call_create.go`: persisted invitation deadlines and quotas.
@@ -42,7 +50,9 @@ Version-1 configuration accepts a partial `lifecycle` object with
 - Passed: `GOTOOLCHAIN=go1.26.3 go test ./internal/iris -run 'TestLifecycle|TestInvitation|TestConfiguration|TestJoin|TestSend' -count=1`.
 - Passed: `GOTOOLCHAIN=go1.26.3 golangci-lint run --fix --allow-serial-runners ./...`.
 
+- Passed: `GOTOOLCHAIN=go1.26.3 go test -race ./internal/iris -run 'TestMaintenance|TestLifecycle|TestBridgeIdle|TestCallBounds' -count=1`.
+
 ## Risks and Follow-ups
 
-Autonomous maintenance, confirmed pruning and process-level retention acceptance
+Confirmed pruning and process-level retention acceptance
 remain tasks in this slice.

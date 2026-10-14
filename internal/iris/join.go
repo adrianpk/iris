@@ -46,7 +46,7 @@ func (s *store) join(ctx context.Context, params joinParams) (conversation, erro
 		return conversation{}, err
 	}
 
-	s.events.notify(outcome.value.ID)
+	s.notify(outcome.value.ID)
 
 	return outcome.value, outcome.problem
 }

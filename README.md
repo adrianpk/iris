@@ -99,9 +99,11 @@ iris close CONVERSATION_ID
 Closure retains the initial request and prevents another join from reactivating
 the conversation. Invitations reject acceptance at their two-hour deadline;
 active conversations reject operations at 24 hours without significant
-activity. Duplicate retries do not renew activity. Lifecycle checks currently
-run during call retries, join, send, receive, ack, and close; configurable policy and background
-maintenance remain in the implementation plan.
+activity. Duplicate retries do not renew activity. The daemon reconciles overdue state before listening and expires conversations
+independently of an agent. It processes batches of at most 128 and waits for
+the next deadline, with a maximum 30-second recheck. Stateful operations also
+check deadlines. Closure/expiration wakes receivers and requests owned bridge
+shutdown; a running turn observes shutdown through its five-second heartbeat.
 
 The invitation code identifies a conversation within the same-user local
 service. It is not a strong credential or isolation between processes sharing

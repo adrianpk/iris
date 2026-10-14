@@ -49,6 +49,10 @@ func (s *store) finishConversation(ctx context.Context, tx *sql.Tx, value *lifec
 		return err
 	}
 
+	if _, err := tx.ExecContext(ctx, "UPDATE bridge_bindings SET stop_requested_at=COALESCE(stop_requested_at,?),updated_at=? WHERE conversation_id=? AND owner_token IS NOT NULL", s.now().UnixMilli(), s.now().UnixMilli(), value.id); err != nil {
+		return err
+	}
+
 	value.state = state
 
 	return nil

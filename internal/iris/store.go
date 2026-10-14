@@ -13,11 +13,12 @@ import (
 )
 
 type store struct {
-	db       *sql.DB
-	now      func() time.Time
-	makeCode func() (string, error)
-	events   waitHub
-	policy   lifecyclePolicy
+	db              *sql.DB
+	now             func() time.Time
+	makeCode        func() (string, error)
+	events          waitHub
+	policy          lifecyclePolicy
+	maintenanceWake chan struct{}
 }
 
 func openStore(ctx context.Context, cfg config) (*store, error) {
@@ -42,7 +43,7 @@ func openStore(ctx context.Context, cfg config) (*store, error) {
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
 
-	s := &store{db: db, now: time.Now, makeCode: newInvitationCode, policy: cfg.settings.Lifecycle}
+	s := &store{db: db, now: time.Now, makeCode: newInvitationCode, policy: cfg.settings.Lifecycle, maintenanceWake: make(chan struct{}, 1)}
 
 	if err := s.migrate(ctx, initialMigrations()); err != nil {
 		return nil, errors.Join(err, db.Close())

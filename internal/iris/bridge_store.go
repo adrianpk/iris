@@ -111,6 +111,10 @@ func (s *store) claimBridge(ctx context.Context, params bridgeClaimParams) (brid
 		return result, err
 	}
 
+	if outcome.problem != nil {
+		s.notify(params.ConversationID)
+	}
+
 	return result, outcome.problem
 }
 

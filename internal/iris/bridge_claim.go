@@ -97,7 +97,7 @@ func (s *store) bridgeStatus(ctx context.Context, params conversationParams, sto
 		return err
 	})
 	if err == nil && stop {
-		s.events.notify(params.ConversationID)
+		s.notify(params.ConversationID)
 	}
 
 	return result.bridgeBinding, err
@@ -132,6 +132,10 @@ func (s *store) renewBridge(ctx context.Context, owner bridgeOwner) (bridgeBindi
 
 		return err
 	})
+
+	if err == nil && value.StopRequestedAt != nil {
+		s.notify(value.ConversationID)
+	}
 
 	return value.bridgeBinding, err
 }

@@ -50,7 +50,7 @@ func (s *store) completeDelivery(ctx context.Context, params sendParams, input a
 		return message{}, err
 	}
 
-	s.events.notify(params.ConversationID)
+	s.notify(params.ConversationID)
 
 	return outcome.value, outcome.problem
 }
