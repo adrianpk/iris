@@ -5,7 +5,7 @@ Delivery set: iris-v1
 Plan: [Iris v1 plan](../../../plan/iris-v1.md)
 Tracker: [Iris v1 tracker](../../../tracker/iris-v1.md)
 Branch: `docs/slice-1-iris-audit-contracts`
-PR: pending
+PR: `#1`
 
 ## Purpose
 
@@ -108,11 +108,14 @@ T1.2 bounded live probe passed all six assertions. T1.3 created the fourteen
 documented tables with foreign keys enabled; that is schema validation, not
 acceptance of an implemented Go store.
 
-Required final exact-HEAD checks, recorded through Looper before readiness:
+Passed through Looper for `dcefd22ca18a863520bca0013b6bcb75dd5e05b8`:
 
-- `make docs-check`
-- `python3 scripts/check-contracts.py`
-- `git diff --check`
+- `make docs-check` — passed.
+- `python3 scripts/check-contracts.py` — passed.
+- `git diff --check` — passed.
+
+The PR-reference follow-up must regenerate the same ordered checks for its
+final clean HEAD before handoff; controller evidence owns that exact identity.
 
 The focused contract checker covers relative links, ten slice identities,
 44 task identities, schema creation, eleven constraint violations, transaction
