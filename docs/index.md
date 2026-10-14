@@ -14,6 +14,8 @@ text/JSON transcripts and scoped storage statistics.
 
 See [Linux operation](how-to/linux-operation.md) for source installation,
 explicit socket activation, upgrades, shutdown and removal.
+See [backup and recovery](how-to/backup-recovery.md) for consistent SQLite
+snapshots, restoration and diagnostics.
 
 - `tutorials/`: guided learning paths.
 - `how-to/`: task procedures.

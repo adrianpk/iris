@@ -82,3 +82,6 @@ the same `PREFIX` and XDG config root as installation. It preserves Iris data,
 configuration, backups and project files. Deliberate data deletion is a separate
 manual operation after a verified backup and stopped service. Stop units before
 uninstalling; the installer does not control running processes.
+
+Use [backup and recovery](backup-recovery.md) before maintenance or deliberate
+data removal. It explains WAL consistency, restore verification and diagnostics.

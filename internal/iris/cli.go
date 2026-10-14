@@ -46,10 +46,17 @@ func (app *App) runServe(ctx context.Context, args []string) error {
 
 	cfg, err := app.config()
 	if err != nil {
-		return &serviceError{Code: "invalid_request", Message: "invalid Iris configuration", cause: err}
+		return fmt.Errorf("%w: %w", &serviceError{Code: "invalid_request", Message: "invalid Iris configuration"}, err)
 	}
 
-	return serveConfigured(ctx, cfg)
+	err = serveConfigured(ctx, cfg)
+
+	var service *serviceError
+	if errors.As(err, &service) && service.cause != nil {
+		return fmt.Errorf("%w: %w", err, service.cause)
+	}
+
+	return err
 }
 
 func serveConfigured(ctx context.Context, cfg config) (resultErr error) {

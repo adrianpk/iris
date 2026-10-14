@@ -143,8 +143,8 @@ future artifacts; create each during its owning slice.
 | Task | Status | Expected Commit | Commit | Validation |
 | --- | --- | --- | --- | --- |
 | T9.1 | in-progress | `feat(systemd): activate the Iris user service` | `de3bf4c2ca19` | Focused descriptor/runtime race checks passed. Generated units pass actual systemd syntax validation; real activation remains T9.4. |
-| T9.2 | in-progress | `build(linux): install and remove Iris user components` | pending | Temporary install/upgrade/removal; explicit activation and data preservation. |
-| T9.3 | pending | `docs(operation): document Iris backup and recovery` | pending | SQLite-consistent backup/restore/reopen and documented diagnostics/shutdown. |
+| T9.2 | completed | `build(linux): install and remove Iris user components` | `f6a48af24743` | Three isolated installation cases passed: reproducible binary, atomic upgrade, actual unit validation, explicit activation, private units, rejected symlinks and preserved data/config. |
+| T9.3 | completed | `docs(operation): document Iris backup and recovery` | pending | Actual documented recipe rejects a live WAL copy; stopped snapshot integrity, restored original CLI IDs/messages and rollback of later writes passed with race checks. Daemon startup causes reach stderr; diagnostics/shutdown documented. |
 | T9.4 | pending | `test(systemd): verify Iris user service operation` | pending | `make test-systemd` added; real isolated user-manager activation/restart/permissions/shutdown. |
 
 ## Slice 10 Tasks

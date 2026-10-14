@@ -23,6 +23,11 @@ Source installation writes the executable and private units atomically, captures
 matching XDG roots and leaves activation explicit. Reinstallation upgrades files;
 uninstallation preserves data/configuration. Workers remain deliberate.
 
+Stopped-backup guidance refuses live WAL/SHM files, creates a new private
+snapshot and checks integrity. Restore reopens original identities and messages;
+later writes roll back to the snapshot. Daemon startup stderr includes its
+underlying configuration/runtime/storage cause for journal diagnostics.
+
 ## Implementation Notes
 
 The user socket owns the listening endpoint. The daemon retains its exclusive
@@ -53,7 +58,11 @@ Go lint passed after formatting.
 Passed: `python3 scripts/test-install.py` (three cases). Actual installed binary
 execution, matching reproducible build hashes, atomic upgrade, path escaping,
 real `systemd-analyze --user verify`, unsafe destination rejection and data/config
-preservation passed. Real activation and backup checks remain in progress.
+preservation passed. Passed: `GOTOOLCHAIN=go1.26.3 go test -race -tags=integration ./internal/iris -run '^TestProcessBackupRestore$|^TestBackup|^TestServeDiagnostic$' -count=1`.
+The actual documented Python recipe rejects live WAL, then copies after graceful
+shutdown. Integrity, private modes and restored CLI IDs/messages passed; later
+writes disappear after restoration. Online backup and cancellation regressions
+also passed. Real user-manager activation remains in progress.
 
 ## Risks and Follow-ups
 
