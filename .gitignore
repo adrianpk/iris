@@ -1,0 +1,5 @@
+/_workspace/
+/bin/
+/iris
+/coverage.out
+*.test
